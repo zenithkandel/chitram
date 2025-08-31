@@ -30,7 +30,8 @@ CREATE TABLE artists (
     arts_sold INT DEFAULT 0,
     bio TEXT,
     profile_picture VARCHAR(255),
-    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('active', 'inactive', 'deleted') DEFAULT 'active'
 );
 
 -- Arts table
