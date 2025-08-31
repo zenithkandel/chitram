@@ -113,7 +113,10 @@ const getDashboardData = async (req, res) => {
             todayViews: todayViews[0]?.view_count || 0
         };
 
-        res.render('admin/dashboard', { dashboardData });
+        res.render('admin/dashboard', { 
+            dashboardData,
+            error: null 
+        });
     } catch (error) {
         console.error('Dashboard error:', error);
         res.render('admin/dashboard', { 

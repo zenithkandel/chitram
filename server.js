@@ -1,0 +1,82 @@
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const path = require('path');
+require('dotenv').config();
+
+// Import database and test connection
+const { testConnection } = require('./config/database');
+
+// Import routes
+const adminRoutes = require('./routes/admin');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Set view engine
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// Routes
+app.use('/admin', adminRoutes);
+
+// Root route
+app.get('/', (req, res) => {
+    res.send(`
+        <h1>चित्रम् Art Platform</h1>
+        <p>Welcome to चित्रम् - Online Art Selling Platform</p>
+        <a href="/admin">Admin Panel</a>
+    `);
+});
+
+// 404 handler
+app.use((req, res) => {
+    res.status(404).send(`
+        <h1>404 - Page Not Found</h1>
+        <p>The page you're looking for doesn't exist.</p>
+        <a href="/">Go Home</a>
+    `);
+});
+
+// Error handler
+app.use((error, req, res, next) => {
+    console.error('Server Error:', error);
+    res.status(500).send(`
+        <h1>500 - Internal Server Error</h1>
+        <p>Something went wrong on our end.</p>
+        <a href="/">Go Home</a>
+    `);
+});
+
+// Start server
+const startServer = async () => {
+    try {
+        // Test database connection
+        const dbConnected = await testConnection();
+        
+        if (!dbConnected) {
+            console.error('❌ Cannot start server: Database connection failed');
+            process.exit(1);
+        }
+
+        app.listen(PORT, () => {
+            console.log(`
+🎨 चित्रम् Server Running Successfully!
+📍 Server: http://localhost:${PORT}
+👑 Admin Panel: http://localhost:${PORT}/admin
+🗄️  Database: Connected
+🚀 Environment: ${process.env.NODE_ENV || 'development'}
+            `);
+        });
+    } catch (error) {
+        console.error('❌ Failed to start server:', error);
+        process.exit(1);
+    }
+};
+
+startServer();
