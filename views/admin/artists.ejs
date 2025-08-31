@@ -217,6 +217,31 @@
             font-size: 1.5rem;
             font-weight: bold;
             margin-right: 1rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .artist-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .artist-avatar .avatar-fallback,
+        .artist-avatar .avatar-text {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            position: relative;
+            z-index: 1;
         }
 
         .artist-info h3 {
@@ -602,7 +627,19 @@
                     <div class="artist-card">
                         <div class="artist-header">
                             <div class="artist-avatar">
-                                <%= artist.full_name.charAt(0).toUpperCase() %>
+                                <% if (artist.profile_picture && artist.profile_picture.trim() !== '') { %>
+                                    <img src="/uploads/profiles/<%= artist.profile_picture %>" 
+                                         alt="<%= artist.full_name %>" 
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                         onload="this.nextElementSibling.style.display='none';">
+                                    <div class="avatar-fallback">
+                                        <%= artist.full_name.charAt(0).toUpperCase() %>
+                                    </div>
+                                <% } else { %>
+                                    <div class="avatar-text">
+                                        <%= artist.full_name.charAt(0).toUpperCase() %>
+                                    </div>
+                                <% } %>
                             </div>
                             <div class="artist-info">
                                 <h3><%= artist.full_name %></h3>
@@ -643,7 +680,7 @@
                             </div>
                         </div>
 
-                        
+
                         <div class="artist-actions">
                             <button class="btn btn-primary" 
                                     data-artist-id="<%= artist.unique_id %>" 
@@ -738,6 +775,11 @@
                     <label class="form-label">Bio</label>
                     <textarea class="form-input form-textarea" id="edit_bio"></textarea>
                 </div>
+                <div class="form-group">
+                    <label class="form-label">Profile Picture</label>
+                    <input type="file" class="form-input" id="edit_profile_picture" accept="image/*">
+                    <small style="color: #666; font-size: 0.8rem;">Current: <span id="current_profile_picture">None</span></small>
+                </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
                     <button type="submit" class="btn btn-primary">Update Artist</button>
@@ -805,6 +847,7 @@
                         document.getElementById('edit_phone').value = artist.phone || '';
                         document.getElementById('edit_socials').value = artist.socials || '';
                         document.getElementById('edit_bio').value = artist.bio || '';
+                        document.getElementById('current_profile_picture').textContent = artist.profile_picture || 'None';
                         
                         document.getElementById('editForm').dataset.artistId = artistId;
                         document.getElementById('editModal').classList.add('active');
