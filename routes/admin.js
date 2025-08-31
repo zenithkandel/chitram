@@ -19,6 +19,9 @@ router.post('/login', redirectIfAuthenticated, adminLogin);
 // Dashboard (requires authentication)
 router.get('/dashboard', authenticateAdmin, getDashboardData);
 
+// Artists management routes
+router.use('/artists', require('./admin/artists'));
+
 // Logout
 router.post('/logout', adminLogout);
 router.get('/logout', adminLogout);
