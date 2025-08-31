@@ -1,4 +1,4 @@
-const db = require('../config/database');
+const { db } = require('../config/database');
 
 // Get all artists (excluding deleted ones)
 const getAllArtists = async (req, res) => {
