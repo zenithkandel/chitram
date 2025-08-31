@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>चित्रम् - Artists Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar styles - same as dashboard */
+        .sidebar {
+            position: fixed;
+            left: -280px;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 1000;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-header h2 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-header p {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            margin: 0.5rem 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            border-left-color: white;
+            color: white;
+        }
+
+        .nav-link.active {
+            background: rgba(255,255,255,0.15);
+            border-left-color: white;
+            color: white;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        /* Main content */
+        .main-content {
+            margin-left: 0;
+            transition: margin-left 0.3s ease;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #333;
+            padding: 0.5rem;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            color: #333;
+            flex: 1;
+            text-align: center;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Artists content */
+        .artists-content {
+            padding: 1.5rem;
+        }
+
+        .artists-header {
+            margin-bottom: 2rem;
+        }
+
+        .artists-header h2 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .artists-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-width: 120px;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Artists grid */
+        .artists-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .artist-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .artist-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .artist-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .artist-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+
+        .artist-info h3 {
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .artist-details {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .artist-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+        }
+
+        .meta-item {
+            color: #666;
+        }
+
+        .meta-label {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .artist-stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 1rem 0;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-text {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .artist-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .artist-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: opacity 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            color: #333;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Responsive design */
+        @media (min-width: 768px) {
+            .artists-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .artists-content {
+                padding: 2rem;
+            }
+
+            .header-title {
+                text-align: left;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar {
+                left: 0;
+                position: fixed;
+            }
+
+            .main-content {
+                margin-left: 280px;
+            }
+
+            .menu-toggle {
+                display: none;
+            }
+
+            .artists-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .artists-content {
+                padding: 2.5rem;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .artists-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>चित्रम्</h2>
+            <p>Admin Dashboard</p>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-item">
+                <a href="/admin/dashboard" class="nav-link">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/admin/artists" class="nav-link active">
+                    <span class="nav-icon">👨‍🎨</span>
+                    Artists
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/admin/arts" class="nav-link">
+                    <span class="nav-icon">🎨</span>
+                    Artworks
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/admin/orders" class="nav-link">
+                    <span class="nav-icon">📦</span>
+                    Orders
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/admin/messages" class="nav-link">
+                    <span class="nav-icon">📧</span>
+                    Messages
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/admin/analytics" class="nav-link">
+                    <span class="nav-icon">📈</span>
+                    Analytics
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/admin/settings" class="nav-link">
+                    <span class="nav-icon">⚙️</span>
+                    Settings
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Sidebar overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <button class="menu-toggle" id="menuToggle">☰</button>
+            <h1 class="header-title">Artists Management</h1>
+            <a href="/admin/logout" class="logout-btn">Logout</a>
+        </header>
+
+        <!-- Artists content -->
+        <div class="artists-content">
+            <!-- Alerts -->
+            <% if (error) { %>
+                <div class="alert alert-error" id="errorAlert"><%= error %></div>
+            <% } %>
+            <% if (success) { %>
+                <div class="alert alert-success" id="successAlert"><%= success %></div>
+            <% } %>
+
+            <!-- Artists header with stats -->
+            <div class="artists-header">
+                <h2>Artists Management</h2>
+                <div class="artists-stats">
+                    <div class="stat-item">
+                        <div class="stat-number"><%= artists.filter(a => a.status === 'active').length %></div>
+                        <div class="stat-label">Active Artists</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number"><%= artists.filter(a => a.status === 'inactive').length %></div>
+                        <div class="stat-label">Inactive Artists</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number"><%= artists.length %></div>
+                        <div class="stat-label">Total Artists</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Artists grid -->
+            <div class="artists-grid">
+                <% artists.forEach(artist => { %>
+                    <div class="artist-card">
+                        <div class="artist-header">
+                            <div class="artist-avatar">
+                                <%= artist.full_name.charAt(0).toUpperCase() %>
+                            </div>
+                            <div class="artist-info">
+                                <h3><%= artist.full_name %></h3>
+                                <div class="artist-details">
+                                    <%= artist.city %>, <%= artist.district %><br>
+                                    Age: <%= artist.age %> | Since: <%= artist.started_art_since %>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="artist-status status-<%= artist.status %>">
+                            <%= artist.status.charAt(0).toUpperCase() + artist.status.slice(1) %>
+                        </div>
+
+                        <div class="artist-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">Email:</span> <%= artist.email %>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Phone:</span> <%= artist.phone || 'N/A' %>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">School:</span> <%= artist.college_school || 'N/A' %>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Joined:</span> <%= new Date(artist.joined_at).toLocaleDateString() %>
+                            </div>
+                        </div>
+
+                        <div class="artist-stats">
+                            <div class="stat">
+                                <div class="stat-value"><%= artist.arts_uploaded %></div>
+                                <div class="stat-text">Arts Uploaded</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value"><%= artist.arts_sold %></div>
+                                <div class="stat-text">Arts Sold</div>
+                            </div>
+                        </div>
+
+                        <div class="artist-actions">
+                            <button class="btn btn-primary" 
+                                    data-artist-id="<%= artist.unique_id %>" 
+                                    onclick="viewProfile(this.dataset.artistId)">
+                                👁️ View Profile
+                            </button>
+                            <button class="btn btn-secondary" 
+                                    data-artist-id="<%= artist.unique_id %>" 
+                                    onclick="editArtist(this.dataset.artistId)">
+                                ✏️ Edit
+                            </button>
+                            <button class="btn btn-danger" 
+                                    data-artist-id="<%= artist.unique_id %>" 
+                                    data-artist-name="<%= artist.full_name.replace(/"/g, '&quot;') %>"
+                                    onclick="deleteArtist(this.dataset.artistId, this.dataset.artistName)">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+
+            <% if (artists.length === 0) { %>
+                <div style="text-align: center; padding: 3rem; color: #666;">
+                    <h3>No artists found</h3>
+                    <p>There are no artists registered in the system yet.</p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Edit Artist Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Artist</h3>
+                <button class="close-btn" onclick="closeEditModal()">&times;</button>
+            </div>
+            <form id="editForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" class="form-input" id="edit_full_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Age *</label>
+                        <input type="number" class="form-input" id="edit_age" min="1" max="100" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Started Art Since</label>
+                        <input type="text" class="form-input" id="edit_started_art_since" placeholder="e.g., 2020">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select class="form-input" id="edit_status">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">School/College</label>
+                    <input type="text" class="form-input" id="edit_college_school">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">City</label>
+                        <input type="text" class="form-input" id="edit_city">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">District</label>
+                        <input type="text" class="form-input" id="edit_district">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-input" id="edit_email" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" class="form-input" id="edit_phone">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Social Media (JSON format)</label>
+                    <textarea class="form-input form-textarea" id="edit_socials" placeholder='{"instagram": "@username", "facebook": "profile"}'></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bio</label>
+                    <textarea class="form-input form-textarea" id="edit_bio"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Artist</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar functionality
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        menuToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+        });
+
+        sidebarOverlay.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        // Close sidebar when clicking nav links on mobile
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth < 1024) {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                }
+            });
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 1024) {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            }
+        });
+
+        // Artist management functions
+        function viewProfile(artistId) {
+            // Redirect to artist profile (to be implemented)
+            window.location.href = `/admin/artists/${artistId}/profile`;
+        }
+
+        function editArtist(artistId) {
+            // Fetch artist data and populate edit modal
+            fetch(`/admin/artists/${artistId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.artist) {
+                        const artist = data.artist;
+                        document.getElementById('edit_full_name').value = artist.full_name;
+                        document.getElementById('edit_age').value = artist.age;
+                        document.getElementById('edit_started_art_since').value = artist.started_art_since || '';
+                        document.getElementById('edit_status').value = artist.status;
+                        document.getElementById('edit_college_school').value = artist.college_school || '';
+                        document.getElementById('edit_city').value = artist.city || '';
+                        document.getElementById('edit_district').value = artist.district || '';
+                        document.getElementById('edit_email').value = artist.email;
+                        document.getElementById('edit_phone').value = artist.phone || '';
+                        document.getElementById('edit_socials').value = artist.socials || '';
+                        document.getElementById('edit_bio').value = artist.bio || '';
+                        
+                        document.getElementById('editForm').dataset.artistId = artistId;
+                        document.getElementById('editModal').classList.add('active');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching artist:', error);
+                    showAlert('Error loading artist data', 'error');
+                });
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        // Handle edit form submission
+        document.getElementById('editForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const artistId = this.dataset.artistId;
+            const formData = {
+                full_name: document.getElementById('edit_full_name').value,
+                age: parseInt(document.getElementById('edit_age').value),
+                started_art_since: document.getElementById('edit_started_art_since').value,
+                status: document.getElementById('edit_status').value,
+                college_school: document.getElementById('edit_college_school').value,
+                city: document.getElementById('edit_city').value,
+                district: document.getElementById('edit_district').value,
+                email: document.getElementById('edit_email').value,
+                phone: document.getElementById('edit_phone').value,
+                socials: document.getElementById('edit_socials').value,
+                bio: document.getElementById('edit_bio').value
+            };
+
+            fetch(`/admin/artists/${artistId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert(data.success, 'success');
+                    closeEditModal();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    showAlert(data.error || 'Error updating artist', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating artist:', error);
+                showAlert('Error updating artist', 'error');
+            });
+        });
+
+        function deleteArtist(artistId, artistName) {
+            if (confirm(`Are you sure you want to delete artist "${artistName}"?`)) {
+                if (confirm(`This action cannot be undone. The artist "${artistName}" will be permanently removed from the active list. Continue?`)) {
+                    fetch(`/admin/artists/${artistId}`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showAlert(data.success, 'success');
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        } else {
+                            showAlert(data.error || 'Error deleting artist', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting artist:', error);
+                        showAlert('Error deleting artist', 'error');
+                    });
+                }
+            }
+        }
+
+        function showAlert(message, type) {
+            // Remove existing alerts
+            const existingAlerts = document.querySelectorAll('.alert');
+            existingAlerts.forEach(alert => alert.remove());
+
+            // Create new alert
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            // Insert at the top of content
+            const content = document.querySelector('.artists-content');
+            content.insertBefore(alert, content.firstChild);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Auto-hide alerts after 5 seconds
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 300);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

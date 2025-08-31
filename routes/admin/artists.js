@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const artistController = require('../../controllers/artistController');
-const authMiddleware = require('../../middleware/auth');
+const { authenticateAdmin } = require('../../middleware/auth');
 
 // All routes require authentication
-router.use(authMiddleware);
+router.use(authenticateAdmin);
 
 // Get all artists page
 router.get('/', artistController.getAllArtists);
