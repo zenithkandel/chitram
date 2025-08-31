@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>चित्रम् - Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+        }
+        
+        .header .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .card.arts { border-left-color: #4CAF50; }
+        .card.artists { border-left-color: #FF9800; }
+        .card.orders { border-left-color: #2196F3; }
+        .card.messages { border-left-color: #9C27B0; }
+        .card.views { border-left-color: #F44336; }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .card.arts .card-icon { background: #E8F5E8; color: #4CAF50; }
+        .card.artists .card-icon { background: #FFF3E0; color: #FF9800; }
+        .card.orders .card-icon { background: #E3F2FD; color: #2196F3; }
+        .card.messages .card-icon { background: #F3E5F5; color: #9C27B0; }
+        .card.views .card-icon { background: #FFEBEE; color: #F44336; }
+        
+        .card-title {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-description {
+            font-size: 0.8rem;
+            color: #999;
+        }
+        
+        .navigation {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .nav-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .nav-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            text-align: center;
+            transition: transform 0.2s;
+            font-weight: 500;
+        }
+        
+        .nav-item:hover {
+            transform: translateY(-3px);
+            color: white;
+        }
+        
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #c33;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>चित्रम् Admin Dashboard</h1>
+        <div class="user-info">
+            <span>Welcome, Admin</span>
+            <a href="/admin/logout" class="logout-btn">Logout</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <% if (error) { %>
+            <div class="error"><%= error %></div>
+        <% } %>
+        
+        <div class="dashboard-grid">
+            <div class="card arts">
+                <div class="card-header">
+                    <div class="card-icon">🎨</div>
+                    <div class="card-title">Total Artworks</div>
+                </div>
+                <div class="card-value"><%= dashboardData.totalArts || 0 %></div>
+                <div class="card-description">Artworks uploaded</div>
+            </div>
+            
+            <div class="card arts">
+                <div class="card-header">
+                    <div class="card-icon">✅</div>
+                    <div class="card-title">Artworks Sold</div>
+                </div>
+                <div class="card-value"><%= dashboardData.artsSold || 0 %></div>
+                <div class="card-description">Successfully sold</div>
+            </div>
+            
+            <div class="card artists">
+                <div class="card-header">
+                    <div class="card-icon">👨‍🎨</div>
+                    <div class="card-title">Total Artists</div>
+                </div>
+                <div class="card-value"><%= dashboardData.totalArtists || 0 %></div>
+                <div class="card-description">Registered artists</div>
+            </div>
+            
+            <div class="card orders">
+                <div class="card-header">
+                    <div class="card-icon">📦</div>
+                    <div class="card-title">Total Orders</div>
+                </div>
+                <div class="card-value"><%= dashboardData.totalOrders || 0 %></div>
+                <div class="card-description">All time orders</div>
+            </div>
+            
+            <div class="card orders">
+                <div class="card-header">
+                    <div class="card-icon">🆕</div>
+                    <div class="card-title">New Orders</div>
+                </div>
+                <div class="card-value"><%= dashboardData.newOrders || 0 %></div>
+                <div class="card-description">Orders placed</div>
+            </div>
+            
+            <div class="card orders">
+                <div class="card-header">
+                    <div class="card-icon">⏳</div>
+                    <div class="card-title">Processing Orders</div>
+                </div>
+                <div class="card-value"><%= dashboardData.processingOrders || 0 %></div>
+                <div class="card-description">Being processed</div>
+            </div>
+            
+            <div class="card messages">
+                <div class="card-header">
+                    <div class="card-icon">💬</div>
+                    <div class="card-title">Total Messages</div>
+                </div>
+                <div class="card-value"><%= dashboardData.totalMessages || 0 %></div>
+                <div class="card-description">Contact messages</div>
+            </div>
+            
+            <div class="card messages">
+                <div class="card-header">
+                    <div class="card-icon">📩</div>
+                    <div class="card-title">Unread Messages</div>
+                </div>
+                <div class="card-value"><%= dashboardData.unreadMessages || 0 %></div>
+                <div class="card-description">Need attention</div>
+            </div>
+            
+            <div class="card views">
+                <div class="card-header">
+                    <div class="card-icon">👁️</div>
+                    <div class="card-title">Total Views</div>
+                </div>
+                <div class="card-value"><%= dashboardData.totalViews || 0 %></div>
+                <div class="card-description">All time page views</div>
+            </div>
+            
+            <div class="card views">
+                <div class="card-header">
+                    <div class="card-icon">📅</div>
+                    <div class="card-title">Today's Views</div>
+                </div>
+                <div class="card-value"><%= dashboardData.todayViews || 0 %></div>
+                <div class="card-description">Views today</div>
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <h2 class="nav-title">Admin Management</h2>
+            <div class="nav-grid">
+                <a href="/admin/artists" class="nav-item">
+                    👨‍🎨 Manage Artists
+                </a>
+                <a href="/admin/arts" class="nav-item">
+                    🎨 Manage Artworks
+                </a>
+                <a href="/admin/orders" class="nav-item">
+                    📦 Manage Orders
+                </a>
+                <a href="/admin/messages" class="nav-item">
+                    💬 Contact Messages
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
