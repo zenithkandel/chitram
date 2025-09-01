@@ -168,6 +168,45 @@
             min-width: 120px;
         }
 
+        .add-artist-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-width: 120px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-artist-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .add-artist-btn:active {
+            transform: translateY(0);
+        }
+
+        .add-artist-btn .add-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .add-artist-btn .add-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
         .stat-number {
             font-size: 1.5rem;
             font-weight: bold;
@@ -727,6 +766,10 @@
                         <div class="stat-number"><%= artists.length %></div>
                         <div class="stat-label">Total Artists</div>
                     </div>
+                    <button class="add-artist-btn" onclick="openAddArtistModal()">
+                        <div class="add-icon">➕</div>
+                        <div class="add-text">Add New Artist</div>
+                    </button>
                 </div>
             </div>
 
@@ -911,6 +954,102 @@
                         <span id="updateBtnText">Update Artist</span>
                         <span id="updateBtnSpinner" style="display: none;">
                             <span class="loading-spinner"></span>Updating...
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add New Artist Modal -->
+    <div class="modal" id="addArtistModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Artist</h3>
+                <button class="close-btn" onclick="closeAddArtistModal()">&times;</button>
+            </div>
+            <form id="addArtistForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" class="form-input" id="add_full_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Age *</label>
+                        <input type="number" class="form-input" id="add_age" min="1" max="100" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Started Art Since</label>
+                        <input type="text" class="form-input" id="add_started_art_since" placeholder="e.g., 2020">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select class="form-input" id="add_status">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">School/College</label>
+                    <input type="text" class="form-input" id="add_college_school">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">City</label>
+                        <input type="text" class="form-input" id="add_city">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">District</label>
+                        <input type="text" class="form-input" id="add_district">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-input" id="add_email" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" class="form-input" id="add_phone">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Social Media (JSON format)</label>
+                    <textarea class="form-input form-textarea" id="add_socials" placeholder='{"instagram": "@username", "facebook": "profile"}'></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bio</label>
+                    <textarea class="form-input form-textarea" id="add_bio"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Profile Picture</label>
+                    <input type="file" class="form-input" id="add_profile_picture" accept="image/*" onchange="previewAddProfilePicture(this)">
+                    
+                    <!-- Image Preview -->
+                    <div id="addImagePreview" style="display: none; margin-top: 10px;">
+                        <div style="font-size: 0.8rem; color: #666; margin-bottom: 5px;">Preview:</div>
+                        <img id="addPreviewImage" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 2px solid #ddd;">
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="progress-container" id="addProgressContainer">
+                    <div class="progress-bar" id="addProgressBar"></div>
+                </div>
+                <div class="progress-text" id="addProgressText" style="display: none;"></div>
+                
+                <!-- Add Status -->
+                <div class="update-status" id="addStatus"></div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddArtistModal()" id="addCancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="addArtistBtn">
+                        <span id="addBtnText">Create Artist</span>
+                        <span id="addBtnSpinner" style="display: none;">
+                            <span class="loading-spinner"></span>Creating...
                         </span>
                     </button>
                 </div>
@@ -1112,6 +1251,160 @@
 
         function updateProgressStatus(type, message) {
             const statusElement = document.getElementById('updateStatus');
+            statusElement.className = `update-status active ${type}`;
+            statusElement.innerHTML = type === 'uploading' || type === 'processing' 
+                ? `<span class="loading-spinner"></span>${message}`
+                : message;
+        }
+
+        // Add New Artist Functions
+        function openAddArtistModal() {
+            document.getElementById('addArtistModal').classList.add('active');
+            // Clear form
+            document.getElementById('addArtistForm').reset();
+            document.getElementById('addImagePreview').style.display = 'none';
+            hideAddProgress();
+        }
+
+        function closeAddArtistModal() {
+            document.getElementById('addArtistModal').classList.remove('active');
+            hideAddProgress();
+        }
+
+        function previewAddProfilePicture(input) {
+            const preview = document.getElementById('addImagePreview');
+            const previewImage = document.getElementById('addPreviewImage');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        // Handle add artist form submission
+        document.getElementById('addArtistForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show progress bar and disable form
+            showAddProgress();
+            
+            // Create FormData object to handle file upload
+            const formData = new FormData();
+            formData.append('full_name', document.getElementById('add_full_name').value);
+            formData.append('age', document.getElementById('add_age').value);
+            formData.append('started_art_since', document.getElementById('add_started_art_since').value);
+            formData.append('status', document.getElementById('add_status').value);
+            formData.append('college_school', document.getElementById('add_college_school').value);
+            formData.append('city', document.getElementById('add_city').value);
+            formData.append('district', document.getElementById('add_district').value);
+            formData.append('email', document.getElementById('add_email').value);
+            formData.append('phone', document.getElementById('add_phone').value);
+            formData.append('socials', document.getElementById('add_socials').value);
+            formData.append('bio', document.getElementById('add_bio').value);
+            
+            // Add profile picture file if selected
+            const profilePictureFile = document.getElementById('add_profile_picture').files[0];
+            if (profilePictureFile) {
+                formData.append('profile_picture', profilePictureFile);
+                updateAddProgressStatus('uploading', 'Uploading profile picture...');
+            } else {
+                updateAddProgressStatus('processing', 'Creating new artist...');
+            }
+
+            // Simulate progress steps
+            updateAddProgress(20);
+            
+            setTimeout(() => {
+                updateAddProgress(50);
+                
+                fetch('/admin/artists', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    updateAddProgress(80);
+                    return response.json();
+                })
+                .then(data => {
+                    updateAddProgress(100);
+                    updateAddProgressStatus('success', 'Artist created successfully!');
+                    
+                    setTimeout(() => {
+                        if (data.success) {
+                            showAlert(data.success, 'success');
+                            closeAddArtistModal();
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                        } else {
+                            hideAddProgress();
+                            showAlert(data.error || 'Error creating artist', 'error');
+                        }
+                    }, 500);
+                })
+                .catch(error => {
+                    console.error('Error creating artist:', error);
+                    hideAddProgress();
+                    showAlert('Error creating artist', 'error');
+                });
+            }, 300);
+        });
+
+        // Add Progress bar functions
+        function showAddProgress() {
+            document.getElementById('addProgressContainer').classList.add('active');
+            document.getElementById('addProgressText').style.display = 'block';
+            document.getElementById('addBtnText').style.display = 'none';
+            document.getElementById('addBtnSpinner').style.display = 'inline';
+            document.getElementById('addArtistBtn').disabled = true;
+            document.getElementById('addCancelBtn').disabled = true;
+            
+            // Disable all form inputs
+            const formInputs = document.querySelectorAll('#addArtistForm input, #addArtistForm select, #addArtistForm textarea');
+            formInputs.forEach(input => input.disabled = true);
+        }
+
+        function hideAddProgress() {
+            document.getElementById('addProgressContainer').classList.remove('active');
+            document.getElementById('addProgressText').style.display = 'none';
+            document.getElementById('addStatus').classList.remove('active');
+            document.getElementById('addBtnText').style.display = 'inline';
+            document.getElementById('addBtnSpinner').style.display = 'none';
+            document.getElementById('addArtistBtn').disabled = false;
+            document.getElementById('addCancelBtn').disabled = false;
+            
+            // Re-enable all form inputs
+            const formInputs = document.querySelectorAll('#addArtistForm input, #addArtistForm select, #addArtistForm textarea');
+            formInputs.forEach(input => input.disabled = false);
+            
+            // Reset progress
+            updateAddProgress(0);
+        }
+
+        function updateAddProgress(percentage) {
+            const progressBar = document.getElementById('addProgressBar');
+            const progressText = document.getElementById('addProgressText');
+            
+            progressBar.style.width = percentage + '%';
+            progressText.textContent = `${percentage}% Complete`;
+            
+            if (percentage > 0) {
+                progressBar.classList.add('animated');
+            } else {
+                progressBar.classList.remove('animated');
+            }
+        }
+
+        function updateAddProgressStatus(type, message) {
+            const statusElement = document.getElementById('addStatus');
             statusElement.className = `update-status active ${type}`;
             statusElement.innerHTML = type === 'uploading' || type === 'processing' 
                 ? `<span class="loading-spinner"></span>${message}`

@@ -166,6 +166,94 @@ const updateArtist = async (req, res) => {
     }
 };
 
+// Create new artist
+const createArtist = async (req, res) => {
+    try {
+        const {
+            full_name,
+            age,
+            started_art_since,
+            college_school,
+            city,
+            district,
+            email,
+            phone,
+            socials,
+            bio,
+            status
+        } = req.body;
+
+        // Validate required fields
+        if (!full_name || !email || !age) {
+            return res.status(400).json({ error: 'Full name, email, and age are required' });
+        }
+
+        // Check if email already exists
+        const [emailCheck] = await db.execute(
+            'SELECT email FROM artists WHERE email = ? AND status != "deleted"',
+            [email]
+        );
+
+        if (emailCheck.length > 0) {
+            return res.status(400).json({ error: 'Email already exists' });
+        }
+
+        // Generate unique ID
+        const unique_id = 'ART' + Date.now() + Math.floor(Math.random() * 1000);
+
+        // Handle profile picture upload
+        let profile_picture = null;
+        if (req.file) {
+            profile_picture = req.file.filename;
+        }
+
+        // Insert new artist
+        await db.execute(`
+            INSERT INTO artists (
+                unique_id,
+                full_name,
+                age,
+                started_art_since,
+                college_school,
+                city,
+                district,
+                email,
+                phone,
+                socials,
+                bio,
+                status,
+                profile_picture,
+                arts_uploaded,
+                arts_sold,
+                joined_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, NOW())
+        `, [
+            unique_id,
+            full_name,
+            age,
+            started_art_since,
+            college_school,
+            city,
+            district,
+            email,
+            phone,
+            socials,
+            bio,
+            status || 'active',
+            profile_picture
+        ]);
+
+        res.json({ 
+            success: 'Artist created successfully',
+            artist_id: unique_id,
+            profile_picture: profile_picture 
+        });
+    } catch (error) {
+        console.error('Create artist error:', error);
+        res.status(500).json({ error: 'Error creating artist' });
+    }
+};
+
 // Soft delete artist
 const deleteArtist = async (req, res) => {
     try {
@@ -197,6 +285,7 @@ const deleteArtist = async (req, res) => {
 module.exports = {
     getAllArtists,
     getArtist,
+    createArtist,
     updateArtist,
     deleteArtist
 };
