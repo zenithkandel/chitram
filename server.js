@@ -45,15 +45,16 @@ app.set('views', path.join(__dirname, 'views'));
 // Routes
 app.use('/admin', adminRoutes);
 app.use('/api/applications', applicationRoutes);
+app.use('/', require('./routes/client'));
 
-// Root route
-app.get('/', (req, res) => {
-    res.send(`
-        <h1>चित्रम् Art Platform</h1>
-        <p>Welcome to चित्रम् - Online Art Selling Platform</p>
-        <a href="/admin">Admin Panel</a>
-    `);
-});
+// Root route redirect (remove the old one)
+// app.get('/', (req, res) => {
+//     res.send(`
+//         <h1>चित्रम् Art Platform</h1>
+//         <p>Welcome to चित्रम् - Online Art Selling Platform</p>
+//         <a href="/admin">Admin Panel</a>
+//     `);
+// });
 
 // 404 handler
 app.use((req, res) => {
