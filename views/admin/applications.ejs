@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>चित्रम् - Artist Applications</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar styles - same as dashboard */
+        .sidebar {
+            position: fixed;
+            left: -280px;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 1000;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-header h2 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-header p {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            margin: 0.5rem 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            border-left-color: white;
+            color: white;
+        }
+
+        .nav-link.active {
+            background: rgba(255,255,255,0.15);
+            border-left-color: white;
+            color: white;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        /* Main content */
+        .main-content {
+            margin-left: 0;
+            transition: margin-left 0.3s ease;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #333;
+            padding: 0.5rem;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            color: #333;
+            flex: 1;
+            text-align: center;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Applications content */
+        .applications-content {
+            padding: 1.5rem;
+        }
+
+        .artists-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .artists-stats-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stats-title {
+            font-size: 1.2rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .stat-card {
+            background: #f8f9ff;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .applications-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .applications-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .application-card {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid #e1e8ed;
+        }
+
+        .application-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .application-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .applicant-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .application-date {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .application-info h3 {
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .application-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending { background: #fff3e0; color: #f57c00; }
+        .status-under_review { background: #e3f2fd; color: #1976d2; }
+        .status-approved { background: #e8f5e8; color: #2e7d32; }
+        .status-rejected { background: #ffebee; color: #c62828; }
+
+        .application-preview {
+            background: #f0f2f5;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #555;
+        }
+
+        .application-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e1e8ed;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.85rem;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-view {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Desktop sidebar active state */
+        @media (min-width: 769px) {
+            .main-content {
+                margin-left: 280px;
+            }
+            
+            .sidebar {
+                left: 0;
+            }
+            
+            .menu-toggle {
+                display: none;
+            }
+        }
+
+        /* Mobile styles */
+        @media (max-width: 768px) {
+            .applications-content {
+                padding: 1rem;
+            }
+
+            .artists-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+
+            .applications-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-title {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Overlay for mobile sidebar */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            backdrop-filter: blur(3px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        .modal-header h2 {
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background: #f0f2f5;
+            color: #333;
+        }
+
+        .application-detail-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #e1e8ed;
+            padding-bottom: 0.5rem;
+        }
+
+        .status-update-section {
+            background: #f8f9ff;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .rejection-reason {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            min-height: 80px;
+            resize: vertical;
+            display: none;
+        }
+
+        .update-status-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .update-status-btn:hover {
+            opacity: 0.9;
+        }
+
+        .profile-picture {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        .socials-list {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            padding: 0.25rem 0.5rem;
+            background: #e3f2fd;
+            color: #1976d2;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>चित्रम्</h2>
+            <p>Art Management System</p>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-item">
+                <a href="/admin/dashboard" class="nav-link">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/admin/artists" class="nav-link">
+                    <span class="nav-icon">👨‍🎨</span>
+                    Artists
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/admin/artworks" class="nav-link">
+                    <span class="nav-icon">🎨</span>
+                    Artworks
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/admin/orders" class="nav-link">
+                    <span class="nav-icon">📦</span>
+                    Orders
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/admin/messages" class="nav-link">
+                    <span class="nav-icon">📧</span>
+                    Messages
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/admin/applications" class="nav-link active">
+                    <span class="nav-icon">📝</span>
+                    Applications
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <button class="menu-toggle" id="menuToggle">☰</button>
+            <h1 class="header-title">📝 Artist Applications</h1>
+            <a href="/admin/logout" class="logout-btn">Logout</a>
+        </header>
+
+        <!-- Applications Content -->
+        <div class="applications-content">
+            <% if (error) { %>
+                <div class="alert error" id="errorAlert">
+                    <%= error %>
+                </div>
+            <% } %>
+
+            <% if (success) { %>
+                <div class="alert success" id="successAlert">
+                    <%= success %>
+                </div>
+            <% } %>
+
+            <!-- Applications Stats -->
+            <div class="artists-stats-section">
+                <div class="stats-header">
+                    <h2 class="stats-title">Applications Overview</h2>
+                </div>
+
+                <div class="artists-stats">
+                    <div class="stat-card">
+                        <div class="stat-number"><%= applications.filter(a => a.status === 'pending').length %></div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number"><%= applications.filter(a => a.status === 'under_review').length %></div>
+                        <div class="stat-label">Under Review</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number"><%= applications.filter(a => a.status === 'approved').length %></div>
+                        <div class="stat-label">Approved</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number"><%= applications.length %></div>
+                        <div class="stat-label">Total Applications</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Applications Grid -->
+            <div class="applications-container">
+                <div class="applications-grid">
+                    <% if (applications.length === 0) { %>
+                        <div class="application-card" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+                            <h3 style="color: #666; margin-bottom: 1rem;">No applications found</h3>
+                            <p style="color: #999;">Artist applications will appear here when people submit them.</p>
+                        </div>
+                    <% } else { %>
+                        <% applications.forEach(application => { %>
+                            <div class="application-card" data-id="<%= application.unique_id %>">
+                                <div class="application-header">
+                                    <div>
+                                        <div class="applicant-name"><%= application.full_name %></div>
+                                        <div class="application-date"><%= new Date(application.received_date).toLocaleDateString() %></div>
+                                    </div>
+                                    <span class="status-badge status-<%= application.status %>"><%= application.status.replace('_', ' ') %></span>
+                                </div>
+                                
+                                <div class="application-info">
+                                    <div class="application-details">
+                                        <div class="detail-item">
+                                            <span class="detail-label">Age</span>
+                                            <span class="detail-value"><%= application.age %> years</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Location</span>
+                                            <span class="detail-value"><%= application.city %>, <%= application.district %></span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Email</span>
+                                            <span class="detail-value"><%= application.email %></span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Started Art At</span>
+                                            <span class="detail-value"><%= application.started_art_at || 'Not specified' %></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <% if (application.message) { %>
+                                        <div class="application-preview">
+                                            <strong>Message:</strong> <%= application.message.substring(0, 100) %><%= application.message.length > 100 ? '...' : '' %>
+                                        </div>
+                                    <% } %>
+                                </div>
+
+                                <div class="application-actions">
+                                    <button class="btn btn-view" onclick="viewApplication('<%= application.unique_id %>')">
+                                        👁️ View Details
+                                    </button>
+                                    <button class="btn btn-delete" onclick="deleteApplication('<%= application.unique_id %>', '<%= application.full_name %>')">
+                                        🗑️ Delete
+                                    </button>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Application Modal -->
+    <div id="viewApplicationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Application Details</h2>
+                <button class="close-btn" onclick="closeViewApplicationModal()">&times;</button>
+            </div>
+            
+            <div id="applicationDetailsContent">
+                <!-- Application details will be loaded here -->
+            </div>
+
+            <div class="status-update-section">
+                <h3 class="section-title">Update Status</h3>
+                <select id="statusSelect" class="status-select" onchange="toggleRejectionReason()">
+                    <option value="pending">Pending</option>
+                    <option value="under_review">Under Review</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+                <textarea id="rejectionReason" class="rejection-reason" placeholder="Please provide a reason for rejection..."></textarea>
+                <button onclick="updateApplicationStatus()" class="update-status-btn">Update Status</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentApplicationId = null;
+
+        // View application function
+        async function viewApplication(applicationId) {
+            currentApplicationId = applicationId;
+            
+            try {
+                const response = await fetch(`/admin/applications/${applicationId}`);
+                const data = await response.json();
+                
+                if (data.application) {
+                    const app = data.application;
+                    
+                    // Set current status in select
+                    document.getElementById('statusSelect').value = app.status;
+                    toggleRejectionReason();
+                    
+                    // Build socials HTML
+                    let socialsHtml = 'Not provided';
+                    if (app.socials) {
+                        const socials = app.socials;
+                        const socialLinks = [];
+                        
+                        if (socials.instagram) socialLinks.push(`<a href="${socials.instagram}" class="social-link" target="_blank">Instagram</a>`);
+                        if (socials.facebook) socialLinks.push(`<a href="${socials.facebook}" class="social-link" target="_blank">Facebook</a>`);
+                        if (socials.twitter) socialLinks.push(`<a href="${socials.twitter}" class="social-link" target="_blank">Twitter</a>`);
+                        if (socials.tiktok) socialLinks.push(`<a href="${socials.tiktok}" class="social-link" target="_blank">TikTok</a>`);
+                        if (socials.youtube) socialLinks.push(`<a href="${socials.youtube}" class="social-link" target="_blank">YouTube</a>`);
+                        
+                        if (socialLinks.length > 0) {
+                            socialsHtml = `<div class="socials-list">${socialLinks.join('')}</div>`;
+                        }
+                    }
+                    
+                    const detailsHtml = `
+                        <div class="application-detail-section">
+                            <h3 class="section-title">Personal Information</h3>
+                            ${app.profile_picture ? `<img src="/uploads/applications/${app.profile_picture}" class="profile-picture" alt="Profile Picture">` : ''}
+                            <div class="application-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Full Name</span>
+                                    <span class="detail-value">${app.full_name}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Age</span>
+                                    <span class="detail-value">${app.age} years</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Email</span>
+                                    <span class="detail-value">${app.email}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Phone</span>
+                                    <span class="detail-value">${app.phone || 'Not provided'}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">City</span>
+                                    <span class="detail-value">${app.city}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">District</span>
+                                    <span class="detail-value">${app.district}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="application-detail-section">
+                            <h3 class="section-title">Art Background</h3>
+                            <div class="application-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Started Art At</span>
+                                    <span class="detail-value">${app.started_art_at || 'Not specified'}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">School/College</span>
+                                    <span class="detail-value">${app.school_college || 'Not provided'}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="application-detail-section">
+                            <h3 class="section-title">Social Media</h3>
+                            ${socialsHtml}
+                        </div>
+
+                        ${app.bio ? `
+                        <div class="application-detail-section">
+                            <h3 class="section-title">Bio</h3>
+                            <p style="line-height: 1.6;">${app.bio.replace(/\n/g, '<br>')}</p>
+                        </div>
+                        ` : ''}
+
+                        ${app.message ? `
+                        <div class="application-detail-section">
+                            <h3 class="section-title">Application Message</h3>
+                            <div style="background: #f8f9ff; padding: 1rem; border-radius: 8px; line-height: 1.6;">
+                                ${app.message.replace(/\n/g, '<br>')}
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <div class="application-detail-section">
+                            <h3 class="section-title">Application Status</h3>
+                            <div class="application-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Current Status</span>
+                                    <span class="status-badge status-${app.status}">${app.status.replace('_', ' ')}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Received Date</span>
+                                    <span class="detail-value">${new Date(app.received_date).toLocaleString()}</span>
+                                </div>
+                                ${app.reviewed_by ? `
+                                <div class="detail-item">
+                                    <span class="detail-label">Reviewed By</span>
+                                    <span class="detail-value">${app.reviewed_by}</span>
+                                </div>
+                                ` : ''}
+                                ${app.reviewed_date ? `
+                                <div class="detail-item">
+                                    <span class="detail-label">Reviewed Date</span>
+                                    <span class="detail-value">${new Date(app.reviewed_date).toLocaleString()}</span>
+                                </div>
+                                ` : ''}
+                            </div>
+                            ${app.rejection_reason ? `
+                            <div style="margin-top: 1rem; padding: 1rem; background: #ffebee; border-radius: 8px;">
+                                <strong style="color: #c62828;">Rejection Reason:</strong><br>
+                                ${app.rejection_reason}
+                            </div>
+                            ` : ''}
+                        </div>
+                    `;
+                    
+                    document.getElementById('applicationDetailsContent').innerHTML = detailsHtml;
+                    document.getElementById('viewApplicationModal').classList.add('active');
+                } else {
+                    showAlert('Error loading application data', 'error');
+                }
+            } catch (error) {
+                console.error('Error fetching application:', error);
+                showAlert('Error loading application data', 'error');
+            }
+        }
+
+        function closeViewApplicationModal() {
+            document.getElementById('viewApplicationModal').classList.remove('active');
+            currentApplicationId = null;
+        }
+
+        function toggleRejectionReason() {
+            const status = document.getElementById('statusSelect').value;
+            const rejectionReason = document.getElementById('rejectionReason');
+            
+            if (status === 'rejected') {
+                rejectionReason.style.display = 'block';
+            } else {
+                rejectionReason.style.display = 'none';
+            }
+        }
+
+        // Update application status
+        async function updateApplicationStatus() {
+            if (!currentApplicationId) {
+                showAlert('No application selected', 'error');
+                return;
+            }
+
+            const status = document.getElementById('statusSelect').value;
+            const rejectionReason = document.getElementById('rejectionReason').value;
+
+            try {
+                const response = await fetch(`/admin/applications/${currentApplicationId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status, rejectionReason })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert(data.success, 'success');
+                    closeViewApplicationModal();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showAlert(data.error || 'Error updating application status', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating application status:', error);
+                showAlert('Error updating application status', 'error');
+            }
+        }
+
+        function deleteApplication(applicationId, applicantName) {
+            if (confirm(`Are you sure you want to delete the application from "${applicantName}"? This action cannot be undone.`)) {
+                fetch(`/admin/applications/${applicationId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert(data.success, 'success');
+                        // Remove the application card from DOM
+                        const applicationCard = document.querySelector(`[data-id="${applicationId}"]`);
+                        if (applicationCard) {
+                            applicationCard.style.transition = 'all 0.3s ease';
+                            applicationCard.style.opacity = '0';
+                            applicationCard.style.transform = 'scale(0.8)';
+                            setTimeout(() => {
+                                applicationCard.remove();
+                                // Reload to update stats
+                                setTimeout(() => window.location.reload(), 1000);
+                            }, 300);
+                        }
+                    } else {
+                        showAlert(data.error || 'Error deleting application', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting application:', error);
+                    showAlert('Error deleting application', 'error');
+                });
+            }
+        }
+
+        function showAlert(message, type) {
+            // Remove existing alerts
+            const existingAlerts = document.querySelectorAll('.alert');
+            existingAlerts.forEach(alert => alert.remove());
+            
+            // Create new alert
+            const alert = document.createElement('div');
+            alert.className = `alert ${type}`;
+            alert.textContent = message;
+            
+            // Insert after header
+            const applicationsContent = document.querySelector('.applications-content');
+            applicationsContent.insertBefore(alert, applicationsContent.firstChild);
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-10px)';
+                    setTimeout(() => alert.remove(), 300);
+                }
+            }, 5000);
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                if (e.target.id === 'viewApplicationModal') {
+                    closeViewApplicationModal();
+                }
+            }
+        });
+
+        // Close modals with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeViewApplicationModal();
+            }
+        });
+
+        // Sidebar toggle functionality
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        menuToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+        });
+
+        sidebarOverlay.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        // Auto-hide alerts
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                if (alert) {
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-10px)';
+                    setTimeout(() => alert.remove(), 300);
+                }
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

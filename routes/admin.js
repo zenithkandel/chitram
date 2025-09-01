@@ -31,6 +31,9 @@ router.use('/orders', require('./admin/orders'));
 // Messages management routes
 router.use('/messages', require('./admin/messages'));
 
+// Applications management routes
+router.use('/applications', require('./admin/applications'));
+
 // Logout
 router.post('/logout', adminLogout);
 router.get('/logout', adminLogout);
