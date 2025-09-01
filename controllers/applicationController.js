@@ -6,7 +6,7 @@ const fs = require('fs');
 // Configure multer for profile picture uploads
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const uploadDir = './public/uploads/applications/';
+        const uploadDir = './uploads/applications/';
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
         }
@@ -256,12 +256,12 @@ const updateApplicationStatus = async (req, res) => {
                     // Handle profile picture - copy from applications folder to artists folder
                     let artistProfilePicture = null;
                     if (application.profile_picture) {
-                        const oldPath = path.join(__dirname, '..', 'public', 'uploads', 'applications', application.profile_picture);
+                        const oldPath = path.join(__dirname, '..', 'uploads', 'applications', application.profile_picture);
                         const newFileName = 'artist-' + Date.now() + '-' + application.profile_picture;
-                        const newPath = path.join(__dirname, '..', 'public', 'uploads', 'profiles', newFileName);
+                        const newPath = path.join(__dirname, '..', 'uploads', 'profiles', newFileName);
                         
                         // Create artists profiles directory if it doesn't exist
-                        const profilesDir = path.join(__dirname, '..', 'public', 'uploads', 'profiles');
+                        const profilesDir = path.join(__dirname, '..', 'uploads', 'profiles');
                         if (!fs.existsSync(profilesDir)) {
                             fs.mkdirSync(profilesDir, { recursive: true });
                         }
