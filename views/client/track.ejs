@@ -1,0 +1,304 @@
+<!-- Track Order Hero Section -->
+<section class="hero" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 3rem 0; color: white; text-align: center;">
+    <div class="container">
+        <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">
+            <i class="fas fa-truck" style="margin-right: 1rem;"></i>
+            Track Your Order
+        </h1>
+        <p style="font-size: 1.2rem; opacity: 0.9; max-width: 600px; margin: 0 auto;">
+            Stay updated on your artwork delivery status
+        </p>
+    </div>
+</section>
+
+<!-- Order Search/Display -->
+<section class="container" style="margin-top: 2rem;">
+    <!-- Order Search Form -->
+    <div id="order-search" class="card" style="max-width: 600px; margin: 0 auto 3rem auto; text-align: center;">
+        <h3 style="color: #333; margin-bottom: 1.5rem;">Enter Order Details</h3>
+        
+        <form id="tracking-form" style="display: grid; gap: 1rem;">
+            <div>
+                <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: bold;">Order ID</label>
+                <input type="text" id="order-id" placeholder="Enter your order ID" required 
+                       style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem; text-align: center;">
+            </div>
+            
+            <div>
+                <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: bold;">Email Address</label>
+                <input type="email" id="email" placeholder="Enter your email address" required 
+                       style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem; text-align: center;">
+            </div>
+            
+            <button type="submit" class="btn" style="padding: 0.75rem 2rem; margin-top: 1rem;">
+                <i class="fas fa-search" style="margin-right: 0.5rem;"></i>
+                Track Order
+            </button>
+        </form>
+    </div>
+
+    <!-- Order Details -->
+    <div id="order-details" style="display: none;">
+        <!-- Order info will be populated here -->
+    </div>
+    
+    <!-- Error Message -->
+    <div id="error-message" style="display: none; text-align: center; color: #e74c3c; background: #fef2f2; padding: 2rem; border-radius: 10px; max-width: 600px; margin: 0 auto;">
+        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+        <h3>Order Not Found</h3>
+        <p>Please check your order ID and email address and try again.</p>
+    </div>
+</section>
+
+<script>
+    // Check URL parameters for order ID
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('order');
+        
+        if (orderId) {
+            document.getElementById('order-id').value = orderId;
+            // Auto-focus email field if order ID is provided
+            document.getElementById('email').focus();
+        }
+    });
+    
+    // Handle form submission
+    document.getElementById('tracking-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        trackOrder();
+    });
+    
+    // Track order function
+    async function trackOrder() {
+        const orderId = document.getElementById('order-id').value.trim();
+        const email = document.getElementById('email').value.trim();
+        
+        if (!orderId || !email) {
+            alert('Please enter both order ID and email address');
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/orders/track', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ orderId, email })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                displayOrderDetails(result.order);
+            } else {
+                showError();
+            }
+            
+        } catch (error) {
+            console.error('Error tracking order:', error);
+            showError();
+        }
+    }
+    
+    // Display order details
+    function displayOrderDetails(order) {
+        document.getElementById('order-search').style.display = 'none';
+        document.getElementById('error-message').style.display = 'none';
+        
+        const orderDetailsContainer = document.getElementById('order-details');
+        orderDetailsContainer.style.display = 'block';
+        
+        // Create order tracking timeline
+        const timeline = createOrderTimeline(order.status, order.created_at, order.updated_at);
+        
+        // Calculate total
+        const subtotal = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const total = subtotal + 50; // Platform fee
+        
+        orderDetailsContainer.innerHTML = 
+            '<div style="display: grid; gap: 2rem;">' +
+                // Order Header
+                '<div class="card">' +
+                    '<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 2rem;">' +
+                        '<div>' +
+                            '<h2 style="color: #333; margin: 0 0 0.5rem 0;">Order #' + order.id + '</h2>' +
+                            '<p style="color: #666; margin: 0;">Placed on ' + new Date(order.created_at).toLocaleDateString() + '</p>' +
+                        '</div>' +
+                        '<div style="text-align: right;">' +
+                            '<div style="background: ' + getStatusColor(order.status) + '; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-weight: bold; margin-bottom: 0.5rem;">' +
+                                order.status.charAt(0).toUpperCase() + order.status.slice(1) +
+                            '</div>' +
+                            '<div style="color: #666; font-size: 0.9rem;">Total: रू ' + total.toLocaleString() + '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    
+                    // Order Timeline
+                    '<div>' +
+                        '<h3 style="color: #333; margin-bottom: 1.5rem;">Delivery Status</h3>' +
+                        timeline +
+                    '</div>' +
+                '</div>' +
+                
+                // Order Items
+                '<div class="card">' +
+                    '<h3 style="color: #333; margin-bottom: 1.5rem;">Order Items</h3>' +
+                    '<div style="display: grid; gap: 1rem;">' +
+                        order.items.map(item => createOrderItemElement(item)).join('') +
+                    '</div>' +
+                '</div>' +
+                
+                // Shipping & Payment Info
+                '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">' +
+                    '<div class="card">' +
+                        '<h3 style="color: #333; margin-bottom: 1.5rem;">Shipping Address</h3>' +
+                        '<div style="color: #666; line-height: 1.6;">' +
+                            '<div style="font-weight: bold; color: #333; margin-bottom: 0.5rem;">' + order.shipping_name + '</div>' +
+                            '<div>' + order.shipping_email + '</div>' +
+                            '<div>' + order.shipping_phone + '</div>' +
+                            '<div style="margin-top: 0.5rem;">' + order.shipping_address + '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    
+                    '<div class="card">' +
+                        '<h3 style="color: #333; margin-bottom: 1.5rem;">Payment & Summary</h3>' +
+                        '<div style="display: grid; gap: 0.5rem; margin-bottom: 1rem;">' +
+                            '<div style="display: flex; justify-content: space-between;">' +
+                                '<span style="color: #666;">Payment Method:</span>' +
+                                '<span style="color: #333; font-weight: bold;">' + formatPaymentMethod(order.payment_method) + '</span>' +
+                            '</div>' +
+                            '<div style="display: flex; justify-content: space-between;">' +
+                                '<span style="color: #666;">Subtotal:</span>' +
+                                '<span style="color: #333;">रू ' + subtotal.toLocaleString() + '</span>' +
+                            '</div>' +
+                            '<div style="display: flex; justify-content: space-between;">' +
+                                '<span style="color: #666;">Platform Fee:</span>' +
+                                '<span style="color: #333;">रू 50</span>' +
+                            '</div>' +
+                            '<div style="display: flex; justify-content: space-between; padding-top: 0.5rem; border-top: 1px solid #e1e8ed; font-weight: bold;">' +
+                                '<span style="color: #333;">Total:</span>' +
+                                '<span style="color: #667eea;">रू ' + total.toLocaleString() + '</span>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                
+                // Action Buttons
+                '<div style="text-align: center; margin-top: 2rem;">' +
+                    '<button onclick="trackAnother()" class="btn btn-outline" style="margin-right: 1rem;">' +
+                        '<i class="fas fa-search" style="margin-right: 0.5rem;"></i>' +
+                        'Track Another Order' +
+                    '</button>' +
+                    '<a href="/arts" class="btn" style="text-decoration: none;">' +
+                        '<i class="fas fa-palette" style="margin-right: 0.5rem;"></i>' +
+                        'Continue Shopping' +
+                    '</a>' +
+                '</div>' +
+            '</div>';
+    }
+    
+    // Create order timeline
+    function createOrderTimeline(currentStatus, createdAt, updatedAt) {
+        const statuses = [
+            { key: 'pending', label: 'Order Placed', icon: 'fas fa-shopping-bag' },
+            { key: 'confirmed', label: 'Order Confirmed', icon: 'fas fa-check-circle' },
+            { key: 'processing', label: 'Preparing Artwork', icon: 'fas fa-palette' },
+            { key: 'shipped', label: 'Shipped', icon: 'fas fa-truck' },
+            { key: 'delivered', label: 'Delivered', icon: 'fas fa-home' }
+        ];
+        
+        const currentIndex = statuses.findIndex(s => s.key === currentStatus);
+        
+        let timelineHtml = '<div style="position: relative;">';
+        
+        statuses.forEach((status, index) => {
+            const isCompleted = index <= currentIndex;
+            const isCurrent = index === currentIndex;
+            
+            timelineHtml += 
+                '<div style="display: flex; align-items: center; margin-bottom: ' + (index < statuses.length - 1 ? '2rem' : '0') + ';">' +
+                    '<div style="position: relative; z-index: 2;">' +
+                        '<div style="width: 50px; height: 50px; border-radius: 50%; background: ' + 
+                            (isCompleted ? '#43e97b' : '#e1e8ed') + '; display: flex; align-items: center; justify-content: center; color: ' +
+                            (isCompleted ? 'white' : '#999') + ';">' +
+                            '<i class="' + status.icon + '"></i>' +
+                        '</div>' +
+                    '</div>' +
+                    
+                    '<div style="margin-left: 1rem; flex: 1;">' +
+                        '<div style="font-weight: bold; color: ' + (isCompleted ? '#333' : '#999') + ';">' + status.label + '</div>' +
+                        (isCurrent ? '<div style="color: #667eea; font-size: 0.9rem; margin-top: 0.25rem;">Updated: ' + new Date(updatedAt).toLocaleString() + '</div>' : '') +
+                    '</div>' +
+                '</div>';
+            
+            // Add connecting line
+            if (index < statuses.length - 1) {
+                timelineHtml += 
+                    '<div style="position: absolute; left: 24px; width: 2px; height: 2rem; background: ' + 
+                        (index < currentIndex ? '#43e97b' : '#e1e8ed') + '; margin-top: -2rem; z-index: 1;"></div>';
+            }
+        });
+        
+        timelineHtml += '</div>';
+        return timelineHtml;
+    }
+    
+    // Create order item element
+    function createOrderItemElement(item) {
+        return 
+            '<div style="display: flex; align-items: center; padding: 1rem; background: #f8f9ff; border-radius: 8px;">' +
+                '<img src="/uploads/' + (item.image || 'placeholder.jpg') + '" ' +
+                     'alt="' + item.title + '" ' +
+                     'style="width: 80px; height: 80px; border-radius: 5px; object-fit: cover; margin-right: 1rem;">' +
+                '<div style="flex: 1;">' +
+                    '<h4 style="margin: 0 0 0.5rem 0; color: #333;">' + item.title + '</h4>' +
+                    '<p style="margin: 0 0 0.5rem 0; color: #666; font-size: 0.9rem;">By ' + item.artist_name + '</p>' +
+                    '<p style="margin: 0; color: #999; font-size: 0.85rem;">Quantity: ' + item.quantity + '</p>' +
+                '</div>' +
+                '<div style="text-align: right;">' +
+                    '<div style="font-weight: bold; color: #333;">रू ' + (item.price * item.quantity).toLocaleString() + '</div>' +
+                    '<div style="color: #666; font-size: 0.85rem;">रू ' + item.price.toLocaleString() + ' each</div>' +
+                '</div>' +
+            '</div>';
+    }
+    
+    // Helper functions
+    function getStatusColor(status) {
+        const colors = {
+            'pending': '#ffa500',
+            'confirmed': '#667eea',
+            'processing': '#f093fb',
+            'shipped': '#43e97b',
+            'delivered': '#4CAF50',
+            'cancelled': '#e74c3c'
+        };
+        return colors[status] || '#999';
+    }
+    
+    function formatPaymentMethod(method) {
+        const methods = {
+            'esewa': 'eSewa',
+            'khalti': 'Khalti',
+            'cod': 'Cash on Delivery'
+        };
+        return methods[method] || method;
+    }
+    
+    function showError() {
+        document.getElementById('order-search').style.display = 'none';
+        document.getElementById('order-details').style.display = 'none';
+        document.getElementById('error-message').style.display = 'block';
+    }
+    
+    function trackAnother() {
+        document.getElementById('order-search').style.display = 'block';
+        document.getElementById('order-details').style.display = 'none';
+        document.getElementById('error-message').style.display = 'none';
+        
+        // Clear form
+        document.getElementById('order-id').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('order-id').focus();
+    }
+</script>

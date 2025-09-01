@@ -35,4 +35,10 @@ router.get('/api/arts/search', clientController.searchArts);
 router.get('/api/arts/load-more', clientController.loadMoreArts);
 router.get('/api/order/:orderId', clientController.getOrderStatus);
 
+// New API endpoints for cart, checkout, and tracking
+router.get('/api/arts/details', clientController.getArtworkDetails);
+router.get('/api/arts/recommended', clientController.getRecommendedArtworks);
+router.post('/api/orders/create', clientController.createOrder);
+router.post('/api/orders/track', clientController.trackOrder);
+
 module.exports = router;

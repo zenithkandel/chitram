@@ -705,5 +705,184 @@ module.exports = {
     submitOrder,
     searchArts,
     loadMoreArts,
-    getOrderStatus
+    getOrderStatus,
+
+    // Get artwork details for cart (API endpoint)
+    getArtworkDetails: async (req, res) => {
+        try {
+            const ids = req.query.ids.split(',').map(id => id.trim());
+            
+            const placeholders = ids.map(() => '?').join(',');
+            const query = `
+                SELECT 
+                    a.unique_id as id,
+                    a.art_name as title,
+                    a.cost as price,
+                    a.art_image as image,
+                    a.size_of_art,
+                    ar.full_name as artist_name,
+                    ar.unique_id as artist_id
+                FROM arts a
+                JOIN artist_applications ar ON a.artist_unique_id = ar.unique_id
+                WHERE a.unique_id IN (${placeholders}) AND ar.status = 'approved'
+            `;
+            
+            const [artworks] = await db.execute(query, ids);
+            res.json(artworks);
+        } catch (error) {
+            console.error('Error fetching artwork details:', error);
+            res.status(500).json({ error: 'Failed to fetch artwork details' });
+        }
+    },
+
+    // Get recommended artworks (API endpoint)
+    getRecommendedArtworks: async (req, res) => {
+        try {
+            const limit = parseInt(req.query.limit) || 4;
+            
+            const query = `
+                SELECT 
+                    a.unique_id as id,
+                    a.art_name as title,
+                    a.cost as price,
+                    a.art_image as image,
+                    ar.full_name as artist_name
+                FROM arts a
+                JOIN artist_applications ar ON a.artist_unique_id = ar.unique_id
+                WHERE a.status = 'listed' AND ar.status = 'approved'
+                ORDER BY RAND()
+                LIMIT ?
+            `;
+            
+            const [artworks] = await db.execute(query, [limit]);
+            res.json(artworks);
+        } catch (error) {
+            console.error('Error fetching recommended artworks:', error);
+            res.status(500).json({ error: 'Failed to fetch recommended artworks' });
+        }
+    },
+
+    // Create order (API endpoint)
+    createOrder: async (req, res) => {
+        try {
+            const { shipping, paymentMethod, instructions, items } = req.body;
+            
+            // Generate unique order ID
+            const orderId = 'CHT' + Date.now() + Math.random().toString(36).substring(2, 5).toUpperCase();
+            
+            // Calculate total
+            const artworkIds = items.map(item => item.id);
+            const placeholders = artworkIds.map(() => '?').join(',');
+            const artworkQuery = `SELECT unique_id as id, cost as price FROM arts WHERE unique_id IN (${placeholders})`;
+            const [artworks] = await db.execute(artworkQuery, artworkIds);
+            
+            let subtotal = 0;
+            items.forEach(item => {
+                const artwork = artworks.find(a => a.id == item.id);
+                if (artwork) {
+                    subtotal += artwork.price * item.quantity;
+                }
+            });
+            
+            const total = subtotal + 50; // Platform fee
+            
+            // Insert order
+            const orderQuery = `
+                INSERT INTO orders (
+                    order_id, customer_name, customer_email, customer_phone, shipping_address, 
+                    payment_method, customer_message, total_amount, item_count, item_list,
+                    creation_date_time, status
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 'placed')
+            `;
+            
+            const shippingName = shipping.firstName + ' ' + shipping.lastName;
+            const shippingAddress = shipping.address + ', ' + shipping.province + 
+                                  (shipping.postalCode ? ', ' + shipping.postalCode : '');
+            
+            await db.execute(orderQuery, [
+                orderId, shippingName, shipping.email, shipping.phone, shippingAddress,
+                paymentMethod, instructions, total, items.length, JSON.stringify(items)
+            ]);
+            
+            res.json({ success: true, orderId });
+        } catch (error) {
+            console.error('Error creating order:', error);
+            res.status(500).json({ success: false, message: 'Failed to create order' });
+        }
+    },
+
+    // Track order (API endpoint)
+    trackOrder: async (req, res) => {
+        try {
+            const { orderId, email } = req.body;
+            
+            // Get order details
+            const orderQuery = `
+                SELECT * FROM orders 
+                WHERE order_id = ? AND customer_email = ?
+            `;
+            
+            const [orders] = await db.execute(orderQuery, [orderId, email]);
+            
+            if (orders.length === 0) {
+                return res.json({ success: false, message: 'Order not found' });
+            }
+            
+            const order = orders[0];
+            
+            // Parse items and get artwork details
+            let items = [];
+            try {
+                const itemList = JSON.parse(order.item_list || '[]');
+                
+                if (itemList.length > 0) {
+                    const artworkIds = itemList.map(item => item.id);
+                    const placeholders = artworkIds.map(() => '?').join(',');
+                    
+                    const itemsQuery = `
+                        SELECT 
+                            a.unique_id as id,
+                            a.art_name as title,
+                            a.cost as price,
+                            a.art_image as image,
+                            ar.full_name as artist_name
+                        FROM arts a
+                        JOIN artist_applications ar ON a.artist_unique_id = ar.unique_id
+                        WHERE a.unique_id IN (${placeholders})
+                    `;
+                    
+                    const [artworks] = await db.execute(itemsQuery, artworkIds);
+                    
+                    items = itemList.map(item => {
+                        const artwork = artworks.find(a => a.id == item.id);
+                        return {
+                            ...artwork,
+                            quantity: item.quantity
+                        };
+                    });
+                }
+            } catch (parseError) {
+                console.error('Error parsing order items:', parseError);
+            }
+            
+            // Format order for response
+            const formattedOrder = {
+                id: order.order_id,
+                shipping_name: order.customer_name,
+                shipping_email: order.customer_email,
+                shipping_phone: order.customer_phone,
+                shipping_address: order.shipping_address,
+                payment_method: order.payment_method,
+                status: order.status,
+                created_at: order.creation_date_time,
+                updated_at: order.received_date_time || order.creation_date_time,
+                items: items
+            };
+            
+            res.json({ success: true, order: formattedOrder });
+        } catch (error) {
+            console.error('Error tracking order:', error);
+            res.status(500).json({ success: false, message: 'Failed to track order' });
+        }
+    }
 };
