@@ -276,7 +276,7 @@ const updateApplicationStatus = async (req, res) => {
                     // Create artist record
                     await db.execute(`
                         INSERT INTO artists (
-                            full_name, age, started_art_at, school_college, 
+                            full_name, age, started_art_since, college_school, 
                             city, district, email, phone, socials, 
                             profile_picture, bio, status
                         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')

@@ -783,10 +783,6 @@
                 if (data.application) {
                     const app = data.application;
                     
-                    // Set current status in select
-                    document.getElementById('statusSelect').value = app.status;
-                    toggleRejectionReason();
-                    
                     // Build socials HTML
                     let socialsHtml = 'Not provided';
                     if (app.socials) {
