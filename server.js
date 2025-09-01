@@ -9,6 +9,7 @@ const { testConnection } = require('./config/database');
 
 // Import routes
 const adminRoutes = require('./routes/admin');
+const applicationRoutes = require('./routes/applications');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -43,6 +44,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Routes
 app.use('/admin', adminRoutes);
+app.use('/api/applications', applicationRoutes);
 
 // Root route
 app.get('/', (req, res) => {
