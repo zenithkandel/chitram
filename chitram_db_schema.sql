@@ -89,6 +89,30 @@ CREATE TABLE page_views (
     UNIQUE KEY unique_date (view_date)
 );
 
+-- Artist Applications table
+CREATE TABLE artist_applications (
+    unique_id INT PRIMARY KEY AUTO_INCREMENT,
+    full_name VARCHAR(100) NOT NULL,
+    age INT NOT NULL,
+    started_art_at VARCHAR(50),
+    school_college VARCHAR(200),
+    city VARCHAR(100) NOT NULL,
+    district VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    phone VARCHAR(20),
+    socials JSON,
+    message TEXT,
+    profile_picture VARCHAR(255),
+    bio TEXT,
+    received_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('pending', 'under_review', 'approved', 'rejected') DEFAULT 'pending',
+    reviewed_by VARCHAR(100),
+    reviewed_date TIMESTAMP NULL,
+    rejection_reason TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
 -- Create indexes for better performance
 CREATE INDEX idx_artist_email ON artists(email);
 CREATE INDEX idx_arts_artist ON arts(artist_unique_id);
@@ -97,6 +121,8 @@ CREATE INDEX idx_arts_status ON arts(status);
 CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_orders_creation_date ON orders(creation_date_time);
 CREATE INDEX idx_contact_status ON contact_messages(status);
+CREATE INDEX idx_applications_status ON artist_applications(status);
+CREATE INDEX idx_applications_received_date ON artist_applications(received_date);
 CREATE INDEX idx_page_views_date ON page_views(view_date);
 
 -- Insert default admin user (password: admin123 - change this in production)
