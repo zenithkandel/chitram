@@ -20,6 +20,7 @@ router.get('/:id', applicationController.getApplication);
 
 // Update application status
 router.put('/:id/status', applicationController.updateApplicationStatus);
+router.post('/:id/status', applicationController.updateApplicationStatus);
 
 // Delete application
 router.delete('/:id', applicationController.deleteApplication);
