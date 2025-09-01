@@ -1,6 +1,7 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
 // Import database and test connection
@@ -11,6 +12,18 @@ const adminRoutes = require('./routes/admin');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(__dirname, 'uploads');
+const profilesDir = path.join(uploadsDir, 'profiles');
+
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir);
+}
+
+if (!fs.existsSync(profilesDir)) {
+    fs.mkdirSync(profilesDir);
+}
 
 // Middleware
 app.use(express.json());
@@ -47,6 +60,16 @@ app.use((req, res) => {
 // Error handler
 app.use((error, req, res, next) => {
     console.error('Server Error:', error);
+    
+    // Handle multer errors
+    if (error.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ error: 'File too large. Maximum size is 5MB.' });
+    }
+    
+    if (error.message === 'Only image files are allowed!') {
+        return res.status(400).json({ error: 'Only image files are allowed!' });
+    }
+    
     res.status(500).send(`
         <h1>500 - Internal Server Error</h1>
         <p>Something went wrong on our end.</p>

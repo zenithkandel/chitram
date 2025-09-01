@@ -868,26 +868,30 @@
             e.preventDefault();
             
             const artistId = this.dataset.artistId;
-            const formData = {
-                full_name: document.getElementById('edit_full_name').value,
-                age: parseInt(document.getElementById('edit_age').value),
-                started_art_since: document.getElementById('edit_started_art_since').value,
-                status: document.getElementById('edit_status').value,
-                college_school: document.getElementById('edit_college_school').value,
-                city: document.getElementById('edit_city').value,
-                district: document.getElementById('edit_district').value,
-                email: document.getElementById('edit_email').value,
-                phone: document.getElementById('edit_phone').value,
-                socials: document.getElementById('edit_socials').value,
-                bio: document.getElementById('edit_bio').value
-            };
+            
+            // Create FormData object to handle file upload
+            const formData = new FormData();
+            formData.append('full_name', document.getElementById('edit_full_name').value);
+            formData.append('age', document.getElementById('edit_age').value);
+            formData.append('started_art_since', document.getElementById('edit_started_art_since').value);
+            formData.append('status', document.getElementById('edit_status').value);
+            formData.append('college_school', document.getElementById('edit_college_school').value);
+            formData.append('city', document.getElementById('edit_city').value);
+            formData.append('district', document.getElementById('edit_district').value);
+            formData.append('email', document.getElementById('edit_email').value);
+            formData.append('phone', document.getElementById('edit_phone').value);
+            formData.append('socials', document.getElementById('edit_socials').value);
+            formData.append('bio', document.getElementById('edit_bio').value);
+            
+            // Add profile picture file if selected
+            const profilePictureFile = document.getElementById('edit_profile_picture').files[0];
+            if (profilePictureFile) {
+                formData.append('profile_picture', profilePictureFile);
+            }
 
             fetch(`/admin/artists/${artistId}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
+                body: formData // Don't set Content-Type header, let browser set it for FormData
             })
             .then(response => response.json())
             .then(data => {

@@ -1,4 +1,6 @@
 const { db } = require('../config/database');
+const path = require('path');
+const fs = require('fs');
 
 // Get all artists (excluding deleted ones)
 const getAllArtists = async (req, res) => {
@@ -79,9 +81,14 @@ const updateArtist = async (req, res) => {
             status
         } = req.body;
 
-        // Check if artist exists
+        // Validate required fields
+        if (!full_name || !email || !age) {
+            return res.status(400).json({ error: 'Full name, email, and age are required' });
+        }
+
+        // Check if artist exists and get current profile picture
         const [existingArtist] = await db.execute(
-            'SELECT unique_id FROM artists WHERE unique_id = ? AND status != "deleted"',
+            'SELECT unique_id, profile_picture FROM artists WHERE unique_id = ? AND status != "deleted"',
             [id]
         );
 
@@ -99,6 +106,24 @@ const updateArtist = async (req, res) => {
             return res.status(400).json({ error: 'Email already exists for another artist' });
         }
 
+        // Handle profile picture upload
+        let profile_picture = existingArtist[0].profile_picture; // Keep existing if no new upload
+        if (req.file) {
+            profile_picture = req.file.filename;
+            
+            // Delete old profile picture if it exists
+            if (existingArtist[0].profile_picture) {
+                const oldImagePath = path.join(__dirname, '../uploads/profiles', existingArtist[0].profile_picture);
+                if (fs.existsSync(oldImagePath)) {
+                    try {
+                        fs.unlinkSync(oldImagePath);
+                    } catch (err) {
+                        console.log('Could not delete old profile picture:', err);
+                    }
+                }
+            }
+        }
+
         // Update artist
         await db.execute(`
             UPDATE artists SET 
@@ -112,7 +137,8 @@ const updateArtist = async (req, res) => {
                 phone = ?,
                 socials = ?,
                 bio = ?,
-                status = ?
+                status = ?,
+                profile_picture = ?
             WHERE unique_id = ?
         `, [
             full_name,
@@ -126,10 +152,14 @@ const updateArtist = async (req, res) => {
             socials,
             bio,
             status,
+            profile_picture,
             id
         ]);
 
-        res.json({ success: 'Artist updated successfully' });
+        res.json({ 
+            success: 'Artist updated successfully',
+            profile_picture: profile_picture 
+        });
     } catch (error) {
         console.error('Update artist error:', error);
         res.status(500).json({ error: 'Error updating artist' });
