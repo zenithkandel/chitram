@@ -245,40 +245,39 @@ const getArtsPage = async (req, res) => {
 
         let query = `
             SELECT 
-                a.unique_id,
-                a.art_name,
-                a.cost,
-                a.art_image,
-                a.art_description,
-                a.size_of_art,
-                a.color_type,
-                a.uploaded_at,
-                ar.full_name as artist_name,
-                ar.unique_id as artist_id
+                a.id,
+                a.title,
+                a.price,
+                a.image,
+                a.description,
+                a.status,
+                a.created_at,
+                ap.full_name as artist_name,
+                ap.id as artist_id
             FROM arts a
-            JOIN artists ar ON a.artist_unique_id = ar.unique_id
-            WHERE a.status = 'listed'
+            JOIN applications ap ON a.artist_id = ap.id
+            WHERE ap.status = 'approved'
         `;
         
         let countQuery = `
             SELECT COUNT(*) as total
             FROM arts a
-            JOIN artists ar ON a.artist_unique_id = ar.unique_id
-            WHERE a.status = 'listed'
+            JOIN applications ap ON a.artist_id = ap.id
+            WHERE ap.status = 'approved'
         `;
 
         let queryParams = [];
         let countParams = [];
 
         if (search) {
-            query += ` AND (a.art_name LIKE ? OR a.art_description LIKE ? OR ar.full_name LIKE ?)`;
-            countQuery += ` AND (a.art_name LIKE ? OR a.art_description LIKE ? OR ar.full_name LIKE ?)`;
+            query += ` AND (a.title LIKE ? OR a.description LIKE ? OR ap.full_name LIKE ?)`;
+            countQuery += ` AND (a.title LIKE ? OR a.description LIKE ? OR ap.full_name LIKE ?)`;
             const searchParam = `%${search}%`;
             queryParams = [searchParam, searchParam, searchParam];
             countParams = [searchParam, searchParam, searchParam];
         }
 
-        query += ` ORDER BY a.uploaded_at DESC LIMIT ? OFFSET ?`;
+        query += ` ORDER BY a.created_at DESC LIMIT ? OFFSET ?`;
         queryParams.push(limit, offset);
 
         const [arts] = await db.execute(query, queryParams);
@@ -287,13 +286,32 @@ const getArtsPage = async (req, res) => {
         const totalArts = totalCount[0].total;
         const totalPages = Math.ceil(totalArts / limit);
 
+        // Get stats for the page
+        const [totalArtsCount] = await db.execute('SELECT COUNT(*) as count FROM arts');
+        const [availableCount] = await db.execute('SELECT COUNT(*) as count FROM arts WHERE status = "available"');
+        const [soldCount] = await db.execute('SELECT COUNT(*) as count FROM arts WHERE status = "sold"');
+        const [avgPriceResult] = await db.execute('SELECT AVG(price) as avg FROM arts WHERE status = "available"');
+
+        const stats = {
+            totalArts: totalArtsCount[0].count || 0,
+            available: availableCount[0].count || 0,
+            sold: soldCount[0].count || 0,
+            avgPrice: Math.round(avgPriceResult[0].avg || 0)
+        };
+
+        const pagination = {
+            currentPage: page,
+            totalPages,
+            totalItems: totalArts,
+            limit
+        };
+
         res.render('client/arts', {
             title: 'All Arts - चित्रम्',
             arts,
-            currentPage: page,
-            totalPages,
+            stats,
+            pagination,
             search,
-            totalArts,
             error: null
         });
     } catch (error) {
@@ -301,10 +319,9 @@ const getArtsPage = async (req, res) => {
         res.render('client/arts', {
             title: 'All Arts - चित्रम्',
             arts: [],
-            currentPage: 1,
-            totalPages: 0,
+            stats: { totalArts: 0, available: 0, sold: 0, avgPrice: 0 },
+            pagination: null,
             search: '',
-            totalArts: 0,
             error: 'Error loading arts data'
         });
     }
