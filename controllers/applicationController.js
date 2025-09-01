@@ -36,7 +36,7 @@ const upload = multer({
     }
 });
 
-// Get all applications
+// Get all applications (pending and under_review by default)
 const getAllApplications = async (req, res) => {
     try {
         const [applications] = await db.execute(`
@@ -61,20 +61,115 @@ const getAllApplications = async (req, res) => {
                 rejection_reason,
                 created_at
             FROM artist_applications 
+            WHERE status IN ('pending', 'under_review')
             ORDER BY received_date DESC
         `);
 
         res.render('admin/applications', { 
             applications,
             error: null,
-            success: null 
+            success: null,
+            pageType: 'new'
         });
     } catch (error) {
         console.error('Applications fetch error:', error);
         res.render('admin/applications', { 
             applications: [],
             error: 'Error loading applications data',
-            success: null 
+            success: null,
+            pageType: 'new'
+        });
+    }
+};
+
+// Get approved applications
+const getApprovedApplications = async (req, res) => {
+    try {
+        const [applications] = await db.execute(`
+            SELECT 
+                unique_id,
+                full_name,
+                age,
+                started_art_at,
+                school_college,
+                city,
+                district,
+                email,
+                phone,
+                socials,
+                message,
+                profile_picture,
+                bio,
+                received_date,
+                status,
+                reviewed_by,
+                reviewed_date,
+                rejection_reason,
+                created_at
+            FROM artist_applications 
+            WHERE status = 'approved'
+            ORDER BY reviewed_date DESC
+        `);
+
+        res.render('admin/applications', { 
+            applications,
+            error: null,
+            success: null,
+            pageType: 'approved'
+        });
+    } catch (error) {
+        console.error('Approved applications fetch error:', error);
+        res.render('admin/applications', { 
+            applications: [],
+            error: 'Error loading approved applications data',
+            success: null,
+            pageType: 'approved'
+        });
+    }
+};
+
+// Get rejected applications
+const getRejectedApplications = async (req, res) => {
+    try {
+        const [applications] = await db.execute(`
+            SELECT 
+                unique_id,
+                full_name,
+                age,
+                started_art_at,
+                school_college,
+                city,
+                district,
+                email,
+                phone,
+                socials,
+                message,
+                profile_picture,
+                bio,
+                received_date,
+                status,
+                reviewed_by,
+                reviewed_date,
+                rejection_reason,
+                created_at
+            FROM artist_applications 
+            WHERE status = 'rejected'
+            ORDER BY reviewed_date DESC
+        `);
+
+        res.render('admin/applications', { 
+            applications,
+            error: null,
+            success: null,
+            pageType: 'rejected'
+        });
+    } catch (error) {
+        console.error('Rejected applications fetch error:', error);
+        res.render('admin/applications', { 
+            applications: [],
+            error: 'Error loading rejected applications data',
+            success: null,
+            pageType: 'rejected'
         });
     }
 };
@@ -122,13 +217,15 @@ const updateApplicationStatus = async (req, res) => {
 
         // Check if application exists
         const [existingApplication] = await db.execute(
-            'SELECT unique_id, full_name, email, status FROM artist_applications WHERE unique_id = ?',
+            'SELECT * FROM artist_applications WHERE unique_id = ?',
             [id]
         );
 
         if (existingApplication.length === 0) {
             return res.status(404).json({ error: 'Application not found' });
         }
+
+        const application = existingApplication[0];
 
         // Prepare update data
         let updateQuery = 'UPDATE artist_applications SET status = ?, reviewed_by = ?, reviewed_date = NOW()';
@@ -148,34 +245,65 @@ const updateApplicationStatus = async (req, res) => {
 
         // If approved, create artist record
         if (status === 'approved') {
-            const application = existingApplication[0];
-            
-            // Get application details for creating artist record
-            const [fullApplication] = await db.execute(
-                'SELECT * FROM artist_applications WHERE unique_id = ?',
-                [id]
-            );
-            
-            if (fullApplication.length > 0) {
-                const app = fullApplication[0];
-                
-                // Create artist record
-                await db.execute(`
-                    INSERT INTO artists (
-                        full_name, age, started_art_at, school_college, 
-                        city, district, email, phone, socials, 
-                        profile_picture, bio, status
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')
-                `, [
-                    app.full_name, app.age, app.started_art_at, app.school_college,
-                    app.city, app.district, app.email, app.phone, app.socials,
-                    app.profile_picture, app.bio
-                ]);
+            try {
+                // Check if artist with this email already exists
+                const [existingArtist] = await db.execute(
+                    'SELECT email FROM artists WHERE email = ?',
+                    [application.email]
+                );
+
+                if (existingArtist.length === 0) {
+                    // Handle profile picture - copy from applications folder to artists folder
+                    let artistProfilePicture = null;
+                    if (application.profile_picture) {
+                        const oldPath = path.join(__dirname, '..', 'public', 'uploads', 'applications', application.profile_picture);
+                        const newFileName = 'artist-' + Date.now() + '-' + application.profile_picture;
+                        const newPath = path.join(__dirname, '..', 'public', 'uploads', 'profiles', newFileName);
+                        
+                        // Create artists profiles directory if it doesn't exist
+                        const profilesDir = path.join(__dirname, '..', 'public', 'uploads', 'profiles');
+                        if (!fs.existsSync(profilesDir)) {
+                            fs.mkdirSync(profilesDir, { recursive: true });
+                        }
+
+                        // Copy file if it exists
+                        if (fs.existsSync(oldPath)) {
+                            fs.copyFileSync(oldPath, newPath);
+                            artistProfilePicture = newFileName;
+                        }
+                    }
+
+                    // Create artist record
+                    await db.execute(`
+                        INSERT INTO artists (
+                            full_name, age, started_art_at, school_college, 
+                            city, district, email, phone, socials, 
+                            profile_picture, bio, status
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')
+                    `, [
+                        application.full_name, 
+                        application.age, 
+                        application.started_art_at, 
+                        application.school_college,
+                        application.city, 
+                        application.district, 
+                        application.email, 
+                        application.phone, 
+                        application.socials,
+                        artistProfilePicture, 
+                        application.bio
+                    ]);
+
+                    console.log(`✅ Artist record created for: ${application.full_name}`);
+                }
+            } catch (artistError) {
+                console.error('Error creating artist record:', artistError);
+                // Don't fail the status update if artist creation fails
             }
         }
 
         res.json({ 
-            success: `Application status updated to ${status}`,
+            success: `Application ${status === 'approved' ? 'approved and artist account created' : status}`,
             status: status 
         });
     } catch (error) {
@@ -278,6 +406,8 @@ const submitApplication = async (req, res) => {
 
 module.exports = {
     getAllApplications,
+    getApprovedApplications,
+    getRejectedApplications,
     getApplication,
     updateApplicationStatus,
     deleteApplication,
