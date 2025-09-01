@@ -9,6 +9,9 @@ router.use(authenticateAdmin);
 // Get all messages page
 router.get('/', messageController.getAllMessages);
 
+// Get archived messages page
+router.get('/archive', messageController.getArchivedMessages);
+
 // Get single message (for viewing)
 router.get('/:id', messageController.getMessage);
 

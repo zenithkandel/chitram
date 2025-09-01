@@ -1,6 +1,6 @@
 const { db } = require('../config/database');
 
-// Get all messages
+// Get all messages (excluding archived by default)
 const getAllMessages = async (req, res) => {
     try {
         const [messages] = await db.execute(`
@@ -14,20 +14,58 @@ const getAllMessages = async (req, res) => {
                 status,
                 created_at
             FROM contact_messages 
+            WHERE status != 'archived'
             ORDER BY created_at DESC
         `);
 
         res.render('admin/messages', { 
             messages,
             error: null,
-            success: null 
+            success: null,
+            pageType: 'inbox'
         });
     } catch (error) {
         console.error('Messages fetch error:', error);
         res.render('admin/messages', { 
             messages: [],
             error: 'Error loading messages data',
-            success: null 
+            success: null,
+            pageType: 'inbox'
+        });
+    }
+};
+
+// Get archived messages
+const getArchivedMessages = async (req, res) => {
+    try {
+        const [messages] = await db.execute(`
+            SELECT 
+                unique_id,
+                full_name,
+                email,
+                phone,
+                subject,
+                message,
+                status,
+                created_at
+            FROM contact_messages 
+            WHERE status = 'archived'
+            ORDER BY created_at DESC
+        `);
+
+        res.render('admin/messages', { 
+            messages,
+            error: null,
+            success: null,
+            pageType: 'archive'
+        });
+    } catch (error) {
+        console.error('Archived messages fetch error:', error);
+        res.render('admin/messages', { 
+            messages: [],
+            error: 'Error loading archived messages data',
+            success: null,
+            pageType: 'archive'
         });
     }
 };
@@ -43,6 +81,15 @@ const getMessage = async (req, res) => {
 
         if (message.length === 0) {
             return res.status(404).json({ error: 'Message not found' });
+        }
+
+        // Auto-mark as read if status is unread
+        if (message[0].status === 'unread') {
+            await db.execute(
+                'UPDATE contact_messages SET status = ? WHERE unique_id = ?',
+                ['read', id]
+            );
+            message[0].status = 'read'; // Update local object
         }
 
         res.json({ message: message[0] });
@@ -120,6 +167,7 @@ const deleteMessage = async (req, res) => {
 
 module.exports = {
     getAllMessages,
+    getArchivedMessages,
     getMessage,
     updateMessageStatus,
     deleteMessage
