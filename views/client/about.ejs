@@ -1,0 +1,172 @@
+<!-- About Section -->
+<section class="container">
+    <div class="card">
+        <h1 style="text-align: center; margin-bottom: 2rem; color: #333;">About चित्रम्</h1>
+        
+        <div style="max-width: 800px; margin: 0 auto; line-height: 1.8; color: #555;">
+            <p style="font-size: 1.1rem; margin-bottom: 2rem; text-align: center; font-style: italic;">
+                "Where Art Meets Technology"
+            </p>
+            
+            <p style="margin-bottom: 1.5rem;">
+                Welcome to <strong>चित्रम्</strong> (Chitram), Nepal's premier online art marketplace where creativity flourishes and artistic dreams come to life. Our platform bridges the gap between talented artists and art enthusiasts, creating a vibrant community that celebrates the beauty and diversity of artistic expression.
+            </p>
+            
+            <p style="margin-bottom: 1.5rem;">
+                Founded with the vision of democratizing art accessibility, चित्रम् provides a comprehensive platform for artists to showcase their work and for art lovers to discover unique pieces that speak to their souls. We believe that every artwork tells a story, and every artist deserves a stage to share their vision with the world.
+            </p>
+
+            <h3 style="color: #667eea; margin: 2rem 0 1rem 0;">Our Mission</h3>
+            <p style="margin-bottom: 1.5rem;">
+                To empower artists by providing them with the tools and platform they need to reach a global audience, while making art more accessible to everyone. We strive to preserve and promote artistic culture while embracing modern technology to enhance the art buying and selling experience.
+            </p>
+
+            <h3 style="color: #667eea; margin: 2rem 0 1rem 0;">What We Offer</h3>
+            <ul style="margin-bottom: 2rem; padding-left: 2rem;">
+                <li style="margin-bottom: 0.5rem;"><strong>For Artists:</strong> Easy application process, professional portfolio management, secure payment system, and marketing support</li>
+                <li style="margin-bottom: 0.5rem;"><strong>For Art Lovers:</strong> Curated collection of authentic artworks, detailed artist profiles, secure purchasing, and order tracking</li>
+                <li style="margin-bottom: 0.5rem;"><strong>For Everyone:</strong> Art discovery, educational content, community building, and cultural preservation</li>
+            </ul>
+
+            <h3 style="color: #667eea; margin: 2rem 0 1rem 0;">Why Choose चित्रम्?</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+                <div style="background: #f8f9ff; padding: 1.5rem; border-radius: 10px;">
+                    <h4 style="color: #667eea; margin-bottom: 0.5rem;">🎨 Authentic Art</h4>
+                    <p style="font-size: 0.9rem;">Every piece is carefully reviewed to ensure authenticity and quality.</p>
+                </div>
+                <div style="background: #f8f9ff; padding: 1.5rem; border-radius: 10px;">
+                    <h4 style="color: #667eea; margin-bottom: 0.5rem;">🤝 Direct Connection</h4>
+                    <p style="font-size: 0.9rem;">Connect directly with artists and learn about their creative process.</p>
+                </div>
+                <div style="background: #f8f9ff; padding: 1.5rem; border-radius: 10px;">
+                    <h4 style="color: #667eea; margin-bottom: 0.5rem;">🔒 Secure Platform</h4>
+                    <p style="font-size: 0.9rem;">Safe and secure transactions with buyer protection.</p>
+                </div>
+                <div style="background: #f8f9ff; padding: 1.5rem; border-radius: 10px;">
+                    <h4 style="color: #667eea; margin-bottom: 0.5rem;">📱 Easy to Use</h4>
+                    <p style="font-size: 0.9rem;">User-friendly interface designed for both artists and buyers.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="container">
+    <div class="card">
+        <h2 style="text-align: center; margin-bottom: 2rem; color: #333;">Get in Touch</h2>
+        
+        <% if (error) { %>
+            <div class="alert alert-error"><%= error %></div>
+        <% } %>
+        
+        <% if (success) { %>
+            <div class="alert alert-success"><%= success %></div>
+        <% } %>
+
+        <div style="max-width: 600px; margin: 0 auto;">
+            <p style="text-align: center; margin-bottom: 2rem; color: #666;">
+                Have questions, suggestions, or want to learn more about चित्रम्? We'd love to hear from you!
+            </p>
+
+            <form id="contact-form" onsubmit="event.preventDefault(); submitContactForm();">
+                <div class="form-group">
+                    <label class="form-label">Full Name *</label>
+                    <input type="text" name="full_name" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address *</label>
+                    <input type="email" name="email" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" name="phone" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Subject *</label>
+                    <input type="text" name="subject" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Message *</label>
+                    <textarea name="message" class="form-input form-textarea" required placeholder="Tell us how we can help you..."></textarea>
+                </div>
+
+                <div style="text-align: center;">
+                    <button type="submit" class="btn" id="contact-submit-btn">Send Message</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Additional Info Section -->
+<section class="container">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+        <div class="card" style="text-align: center;">
+            <h3 style="color: #667eea; margin-bottom: 1rem;">🎨 For Artists</h3>
+            <p style="margin-bottom: 1.5rem; color: #666;">
+                Ready to showcase your talent? Join our community of artists and start selling your artwork today.
+            </p>
+            <a href="/apply" class="btn">Apply as Artist</a>
+        </div>
+
+        <div class="card" style="text-align: center;">
+            <h3 style="color: #667eea; margin-bottom: 1rem;">🛒 For Buyers</h3>
+            <p style="margin-bottom: 1.5rem; color: #666;">
+                Discover unique artworks from talented artists. Find the perfect piece for your space.
+            </p>
+            <a href="/arts" class="btn">Browse Arts</a>
+        </div>
+
+        <div class="card" style="text-align: center;">
+            <h3 style="color: #667eea; margin-bottom: 1rem;">📞 Support</h3>
+            <p style="margin-bottom: 1.5rem; color: #666;">
+                Need help with your order or have questions? Our support team is here to assist you.
+            </p>
+            <a href="/track" class="btn">Track Order</a>
+        </div>
+    </div>
+</section>
+
+<script>
+    function submitContactForm() {
+        const form = document.getElementById('contact-form');
+        const submitBtn = document.getElementById('contact-submit-btn');
+        const originalText = submitBtn.textContent;
+        
+        submitBtn.innerHTML = '<span class="loading"></span> Sending...';
+        submitBtn.disabled = true;
+
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+
+        fetch('/contact', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.cart.showNotification(data.success, 'success');
+                form.reset();
+            } else {
+                window.cart.showNotification(data.error, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Contact form error:', error);
+            window.cart.showNotification('An error occurred. Please try again.', 'error');
+        })
+        .finally(() => {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        });
+    }
+</script>
