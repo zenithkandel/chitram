@@ -135,7 +135,7 @@ const getArtistsPage = async (req, res) => {
         
         const [artists] = await db.execute(`
             SELECT 
-                id,
+                unique_id as id,
                 full_name,
                 age,
                 started_art_at,
@@ -146,16 +146,16 @@ const getArtistsPage = async (req, res) => {
                 socials,
                 school_college,
                 created_at
-            FROM applications 
+            FROM artist_applications 
             WHERE status = 'approved'
             ORDER BY created_at DESC
         `);
 
         // Get stats for the page
-        const [totalArtists] = await db.execute('SELECT COUNT(*) as count FROM applications WHERE status = "approved"');
-        const [totalArtworks] = await db.execute('SELECT COUNT(*) as count FROM arts WHERE status = "available"');
-        const [avgAgeResult] = await db.execute('SELECT AVG(age) as avg FROM applications WHERE status = "approved"');
-        const [locationsResult] = await db.execute('SELECT COUNT(DISTINCT city) as count FROM applications WHERE status = "approved"');
+        const [totalArtists] = await db.execute('SELECT COUNT(*) as count FROM artist_applications WHERE status = "approved"');
+        const [totalArtworks] = await db.execute('SELECT COUNT(*) as count FROM arts WHERE status = "listed"');
+        const [avgAgeResult] = await db.execute('SELECT AVG(age) as avg FROM artist_applications WHERE status = "approved"');
+        const [locationsResult] = await db.execute('SELECT COUNT(DISTINCT city) as count FROM artist_applications WHERE status = "approved"');
 
         const stats = {
             totalArtists: totalArtists[0].count || 0,
@@ -192,36 +192,59 @@ const getArtistPage = async (req, res) => {
         
         // Get artist details
         const [artist] = await db.execute(`
-            SELECT * FROM artists WHERE unique_id = ? AND status = 'active'
+            SELECT * FROM artist_applications WHERE unique_id = ? AND status = 'approved'
         `, [id]);
 
         if (artist.length === 0) {
-            return res.status(404).render('client/404', {
-                title: 'Artist Not Found - चित्रम्'
+            return res.status(404).render('client/error', {
+                title: 'Artist Not Found - चित्रम्',
+                error: 'Artist not found or not approved yet.'
             });
         }
 
         // Get artist's arts
-        const [arts] = await db.execute(`
+        const [artworks] = await db.execute(`
             SELECT 
-                unique_id,
-                art_name,
-                cost,
-                art_image,
-                art_description,
+                unique_id as id,
+                art_name as title,
+                cost as price,
+                art_image as image,
+                art_description as description,
                 size_of_art,
                 color_type,
                 status,
-                uploaded_at
+                uploaded_at as created_at
             FROM arts 
             WHERE artist_unique_id = ? AND status = 'listed'
             ORDER BY uploaded_at DESC
         `, [id]);
 
-        res.render('client/artist', {
+        // Process artworks to match expected format
+        const processedArtworks = artworks.map(art => ({
+            ...art,
+            status: art.status === 'listed' ? 'available' : art.status
+        }));
+
+        // Get artist stats
+        const [totalArtworks] = await db.execute(`
+            SELECT COUNT(*) as count FROM arts WHERE artist_unique_id = ?
+        `, [id]);
+        
+        const [soldArtworks] = await db.execute(`
+            SELECT COUNT(*) as count FROM arts WHERE artist_unique_id = ? AND status = 'sold'
+        `, [id]);
+
+        const stats = {
+            artworks: totalArtworks[0].count || 0,
+            sold: soldArtworks[0].count || 0,
+            avgPrice: 0 // Will calculate if needed
+        };
+
+        res.render('client/artist-detail', {
             title: `${artist[0].full_name} - चित्रम्`,
             artist: artist[0],
-            arts,
+            artworks: processedArtworks,
+            stats,
             error: null
         });
     } catch (error) {
@@ -245,39 +268,39 @@ const getArtsPage = async (req, res) => {
 
         let query = `
             SELECT 
-                a.id,
-                a.title,
-                a.price,
-                a.image,
-                a.description,
+                a.unique_id as id,
+                a.art_name as title,
+                a.cost as price,
+                a.art_image as image,
+                a.art_description as description,
                 a.status,
-                a.created_at,
+                a.uploaded_at as created_at,
                 ap.full_name as artist_name,
-                ap.id as artist_id
+                ap.unique_id as artist_id
             FROM arts a
-            JOIN applications ap ON a.artist_id = ap.id
-            WHERE ap.status = 'approved'
+            JOIN artist_applications ap ON a.artist_unique_id = ap.unique_id
+            WHERE ap.status = 'approved' AND a.status = 'listed'
         `;
         
         let countQuery = `
             SELECT COUNT(*) as total
             FROM arts a
-            JOIN applications ap ON a.artist_id = ap.id
-            WHERE ap.status = 'approved'
+            JOIN artist_applications ap ON a.artist_unique_id = ap.unique_id
+            WHERE ap.status = 'approved' AND a.status = 'listed'
         `;
 
         let queryParams = [];
         let countParams = [];
 
         if (search) {
-            query += ` AND (a.title LIKE ? OR a.description LIKE ? OR ap.full_name LIKE ?)`;
-            countQuery += ` AND (a.title LIKE ? OR a.description LIKE ? OR ap.full_name LIKE ?)`;
+            query += ` AND (a.art_name LIKE ? OR a.art_description LIKE ? OR ap.full_name LIKE ?)`;
+            countQuery += ` AND (a.art_name LIKE ? OR a.art_description LIKE ? OR ap.full_name LIKE ?)`;
             const searchParam = `%${search}%`;
             queryParams = [searchParam, searchParam, searchParam];
             countParams = [searchParam, searchParam, searchParam];
         }
 
-        query += ` ORDER BY a.created_at DESC LIMIT ? OFFSET ?`;
+        query += ` ORDER BY a.uploaded_at DESC LIMIT ? OFFSET ?`;
         queryParams.push(limit, offset);
 
         const [arts] = await db.execute(query, queryParams);
@@ -286,11 +309,11 @@ const getArtsPage = async (req, res) => {
         const totalArts = totalCount[0].total;
         const totalPages = Math.ceil(totalArts / limit);
 
-        // Get stats for the page
+        // Get stats for the page (map database statuses to our display statuses)
         const [totalArtsCount] = await db.execute('SELECT COUNT(*) as count FROM arts');
-        const [availableCount] = await db.execute('SELECT COUNT(*) as count FROM arts WHERE status = "available"');
+        const [availableCount] = await db.execute('SELECT COUNT(*) as count FROM arts WHERE status = "listed"');
         const [soldCount] = await db.execute('SELECT COUNT(*) as count FROM arts WHERE status = "sold"');
-        const [avgPriceResult] = await db.execute('SELECT AVG(price) as avg FROM arts WHERE status = "available"');
+        const [avgPriceResult] = await db.execute('SELECT AVG(cost) as avg FROM arts WHERE status = "listed"');
 
         const stats = {
             totalArts: totalArtsCount[0].count || 0,
@@ -298,6 +321,12 @@ const getArtsPage = async (req, res) => {
             sold: soldCount[0].count || 0,
             avgPrice: Math.round(avgPriceResult[0].avg || 0)
         };
+
+        // Map database status to display status
+        const processedArts = arts.map(art => ({
+            ...art,
+            status: art.status === 'listed' ? 'available' : art.status
+        }));
 
         const pagination = {
             currentPage: page,
@@ -308,7 +337,7 @@ const getArtsPage = async (req, res) => {
 
         res.render('client/arts', {
             title: 'All Arts - चित्रम्',
-            arts,
+            arts: processedArts,
             stats,
             pagination,
             search,
