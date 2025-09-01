@@ -1,0 +1,400 @@
+<!-- Cart Hero Section -->
+<section class="hero" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 3rem 0; color: white;        try {
+            const response = await fetch('/api/arts/details?ids=' + artworkIds);
+            const artworks = await response.json();xt-align: center;">
+    <div class="container">
+        <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">
+            <i class="fas fa-shopping-cart" style="margin-right: 1rem;"></i>
+            Shopping Cart
+        </h1>
+        <p style="font-size: 1.2rem; opacity: 0.9; max-width: 600px; margin: 0 auto;">
+            Review your selected artworks before proceeding to checkout
+        </p>
+    </div>
+</section>
+
+<!-- Cart Content -->
+<section class="container" style="margin-top: 2rem;">
+    <div style="display: grid; grid-template-columns: 1fr 350px; gap: 3rem;">
+        <!-- Cart Items -->
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 style="color: #333; margin: 0;">Cart Items</h2>
+                <button onclick="clearCart()" class="btn btn-outline" style="padding: 0.5rem 1rem;" id="clear-cart-btn">
+                    <i class="fas fa-trash" style="margin-right: 0.5rem;"></i>
+                    Clear Cart
+                </button>
+            </div>
+
+            <!-- Cart Items Container -->
+            <div id="cart-items-container">
+                <!-- Dynamic cart items will be loaded here -->
+            </div>
+
+            <!-- Empty Cart Message -->
+            <div id="empty-cart" style="display: none; text-align: center; padding: 4rem 2rem; color: #666;">
+                <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h3 style="margin-bottom: 1rem;">Your Cart is Empty</h3>
+                <p style="margin-bottom: 2rem;">Looks like you haven't added any artworks to your cart yet.</p>
+                <a href="/arts" class="btn" style="text-decoration: none;">
+                    <i class="fas fa-palette" style="margin-right: 0.5rem;"></i>
+                    Browse Artworks
+                </a>
+            </div>
+        </div>
+
+        <!-- Cart Summary -->
+        <div style="position: sticky; top: 2rem; height: fit-content;">
+            <div class="card" style="background: #f8f9ff; border: none;">
+                <h3 style="color: #667eea; margin-bottom: 1.5rem;">Order Summary</h3>
+                
+                <div style="border-bottom: 1px solid #e1e8ed; padding-bottom: 1rem; margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="color: #666;">Items (<span id="cart-count">0</span>):</span>
+                        <span style="color: #333; font-weight: bold;" id="subtotal">रू 0</span>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="color: #666;">Delivery:</span>
+                        <span style="color: #43e97b; font-weight: bold;">Free</span>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="color: #666;">Platform Fee:</span>
+                        <span style="color: #333;">रू 50</span>
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: 2rem; font-size: 1.2rem;">
+                    <strong style="color: #333;">Total:</strong>
+                    <strong style="color: #667eea;" id="total">रू 50</strong>
+                </div>
+                
+                <button onclick="proceedToCheckout()" class="btn" style="width: 100%; padding: 1rem; font-size: 1.1rem; margin-bottom: 1rem;" id="checkout-btn" disabled>
+                    <i class="fas fa-credit-card" style="margin-right: 0.5rem;"></i>
+                    Proceed to Checkout
+                </button>
+                
+                <a href="/arts" class="btn btn-outline" style="width: 100%; text-align: center; text-decoration: none; padding: 0.75rem;">
+                    <i class="fas fa-arrow-left" style="margin-right: 0.5rem;"></i>
+                    Continue Shopping
+                </a>
+                
+                <!-- Trust Indicators -->
+                <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e1e8ed;">
+                    <h4 style="color: #333; margin-bottom: 1rem; font-size: 0.9rem;">Why shop with us?</h4>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div style="display: flex; align-items: center; color: #666; font-size: 0.85rem;">
+                            <i class="fas fa-shield-alt" style="color: #43e97b; margin-right: 0.5rem;"></i>
+                            Secure payment processing
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; color: #666; font-size: 0.85rem;">
+                            <i class="fas fa-truck" style="color: #667eea; margin-right: 0.5rem;"></i>
+                            Free and safe delivery
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; color: #666; font-size: 0.85rem;">
+                            <i class="fas fa-headset" style="color: #f093fb; margin-right: 0.5rem;"></i>
+                            24/7 customer support
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; color: #666; font-size: 0.85rem;">
+                            <i class="fas fa-undo" style="color: #ffa500; margin-right: 0.5rem;"></i>
+                            7-day return policy
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recommended Artworks -->
+<section class="container" style="margin-top: 4rem;">
+    <h2 style="color: #333; margin-bottom: 2rem; text-align: center;">You Might Also Like</h2>
+    
+    <div id="recommended-arts" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 2rem;">
+        <!-- Recommended artworks will be loaded dynamically -->
+    </div>
+</section>
+
+<script>
+    // Cart functionality
+    let cart = JSON.parse(localStorage.getItem('chitram_cart')) || [];
+    
+    // Initialize cart on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        loadCartItems();
+        loadRecommendedArts();
+        updateCartSummary();
+    });
+    
+    // Load cart items
+    async function loadCartItems() {
+        const container = document.getElementById('cart-items-container');
+        const emptyCart = document.getElementById('empty-cart');
+        
+        if (cart.length === 0) {
+            container.style.display = 'none';
+            emptyCart.style.display = 'block';
+            return;
+        }
+        
+        container.style.display = 'block';
+        emptyCart.style.display = 'none';
+        
+        // Get artwork details for cart items
+        const artworkIds = cart.map(item => item.id).join(',');
+        
+        try {
+            const response = await fetch(\`/api/arts/details?ids=\${artworkIds}\`);
+            const artworks = await response.json();
+            
+            container.innerHTML = '';
+            
+            artworks.forEach(artwork => {
+                const cartItem = cart.find(item => item.id == artwork.id);
+                const itemElement = createCartItemElement(artwork, cartItem.quantity);
+                container.appendChild(itemElement);
+            });
+            
+        } catch (error) {
+            console.error('Error loading cart items:', error);
+            container.innerHTML = '<p style="color: #e74c3c; text-align: center;">Error loading cart items</p>';
+        }
+    }
+    
+    // Create cart item element
+    function createCartItemElement(artwork, quantity) {
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.style.cssText = 'background: white; border: 1px solid #e1e8ed; border-radius: 10px; padding: 1.5rem; margin-bottom: 1rem; display: flex; gap: 1.5rem;';
+        
+        div.innerHTML = \`
+            <div style="flex-shrink: 0;">
+                <img src="/uploads/\${artwork.image || 'placeholder.jpg'}" 
+                     alt="\${artwork.title}"
+                     style="width: 120px; height: 120px; border-radius: 8px; object-fit: cover;"
+                     onerror="this.src='/images/placeholder.jpg'">
+            </div>
+            
+            <div style="flex: 1; display: flex; flex-direction: column;">
+                <div style="flex: 1;">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #333;">
+                        <a href="/art/\${artwork.id}" style="text-decoration: none; color: inherit;" 
+                           onmouseover="this.style.color='#667eea'" onmouseout="this.style.color='inherit'">
+                            \${artwork.title}
+                        </a>
+                    </h4>
+                    
+                    <p style="margin: 0 0 0.5rem 0; color: #666; font-size: 0.9rem;">
+                        By <a href="/artist/\${artwork.artist_id}" style="color: #667eea; text-decoration: none;">\${artwork.artist_name}</a>
+                    </p>
+                    
+                    <p style="margin: 0 0 1rem 0; color: #999; font-size: 0.85rem;">
+                        Size: \${artwork.size_of_art || 'Not specified'}
+                    </p>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 5px;">
+                            <button onclick="updateQuantity(\${artwork.id}, -1)" 
+                                    style="background: none; border: none; padding: 0.5rem; cursor: pointer; color: #666;">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <span style="padding: 0 1rem; font-weight: bold;" id="qty-\${artwork.id}">\${quantity}</span>
+                            <button onclick="updateQuantity(\${artwork.id}, 1)" 
+                                    style="background: none; border: none; padding: 0.5rem; cursor: pointer; color: #666;">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        
+                        <button onclick="removeFromCart(\${artwork.id})" 
+                                style="background: none; border: none; color: #e74c3c; cursor: pointer; padding: 0.5rem;"
+                                title="Remove from cart">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    
+                    <div style="text-align: right;">
+                        <div style="font-size: 1.2rem; font-weight: bold; color: #333;">
+                            रू \${(artwork.price * quantity).toLocaleString()}
+                        </div>
+                        <div style="font-size: 0.85rem; color: #666;">
+                            रू \${artwork.price.toLocaleString()} each
+                        </div>
+                    </div>
+                </div>
+            </div>
+        \`;
+        
+        return div;
+    }
+    
+    // Update quantity
+    function updateQuantity(artworkId, change) {
+        const cartItem = cart.find(item => item.id == artworkId);
+        if (cartItem) {
+            cartItem.quantity = Math.max(1, cartItem.quantity + change);
+            localStorage.setItem('chitram_cart', JSON.stringify(cart));
+            
+            document.getElementById(\`qty-\${artworkId}\`).textContent = cartItem.quantity;
+            updateCartSummary();
+            
+            // Update the price display for this item
+            loadCartItems();
+        }
+    }
+    
+    // Remove from cart
+    function removeFromCart(artworkId) {
+        cart = cart.filter(item => item.id != artworkId);
+        localStorage.setItem('chitram_cart', JSON.stringify(cart));
+        
+        loadCartItems();
+        updateCartSummary();
+        
+        window.cart.showNotification('Item removed from cart', 'success');
+    }
+    
+    // Clear cart
+    function clearCart() {
+        if (cart.length === 0) return;
+        
+        if (confirm('Are you sure you want to clear your cart?')) {
+            cart = [];
+            localStorage.setItem('chitram_cart', JSON.stringify(cart));
+            
+            loadCartItems();
+            updateCartSummary();
+            
+            window.cart.showNotification('Cart cleared', 'success');
+        }
+    }
+    
+    // Update cart summary
+    async function updateCartSummary() {
+        const countElement = document.getElementById('cart-count');
+        const subtotalElement = document.getElementById('subtotal');
+        const totalElement = document.getElementById('total');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        
+        const itemCount = cart.reduce((total, item) => total + item.quantity, 0);
+        countElement.textContent = itemCount;
+        
+        if (itemCount === 0) {
+            subtotalElement.textContent = 'रू 0';
+            totalElement.textContent = 'रू 50';
+            checkoutBtn.disabled = true;
+            return;
+        }
+        
+        // Calculate subtotal
+        try {
+            const artworkIds = cart.map(item => item.id).join(',');
+            const response = await fetch(\`/api/arts/details?ids=\${artworkIds}\`);
+            const artworks = await response.json();
+            
+            let subtotal = 0;
+            artworks.forEach(artwork => {
+                const cartItem = cart.find(item => item.id == artwork.id);
+                subtotal += artwork.price * cartItem.quantity;
+            });
+            
+            const platformFee = 50;
+            const total = subtotal + platformFee;
+            
+            subtotalElement.textContent = \`रू \${subtotal.toLocaleString()}\`;
+            totalElement.textContent = \`रू \${total.toLocaleString()}\`;
+            
+            checkoutBtn.disabled = false;
+            
+        } catch (error) {
+            console.error('Error calculating total:', error);
+            checkoutBtn.disabled = true;
+        }
+    }
+    
+    // Load recommended artworks
+    async function loadRecommendedArts() {
+        try {
+            const response = await fetch('/api/arts/recommended?limit=4');
+            const artworks = await response.json();
+            
+            const container = document.getElementById('recommended-arts');
+            container.innerHTML = '';
+            
+            artworks.forEach(artwork => {
+                const artElement = createRecommendedArtElement(artwork);
+                container.appendChild(artElement);
+            });
+            
+        } catch (error) {
+            console.error('Error loading recommended arts:', error);
+        }
+    }
+    
+    // Create recommended art element
+    function createRecommendedArtElement(artwork) {
+        const div = document.createElement('div');
+        div.className = 'recommended-art';
+        div.style.cssText = 'transition: transform 0.3s ease;';
+        
+        div.innerHTML = \`
+            <div class="card" style="height: 100%;" onmouseover="this.parentElement.style.transform='translateY(-5px)'" onmouseout="this.parentElement.style.transform='translateY(0)'">
+                <div style="position: relative; overflow: hidden; border-radius: 10px 10px 0 0; height: 180px; background: #f5f5f5;">
+                    <img src="/uploads/\${artwork.image || 'placeholder.jpg'}" 
+                         alt="\${artwork.title}"
+                         style="width: 100%; height: 100%; object-fit: cover;"
+                         onerror="this.src='/images/placeholder.jpg'">
+                    
+                    <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.8rem;">
+                        रू \${artwork.price.toLocaleString()}
+                    </div>
+                </div>
+                
+                <div style="padding: 1rem;">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #333; font-size: 1rem;">
+                        <a href="/art/\${artwork.id}" style="text-decoration: none; color: inherit;" 
+                           onmouseover="this.style.color='#667eea'" onmouseout="this.style.color='inherit'">
+                            \${artwork.title}
+                        </a>
+                    </h4>
+                    
+                    <p style="color: #666; font-size: 0.85rem; margin: 0 0 1rem 0;">
+                        By \${artwork.artist_name}
+                    </p>
+                    
+                    <button onclick="addRecommendedToCart(\${artwork.id})" class="btn btn-outline" style="width: 100%; font-size: 0.9rem;">
+                        <i class="fas fa-plus" style="margin-right: 0.25rem;"></i>
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+        \`;
+        
+        return div;
+    }
+    
+    // Add recommended artwork to cart
+    function addRecommendedToCart(artworkId) {
+        window.cart.addItem(artworkId);
+        loadCartItems();
+        updateCartSummary();
+    }
+    
+    // Proceed to checkout
+    function proceedToCheckout() {
+        if (cart.length === 0) {
+            window.cart.showNotification('Your cart is empty', 'error');
+            return;
+        }
+        
+        window.location.href = '/checkout';
+    }
+</script>

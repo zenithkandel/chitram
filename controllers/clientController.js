@@ -364,42 +364,68 @@ const getArtPage = async (req, res) => {
         const { id } = req.params;
         
         // Get art details with artist information
-        const [art] = await db.execute(`
+        const [artResult] = await db.execute(`
             SELECT 
                 a.*,
-                ar.full_name as artist_name,
-                ar.profile_picture as artist_profile,
-                ar.bio as artist_bio,
-                ar.city as artist_city,
-                ar.district as artist_district
+                ar.full_name,
+                ar.profile_picture,
+                ar.bio,
+                ar.city,
+                ar.district,
+                ar.unique_id as artist_id
             FROM arts a
-            JOIN artists ar ON a.artist_unique_id = ar.unique_id
-            WHERE a.unique_id = ? AND a.status = 'listed'
+            JOIN artist_applications ar ON a.artist_unique_id = ar.unique_id
+            WHERE a.unique_id = ? AND ar.status = 'approved'
         `, [id]);
 
-        if (art.length === 0) {
-            return res.status(404).render('client/404', {
-                title: 'Art Not Found - चित्रम्'
+        if (artResult.length === 0) {
+            return res.status(404).render('client/error', {
+                title: 'Artwork Not Found - चित्रम्',
+                error: 'Artwork not found or not available.'
             });
         }
 
-        // Get related arts from the same artist
+        const art = artResult[0];
+        const artist = {
+            unique_id: art.artist_id,
+            full_name: art.full_name,
+            profile_picture: art.profile_picture,
+            bio: art.bio,
+            city: art.city,
+            district: art.district
+        };
+
+        // Get related arts from the same artist (excluding current art)
         const [relatedArts] = await db.execute(`
             SELECT 
                 unique_id,
                 art_name,
                 cost,
                 art_image,
-                size_of_art
+                uploaded_at
             FROM arts 
             WHERE artist_unique_id = ? AND unique_id != ? AND status = 'listed'
             ORDER BY uploaded_at DESC
             LIMIT 4
-        `, [art[0].artist_unique_id, id]);
+        `, [art.artist_unique_id, id]);
 
-        res.render('client/art', {
-            title: `${art[0].art_name} - चित्रम्`,
-            art: art[0],
+        // Clean up the art object for display
+        const displayArt = {
+            unique_id: art.unique_id,
+            title: art.art_name,
+            price: art.cost,
+            image: art.art_image,
+            description: art.art_description,
+            status: art.status,
+            size_of_art: art.size_of_art,
+            color_type: art.color_type,
+            uploaded_at: art.uploaded_at
+        };
+
+        res.render('client/art-detail', {
+            title: `${art.art_name} - चित्रम्`,
+            art: displayArt,
+            artist,
             relatedArts,
             error: null
         });
@@ -407,7 +433,7 @@ const getArtPage = async (req, res) => {
         console.error('Art page error:', error);
         res.status(500).render('client/error', {
             title: 'Error - चित्रम्',
-            error: 'Error loading art data'
+            error: 'Error loading artwork data'
         });
     }
 };

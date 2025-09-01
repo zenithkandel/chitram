@@ -1,0 +1,389 @@
+<!-- Art Detail Hero Section -->
+<section style="background: #f8f9ff; padding: 2rem 0;">
+    <div class="container">
+        <nav style="margin-bottom: 2rem;">
+            <a href="/" style="color: #667eea; text-decoration: none;">Home</a>
+            <span style="margin: 0 0.5rem; color: #999;">/</span>
+            <a href="/arts" style="color: #667eea; text-decoration: none;">All Arts</a>
+            <span style="margin: 0 0.5rem; color: #999;">/</span>
+            <span style="color: #333;"><%= art.title %></span>
+        </nav>
+    </div>
+</section>
+
+<!-- Art Detail Section -->
+<section class="container">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-bottom: 3rem;">
+        <!-- Art Image -->
+        <div>
+            <div style="position: relative; border-radius: 15px; overflow: hidden; background: #f5f5f5; aspect-ratio: 1;">
+                <% if (art.image) { %>
+                    <img src="/uploads/<%= art.image %>" 
+                         alt="<%= art.title %>"
+                         style="width: 100%; height: 100%; object-fit: cover;"
+                         id="main-art-image">
+                <% } else { %>
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999; font-size: 4rem;">
+                        <i class="fas fa-image"></i>
+                    </div>
+                <% } %>
+                
+                <!-- Status Badge -->
+                <div class="status-badge" data-status="<%= art.status %>" style="position: absolute; top: 20px; left: 20px; color: white; padding: 0.5rem 1rem; border-radius: 25px; font-weight: bold; backdrop-filter: blur(10px);">
+                    <%= art.status === 'listed' ? 'Available' : art.status %>
+                </div>
+                
+                <!-- Price Badge -->
+                <div style="position: absolute; bottom: 20px; right: 20px; background: rgba(0,0,0,0.8); color: white; padding: 1rem 1.5rem; border-radius: 25px; font-size: 1.2rem; font-weight: bold; backdrop-filter: blur(10px);">
+                    रू <%= art.price.toLocaleString() %>
+                </div>
+            </div>
+            
+            <!-- Image Actions -->
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <button onclick="openImageModal()" class="btn btn-outline" style="flex: 1;">
+                    <i class="fas fa-expand" style="margin-right: 0.5rem;"></i>
+                    View Full Size
+                </button>
+                <button onclick="shareArt()" class="btn btn-outline" style="flex: 1;">
+                    <i class="fas fa-share" style="margin-right: 0.5rem;"></i>
+                    Share
+                </button>
+            </div>
+        </div>
+
+        <!-- Art Details -->
+        <div>
+            <div style="margin-bottom: 2rem;">
+                <h1 style="font-size: 2.5rem; color: #333; margin-bottom: 1rem;"><%= art.title %></h1>
+                
+                <!-- Artist Info -->
+                <div style="display: flex; align-items: center; margin-bottom: 1.5rem; padding: 1rem; background: #f8f9ff; border-radius: 10px;">
+                    <% if (artist.profile_picture) { %>
+                        <img src="/uploads/<%= artist.profile_picture %>" 
+                             alt="<%= artist.full_name %>"
+                             style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-right: 1rem;"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div style="display: none; width: 60px; height: 60px; border-radius: 50%; background: #667eea; color: white; margin-right: 1rem; align-items: center; justify-content: center; font-size: 1.5rem;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    <% } else { %>
+                        <div style="width: 60px; height: 60px; border-radius: 50%; background: #667eea; color: white; margin-right: 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    <% } %>
+                    
+                    <div>
+                        <h3 style="margin: 0; color: #333;">
+                            <a href="/artist/<%= artist.unique_id %>" style="text-decoration: none; color: inherit;" 
+                               onmouseover="this.style.color='#667eea'" onmouseout="this.style.color='inherit'">
+                                <%= artist.full_name %>
+                            </a>
+                        </h3>
+                        <p style="margin: 0; color: #666; font-size: 0.9rem;">
+                            <i class="fas fa-map-marker-alt" style="margin-right: 0.25rem;"></i>
+                            <%= artist.city %>, <%= artist.district %>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Art Details -->
+                <div style="background: white; border: 1px solid #e1e8ed; border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem;">
+                    <h3 style="color: #333; margin-bottom: 1rem;">Artwork Details</h3>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div>
+                            <strong style="color: #667eea;">Price:</strong>
+                            <div style="font-size: 1.5rem; color: #333; font-weight: bold;">रू <%= art.price.toLocaleString() %></div>
+                        </div>
+                        
+                        <div>
+                            <strong style="color: #667eea;">Status:</strong>
+                            <div class="status-text" data-status="<%= art.status %>" style="font-weight: bold; text-transform: capitalize;">
+                                <%= art.status === 'listed' ? 'Available' : art.status %>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <% if (art.size_of_art) { %>
+                        <div style="margin-bottom: 1rem;">
+                            <strong style="color: #667eea;">Size:</strong>
+                            <span style="color: #333;"><%= art.size_of_art %></span>
+                        </div>
+                    <% } %>
+                    
+                    <% if (art.color_type) { %>
+                        <div style="margin-bottom: 1rem;">
+                            <strong style="color: #667eea;">Type:</strong>
+                            <span style="color: #333; text-transform: capitalize;"><%= art.color_type.replace('_', ' ') %></span>
+                        </div>
+                    <% } %>
+                    
+                    <div>
+                        <strong style="color: #667eea;">Listed:</strong>
+                        <span style="color: #333;"><%= new Date(art.uploaded_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></span>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <% if (art.description) { %>
+                    <div style="background: #f8f9ff; border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem;">
+                        <h3 style="color: #333; margin-bottom: 1rem;">Description</h3>
+                        <p style="color: #555; line-height: 1.6; margin: 0;"><%= art.description %></p>
+                    </div>
+                <% } %>
+
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                    <% if (art.status === 'listed') { %>
+                        <button class="add-to-cart-btn" data-artwork-id="<%= art.unique_id %>" class="btn" style="flex: 2; padding: 1rem; font-size: 1.1rem;">
+                            <i class="fas fa-shopping-cart" style="margin-right: 0.5rem;"></i>
+                            Add to Cart
+                        </button>
+                        <button onclick="contactArtist()" class="btn btn-outline" style="flex: 1; padding: 1rem;">
+                            <i class="fas fa-envelope" style="margin-right: 0.5rem;"></i>
+                            Contact Artist
+                        </button>
+                    <% } else { %>
+                        <div style="flex: 2; text-align: center; padding: 1rem; background: #f5f5f5; border-radius: 5px; color: #999; font-weight: bold;">
+                            <i class="fas fa-times-circle" style="margin-right: 0.5rem;"></i>
+                            <%= art.status === 'sold' ? 'Sold Out' : 'Not Available' %>
+                        </div>
+                        <button onclick="contactArtist()" class="btn btn-outline" style="flex: 1; padding: 1rem;">
+                            <i class="fas fa-envelope" style="margin-right: 0.5rem;"></i>
+                            Contact Artist
+                        </button>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Arts -->
+<section class="container">
+    <h2 style="color: #333; margin-bottom: 2rem;">More from <%= artist.full_name %></h2>
+    
+    <% if (relatedArts && relatedArts.length > 0) { %>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+            <% relatedArts.forEach(relatedArt => { %>
+                <div class="card" style="transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                    <div style="position: relative; overflow: hidden; border-radius: 10px 10px 0 0; height: 180px; background: #f5f5f5;">
+                        <% if (relatedArt.art_image) { %>
+                            <img src="/uploads/<%= relatedArt.art_image %>" 
+                                 alt="<%= relatedArt.art_name %>"
+                                 style="width: 100%; height: 100%; object-fit: cover;">
+                        <% } else { %>
+                            <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999; font-size: 2rem;">
+                                <i class="fas fa-image"></i>
+                            </div>
+                        <% } %>
+                        
+                        <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.8rem;">
+                            रू <%= relatedArt.cost.toLocaleString() %>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 1rem;">
+                        <h4 style="margin: 0 0 0.5rem 0; color: #333;">
+                            <a href="/art/<%= relatedArt.unique_id %>" style="text-decoration: none; color: inherit;" 
+                               onmouseover="this.style.color='#667eea'" onmouseout="this.style.color='inherit'">
+                                <%= relatedArt.art_name %>
+                            </a>
+                        </h4>
+                        <p style="color: #666; font-size: 0.8rem; margin: 0;">
+                            <%= new Date(relatedArt.uploaded_at).toLocaleDateString() %>
+                        </p>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    <% } else { %>
+        <div style="text-align: center; padding: 2rem; color: #666;">
+            <p>No other artworks from this artist yet.</p>
+        </div>
+    <% } %>
+    
+    <div style="text-align: center;">
+        <a href="/artist/<%= artist.unique_id %>" class="btn btn-outline" style="text-decoration: none;">
+            View All Artworks by <%= artist.full_name %>
+        </a>
+    </div>
+</section>
+
+<!-- Image Modal -->
+<div id="image-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center;">
+    <div style="position: relative; max-width: 90vw; max-height: 90vh;">
+        <button onclick="closeImageModal()" style="position: absolute; top: -40px; right: 0; background: none; border: none; color: white; font-size: 2rem; cursor: pointer;">
+            <i class="fas fa-times"></i>
+        </button>
+        <img id="modal-image" src="" alt="" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+    </div>
+</div>
+
+<!-- Contact Modal -->
+<div id="contact-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 2rem; border-radius: 10px; width: 90%; max-width: 500px; position: relative;">
+        <button onclick="closeContactModal()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; color: #999; cursor: pointer;">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <h3 style="margin-bottom: 1.5rem; color: #333;">Contact <%= artist.full_name %></h3>
+        
+        <form onsubmit="sendMessage(event)">
+            <div class="form-group">
+                <label class="form-label">Your Name</label>
+                <input type="text" name="sender_name" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Your Email</label>
+                <input type="email" name="sender_email" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Subject</label>
+                <input type="text" name="subject" class="form-input" value="Interested in <%= art.title %>" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Message</label>
+                <textarea name="message" class="form-input form-textarea" placeholder="Hi, I'm interested in purchasing '<%= art.title %>'..." required></textarea>
+            </div>
+            
+            <div style="text-align: center; margin-top: 1.5rem;">
+                <button type="submit" class="btn" style="padding: 0.75rem 2rem;">
+                    Send Message
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Set status badge color
+    document.addEventListener('DOMContentLoaded', function() {
+        const statusBadge = document.querySelector('.status-badge');
+        const status = statusBadge.dataset.status;
+        if (status === 'listed') {
+            statusBadge.style.background = 'rgba(67, 233, 123, 0.9)';
+        } else if (status === 'sold') {
+            statusBadge.style.background = 'rgba(231, 76, 60, 0.9)';
+        } else {
+            statusBadge.style.background = 'rgba(243, 156, 18, 0.9)';
+        }
+        
+        // Set status text color
+        const statusText = document.querySelector('.status-text');
+        if (statusText) {
+            const textStatus = statusText.dataset.status;
+            if (textStatus === 'listed') {
+                statusText.style.color = '#43e97b';
+            } else if (textStatus === 'sold') {
+                statusText.style.color = '#e74c3c';
+            } else {
+                statusText.style.color = '#f39c12';
+            }
+        }
+        
+        // Add to cart functionality
+        const addToCartBtn = document.querySelector('.add-to-cart-btn');
+        if (addToCartBtn) {
+            addToCartBtn.addEventListener('click', function() {
+                const artworkId = this.dataset.artworkId;
+                window.cart.addItem(artworkId);
+            });
+        }
+    });
+    
+    // Image modal functions
+    function openImageModal() {
+        const mainImage = document.getElementById('main-art-image');
+        const modalImage = document.getElementById('modal-image');
+        const modal = document.getElementById('image-modal');
+        
+        modalImage.src = mainImage.src;
+        modalImage.alt = mainImage.alt;
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeImageModal() {
+        document.getElementById('image-modal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+    
+    // Contact functions
+    function contactArtist() {
+        document.getElementById('contact-modal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeContactModal() {
+        document.getElementById('contact-modal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+    
+    function sendMessage(event) {
+        event.preventDefault();
+        
+        const formData = new FormData(event.target);
+        formData.append('artist_id', '<%= artist.unique_id %>');
+        
+        fetch('/api/contact/artist', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.cart.showNotification('Message sent successfully!', 'success');
+                closeContactModal();
+                event.target.reset();
+            } else {
+                window.cart.showNotification(data.error, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Contact error:', error);
+            window.cart.showNotification('Failed to send message. Please try again.', 'error');
+        });
+    }
+    
+    // Share function
+    function shareArt() {
+        if (navigator.share) {
+            navigator.share({
+                title: '<%= art.title %>',
+                text: 'Check out this amazing artwork by <%= artist.full_name %>',
+                url: window.location.href
+            });
+        } else {
+            // Fallback: copy to clipboard
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                window.cart.showNotification('Link copied to clipboard!', 'success');
+            });
+        }
+    }
+    
+    // Close modals on outside click
+    document.getElementById('image-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeImageModal();
+    });
+    
+    document.getElementById('contact-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeContactModal();
+    });
+    
+    // Close modals on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            if (document.getElementById('image-modal').style.display === 'flex') {
+                closeImageModal();
+            }
+            if (document.getElementById('contact-modal').style.display === 'flex') {
+                closeContactModal();
+            }
+        }
+    });
+</script>
