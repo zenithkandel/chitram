@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artworks Management - चित्रम् Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e3f2fd;
+        }
+
+        .header h1 {
+            color: #1565c0;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .back-btn {
+            background: linear-gradient(45deg, #42a5f5, #1976d2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(25, 118, 210, 0.3);
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            animation: slideIn 0.5s ease;
+        }
+
+        .alert.success {
+            background: linear-gradient(45deg, #4caf50, #66bb6a);
+            color: white;
+        }
+
+        .alert.error {
+            background: linear-gradient(45deg, #f44336, #ef5350);
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .artworks-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .stat-card:hover::before {
+            left: 100%;
+        }
+
+        .stat-card h3 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .stat-card p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .add-artwork-btn {
+            background: linear-gradient(45deg, #4caf50, #66bb6a);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .add-artwork-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        }
+
+        .artworks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .artwork-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #e3f2fd;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .artwork-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+
+        .artwork-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .artwork-image {
+            width: 100%;
+            height: 200px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .artwork-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .artwork-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .artwork-image.no-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 1.2em;
+            background: linear-gradient(45deg, #f5f5f5, #eeeeee);
+        }
+
+        .artwork-info h3 {
+            color: #1565c0;
+            font-size: 1.4em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .artwork-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 0.9em;
+            color: #666;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-listed { background: #e8f5e8; color: #2e7d32; }
+        .status-ordered { background: #fff3e0; color: #f57c00; }
+        .status-sold { background: #e3f2fd; color: #1976d2; }
+        .status-delivered { background: #f3e5f5; color: #7b1fa2; }
+
+        .artwork-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9em;
+        }
+
+        .btn-edit {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+            color: white;
+        }
+
+        .btn-delete {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e3f2fd;
+        }
+
+        .modal-header h2 {
+            color: #1565c0;
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #666;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1976d2;
+            box-shadow: 0 0 10px rgba(25, 118, 210, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .image-upload {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            background: #f5f5f5;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview.empty {
+            color: #999;
+            font-size: 1.1em;
+        }
+
+        .progress-container {
+            display: none;
+            margin: 20px 0;
+        }
+
+        .progress-container.active {
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #4caf50, #66bb6a);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-fill.animated {
+            background: linear-gradient(45deg, #4caf50, #66bb6a, #4caf50);
+            background-size: 200% 200%;
+            animation: gradientShift 2s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .progress-text {
+            text-align: center;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .update-status {
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-weight: 500;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .update-status.active {
+            display: flex;
+        }
+
+        .update-status.success {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .update-status.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .update-status.uploading,
+        .update-status.processing {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .loading-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e0e0e0;
+            border-top: 2px solid #1976d2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #1976d2, #42a5f5);
+            color: white;
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover,
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .spinner {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .artworks-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Artworks Management</h1>
+            <a href="/admin/dashboard" class="back-btn">
+                ← Back to Dashboard
+            </a>
+        </div>
+
+        <% if (error) { %>
+            <div class="alert error" id="errorAlert">
+                <%= error %>
+            </div>
+        <% } %>
+
+        <% if (success) { %>
+            <div class="alert success" id="successAlert">
+                <%= success %>
+            </div>
+        <% } %>
+
+        <div class="artworks-stats">
+            <div class="stat-card">
+                <h3><%= artworks.filter(a => a.status === 'listed').length %></h3>
+                <p>Listed Artworks</p>
+            </div>
+            <div class="stat-card">
+                <h3><%= artworks.filter(a => a.status === 'ordered').length %></h3>
+                <p>Ordered Artworks</p>
+            </div>
+            <div class="stat-card">
+                <h3><%= artworks.filter(a => a.status === 'sold').length %></h3>
+                <p>Sold Artworks</p>
+            </div>
+            <div class="stat-card">
+                <h3><%= artworks.length %></h3>
+                <p>Total Artworks</p>
+            </div>
+            <button class="add-artwork-btn" onclick="openAddArtworkModal()">
+                + Add New Artwork
+            </button>
+        </div>
+
+        <div class="artworks-grid">
+            <% if (artworks.length === 0) { %>
+                <div class="artwork-card" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                    <h3>No artworks found</h3>
+                    <p>Start by adding your first artwork!</p>
+                </div>
+            <% } else { %>
+                <% artworks.forEach(artwork => { %>
+                    <div class="artwork-card" data-id="<%= artwork.unique_id %>">
+                        <div class="artwork-image <%= artwork.art_image ? '' : 'no-image' %>">
+                            <% if (artwork.art_image) { %>
+                                <img src="/uploads/artworks/<%= artwork.art_image %>" alt="<%= artwork.art_name %>">
+                            <% } else { %>
+                                🖼️ No Image
+                            <% } %>
+                        </div>
+                        
+                        <div class="artwork-info">
+                            <h3><%= artwork.art_name %></h3>
+                            
+                            <div class="artwork-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Artist</span>
+                                    <span class="detail-value"><%= artwork.artist_name || 'Unknown' %></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Category</span>
+                                    <span class="detail-value"><%= artwork.art_category %></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Price</span>
+                                    <span class="detail-value">Rs. <%= Number(artwork.cost).toLocaleString() %></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Status</span>
+                                    <span class="status-badge status-<%= artwork.status %>"><%= artwork.status %></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Size</span>
+                                    <span class="detail-value"><%= artwork.size_of_art || 'N/A' %></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Color Type</span>
+                                    <span class="detail-value"><%= artwork.color_type === 'black_and_white' ? 'B&W' : 'Color' %></span>
+                                </div>
+                            </div>
+                            
+                            <% if (artwork.art_description) { %>
+                                <p style="margin: 10px 0; color: #666; font-size: 0.9em;">
+                                    <%= artwork.art_description.substring(0, 100) %><%= artwork.art_description.length > 100 ? '...' : '' %>
+                                </p>
+                            <% } %>
+                        </div>
+
+                        <div class="artwork-actions">
+                            <button class="btn btn-edit" onclick="editArtwork('<%= artwork.unique_id %>')">
+                                ✏️ Edit
+                            </button>
+                            <button class="btn btn-delete" onclick="deleteArtwork('<%= artwork.unique_id %>', '<%= artwork.art_name %>')">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Edit Artwork Modal -->
+    <div id="editArtworkModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Artwork</h2>
+                <button class="close-btn" onclick="closeEditArtworkModal()">&times;</button>
+            </div>
+            
+            <form id="editArtworkForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit_art_name">Artwork Name *</label>
+                        <input type="text" id="edit_art_name" name="art_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_artist_unique_id">Artist *</label>
+                        <select id="edit_artist_unique_id" name="artist_unique_id" required>
+                            <option value="">Loading artists...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit_art_category">Category *</label>
+                        <select id="edit_art_category" name="art_category" required>
+                            <option value="">Select Category</option>
+                            <option value="Landscape">Landscape</option>
+                            <option value="Portrait">Portrait</option>
+                            <option value="Abstract">Abstract</option>
+                            <option value="Still Life">Still Life</option>
+                            <option value="Traditional">Traditional</option>
+                            <option value="Modern">Modern</option>
+                            <option value="Digital">Digital</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_cost">Price (Rs.) *</label>
+                        <input type="number" id="edit_cost" name="cost" min="0" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit_size_of_art">Size of Art</label>
+                        <input type="text" id="edit_size_of_art" name="size_of_art" placeholder="e.g., 16x20 inches">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_work_hours">Work Hours</label>
+                        <input type="text" id="edit_work_hours" name="work_hours" placeholder="e.g., 15-20 hours">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit_color_type">Color Type *</label>
+                        <select id="edit_color_type" name="color_type" required>
+                            <option value="color">Color</option>
+                            <option value="black_and_white">Black & White</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_status">Status</label>
+                        <select id="edit_status" name="status">
+                            <option value="listed">Listed</option>
+                            <option value="ordered">Ordered</option>
+                            <option value="sold">Sold</option>
+                            <option value="delivered">Delivered</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit_art_description">Description</label>
+                    <textarea id="edit_art_description" name="art_description" rows="3" placeholder="Describe the artwork..."></textarea>
+                </div>
+
+                <div class="image-upload">
+                    <label for="edit_art_image">Artwork Image</label>
+                    <input type="file" id="edit_art_image" name="art_image" accept="image/*" onchange="previewEditArtworkImage(this)">
+                    <div id="editImagePreview" class="image-preview empty">
+                        <span>No image selected</span>
+                        <img id="editPreviewImage" style="display: none;">
+                    </div>
+                </div>
+
+                <div id="updateProgressContainer" class="progress-container">
+                    <div class="progress-bar">
+                        <div id="updateProgressBar" class="progress-fill"></div>
+                    </div>
+                    <div id="updateProgressText" class="progress-text">0% Complete</div>
+                    <div id="updateStatus" class="update-status"></div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="editCancelBtn" onclick="closeEditArtworkModal()">Cancel</button>
+                    <button type="submit" class="btn-primary" id="updateArtworkBtn">
+                        <span id="editBtnText">Update Artwork</span>
+                        <span id="editBtnSpinner" class="loading-spinner" style="display: none;"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Artwork Modal -->
+    <div id="addArtworkModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Artwork</h2>
+                <button class="close-btn" onclick="closeAddArtworkModal()">&times;</button>
+            </div>
+            
+            <form id="addArtworkForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="add_art_name">Artwork Name *</label>
+                        <input type="text" id="add_art_name" name="art_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="add_artist_unique_id">Artist *</label>
+                        <select id="add_artist_unique_id" name="artist_unique_id" required>
+                            <option value="">Loading artists...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="add_art_category">Category *</label>
+                        <select id="add_art_category" name="art_category" required>
+                            <option value="">Select Category</option>
+                            <option value="Landscape">Landscape</option>
+                            <option value="Portrait">Portrait</option>
+                            <option value="Abstract">Abstract</option>
+                            <option value="Still Life">Still Life</option>
+                            <option value="Traditional">Traditional</option>
+                            <option value="Modern">Modern</option>
+                            <option value="Digital">Digital</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="add_cost">Price (Rs.) *</label>
+                        <input type="number" id="add_cost" name="cost" min="0" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="add_size_of_art">Size of Art</label>
+                        <input type="text" id="add_size_of_art" name="size_of_art" placeholder="e.g., 16x20 inches">
+                    </div>
+                    <div class="form-group">
+                        <label for="add_work_hours">Work Hours</label>
+                        <input type="text" id="add_work_hours" name="work_hours" placeholder="e.g., 15-20 hours">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="add_color_type">Color Type *</label>
+                        <select id="add_color_type" name="color_type" required>
+                            <option value="color">Color</option>
+                            <option value="black_and_white">Black & White</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="add_status">Status</label>
+                        <select id="add_status" name="status">
+                            <option value="listed">Listed</option>
+                            <option value="ordered">Ordered</option>
+                            <option value="sold">Sold</option>
+                            <option value="delivered">Delivered</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="add_art_description">Description</label>
+                    <textarea id="add_art_description" name="art_description" rows="3" placeholder="Describe the artwork..."></textarea>
+                </div>
+
+                <div class="image-upload">
+                    <label for="add_art_image">Artwork Image *</label>
+                    <input type="file" id="add_art_image" name="art_image" accept="image/*" required onchange="previewAddArtworkImage(this)">
+                    <div id="addImagePreview" class="image-preview empty">
+                        <span>No image selected</span>
+                        <img id="addPreviewImage" style="display: none;">
+                    </div>
+                </div>
+
+                <div id="addProgressContainer" class="progress-container">
+                    <div class="progress-bar">
+                        <div id="addProgressBar" class="progress-fill"></div>
+                    </div>
+                    <div id="addProgressText" class="progress-text">0% Complete</div>
+                    <div id="addStatus" class="update-status"></div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="addCancelBtn" onclick="closeAddArtworkModal()">Cancel</button>
+                    <button type="submit" class="btn-primary" id="addArtworkBtn">
+                        <span id="addBtnText">Add Artwork</span>
+                        <span id="addBtnSpinner" class="loading-spinner" style="display: none;"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Auto-hide alerts
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                if (alert) {
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-20px)';
+                    setTimeout(() => alert.remove(), 300);
+                }
+            });
+        }, 5000);
+
+        // Global variables
+        let currentArtworkId = null;
+
+        // Load artists for dropdowns
+        async function loadArtists() {
+            try {
+                const response = await fetch('/admin/artworks/api/artists');
+                const data = await response.json();
+                
+                if (data.artists) {
+                    const editSelect = document.getElementById('edit_artist_unique_id');
+                    const addSelect = document.getElementById('add_artist_unique_id');
+                    
+                    // Clear existing options
+                    editSelect.innerHTML = '<option value="">Select Artist</option>';
+                    addSelect.innerHTML = '<option value="">Select Artist</option>';
+                    
+                    // Add artist options
+                    data.artists.forEach(artist => {
+                        const option1 = new Option(artist.full_name, artist.unique_id);
+                        const option2 = new Option(artist.full_name, artist.unique_id);
+                        editSelect.add(option1);
+                        addSelect.add(option2);
+                    });
+                } else {
+                    console.error('No artists found');
+                }
+            } catch (error) {
+                console.error('Error loading artists:', error);
+            }
+        }
+
+        // Load artists on page load
+        document.addEventListener('DOMContentLoaded', loadArtists);
+
+        // Edit artwork function
+        async function editArtwork(artworkId) {
+            currentArtworkId = artworkId;
+            
+            try {
+                const response = await fetch(`/admin/artworks/${artworkId}`);
+                const data = await response.json();
+                
+                if (data.artwork) {
+                    const artwork = data.artwork;
+                    
+                    // Fill form fields
+                    document.getElementById('edit_art_name').value = artwork.art_name || '';
+                    document.getElementById('edit_artist_unique_id').value = artwork.artist_unique_id || '';
+                    document.getElementById('edit_art_category').value = artwork.art_category || '';
+                    document.getElementById('edit_cost').value = artwork.cost || '';
+                    document.getElementById('edit_size_of_art').value = artwork.size_of_art || '';
+                    document.getElementById('edit_work_hours').value = artwork.work_hours || '';
+                    document.getElementById('edit_color_type').value = artwork.color_type || 'color';
+                    document.getElementById('edit_status').value = artwork.status || 'listed';
+                    document.getElementById('edit_art_description').value = artwork.art_description || '';
+                    
+                    // Show existing image if available
+                    const preview = document.getElementById('editImagePreview');
+                    const previewImage = document.getElementById('editPreviewImage');
+                    
+                    if (artwork.art_image) {
+                        previewImage.src = `/uploads/artworks/${artwork.art_image}`;
+                        previewImage.style.display = 'block';
+                        preview.classList.remove('empty');
+                        preview.querySelector('span').style.display = 'none';
+                    } else {
+                        previewImage.style.display = 'none';
+                        preview.classList.add('empty');
+                        preview.querySelector('span').style.display = 'block';
+                        preview.querySelector('span').textContent = 'No image available';
+                    }
+                    
+                    // Show modal
+                    document.getElementById('editArtworkModal').classList.add('active');
+                } else {
+                    showAlert('Error loading artwork data', 'error');
+                }
+            } catch (error) {
+                console.error('Error fetching artwork:', error);
+                showAlert('Error loading artwork data', 'error');
+            }
+        }
+
+        function closeEditArtworkModal() {
+            document.getElementById('editArtworkModal').classList.remove('active');
+            hideUpdateProgress();
+        }
+
+        function previewEditArtworkImage(input) {
+            const preview = document.getElementById('editImagePreview');
+            const previewImage = document.getElementById('editPreviewImage');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = 'block';
+                    preview.classList.remove('empty');
+                    preview.querySelector('span').style.display = 'none';
+                };
+                
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                previewImage.style.display = 'none';
+                preview.classList.add('empty');
+                preview.querySelector('span').style.display = 'block';
+                preview.querySelector('span').textContent = 'No image selected';
+            }
+        }
+
+        // Handle edit artwork form submission
+        document.getElementById('editArtworkForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!currentArtworkId) {
+                showAlert('No artwork selected for editing', 'error');
+                return;
+            }
+            
+            // Show progress bar and disable form
+            showUpdateProgress();
+            
+            // Create FormData object to handle file upload
+            const formData = new FormData();
+            formData.append('art_name', document.getElementById('edit_art_name').value);
+            formData.append('artist_unique_id', document.getElementById('edit_artist_unique_id').value);
+            formData.append('art_category', document.getElementById('edit_art_category').value);
+            formData.append('cost', document.getElementById('edit_cost').value);
+            formData.append('size_of_art', document.getElementById('edit_size_of_art').value);
+            formData.append('work_hours', document.getElementById('edit_work_hours').value);
+            formData.append('color_type', document.getElementById('edit_color_type').value);
+            formData.append('status', document.getElementById('edit_status').value);
+            formData.append('art_description', document.getElementById('edit_art_description').value);
+            
+            // Add artwork image file if selected
+            const artworkImageFile = document.getElementById('edit_art_image').files[0];
+            if (artworkImageFile) {
+                formData.append('art_image', artworkImageFile);
+                updateProgressStatus('uploading', 'Uploading artwork image...');
+            } else {
+                updateProgressStatus('processing', 'Updating artwork...');
+            }
+
+            // Simulate progress steps
+            updateProgress(20);
+            
+            setTimeout(() => {
+                updateProgress(50);
+                
+                fetch(`/admin/artworks/${currentArtworkId}`, {
+                    method: 'PUT',
+                    body: formData
+                })
+                .then(response => {
+                    updateProgress(80);
+                    return response.json();
+                })
+                .then(data => {
+                    updateProgress(100);
+                    updateProgressStatus('success', 'Artwork updated successfully!');
+                    
+                    setTimeout(() => {
+                        if (data.success) {
+                            showAlert(data.success, 'success');
+                            closeEditArtworkModal();
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                        } else {
+                            hideUpdateProgress();
+                            showAlert(data.error || 'Error updating artwork', 'error');
+                        }
+                    }, 500);
+                })
+                .catch(error => {
+                    console.error('Error updating artwork:', error);
+                    hideUpdateProgress();
+                    showAlert('Error updating artwork', 'error');
+                });
+            }, 300);
+        });
+
+        // Progress bar functions
+        function showUpdateProgress() {
+            document.getElementById('updateProgressContainer').classList.add('active');
+            document.getElementById('updateProgressText').style.display = 'block';
+            document.getElementById('editBtnText').style.display = 'none';
+            document.getElementById('editBtnSpinner').style.display = 'inline';
+            document.getElementById('updateArtworkBtn').disabled = true;
+            document.getElementById('editCancelBtn').disabled = true;
+            
+            // Disable all form inputs
+            const formInputs = document.querySelectorAll('#editArtworkForm input, #editArtworkForm select, #editArtworkForm textarea');
+            formInputs.forEach(input => input.disabled = true);
+        }
+
+        function hideUpdateProgress() {
+            document.getElementById('updateProgressContainer').classList.remove('active');
+            document.getElementById('updateProgressText').style.display = 'none';
+            document.getElementById('updateStatus').classList.remove('active');
+            document.getElementById('editBtnText').style.display = 'inline';
+            document.getElementById('editBtnSpinner').style.display = 'none';
+            document.getElementById('updateArtworkBtn').disabled = false;
+            document.getElementById('editCancelBtn').disabled = false;
+            
+            // Re-enable all form inputs
+            const formInputs = document.querySelectorAll('#editArtworkForm input, #editArtworkForm select, #editArtworkForm textarea');
+            formInputs.forEach(input => input.disabled = false);
+            
+            // Reset progress
+            updateProgress(0);
+        }
+
+        function updateProgress(percentage) {
+            const progressBar = document.getElementById('updateProgressBar');
+            const progressText = document.getElementById('updateProgressText');
+            
+            progressBar.style.width = percentage + '%';
+            progressText.textContent = `${percentage}% Complete`;
+            
+            if (percentage > 0) {
+                progressBar.classList.add('animated');
+            } else {
+                progressBar.classList.remove('animated');
+            }
+        }
+
+        function updateProgressStatus(type, message) {
+            const statusElement = document.getElementById('updateStatus');
+            statusElement.className = `update-status active ${type}`;
+            statusElement.innerHTML = type === 'uploading' || type === 'processing' 
+                ? `<span class="loading-spinner"></span>${message}`
+                : message;
+        }
+
+        // Add New Artwork Functions
+        function openAddArtworkModal() {
+            document.getElementById('addArtworkModal').classList.add('active');
+            // Clear form
+            document.getElementById('addArtworkForm').reset();
+            document.getElementById('addImagePreview').style.display = 'none';
+            document.getElementById('addImagePreview').classList.add('empty');
+            document.getElementById('addImagePreview').querySelector('span').style.display = 'block';
+            document.getElementById('addImagePreview').querySelector('span').textContent = 'No image selected';
+            hideAddProgress();
+        }
+
+        function closeAddArtworkModal() {
+            document.getElementById('addArtworkModal').classList.remove('active');
+            hideAddProgress();
+        }
+
+        function previewAddArtworkImage(input) {
+            const preview = document.getElementById('addImagePreview');
+            const previewImage = document.getElementById('addPreviewImage');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = 'block';
+                    preview.classList.remove('empty');
+                    preview.querySelector('span').style.display = 'none';
+                };
+                
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                previewImage.style.display = 'none';
+                preview.classList.add('empty');
+                preview.querySelector('span').style.display = 'block';
+                preview.querySelector('span').textContent = 'No image selected';
+            }
+        }
+
+        // Handle add artwork form submission
+        document.getElementById('addArtworkForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show progress bar and disable form
+            showAddProgress();
+            
+            // Create FormData object to handle file upload
+            const formData = new FormData();
+            formData.append('art_name', document.getElementById('add_art_name').value);
+            formData.append('artist_unique_id', document.getElementById('add_artist_unique_id').value);
+            formData.append('art_category', document.getElementById('add_art_category').value);
+            formData.append('cost', document.getElementById('add_cost').value);
+            formData.append('size_of_art', document.getElementById('add_size_of_art').value);
+            formData.append('work_hours', document.getElementById('add_work_hours').value);
+            formData.append('color_type', document.getElementById('add_color_type').value);
+            formData.append('status', document.getElementById('add_status').value);
+            formData.append('art_description', document.getElementById('add_art_description').value);
+            
+            // Add artwork image file (required)
+            const artworkImageFile = document.getElementById('add_art_image').files[0];
+            if (artworkImageFile) {
+                formData.append('art_image', artworkImageFile);
+                updateAddProgressStatus('uploading', 'Uploading artwork image...');
+            } else {
+                updateAddProgressStatus('processing', 'Creating new artwork...');
+            }
+
+            // Simulate progress steps
+            updateAddProgress(20);
+            
+            setTimeout(() => {
+                updateAddProgress(50);
+                
+                fetch('/admin/artworks', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    updateAddProgress(80);
+                    return response.json();
+                })
+                .then(data => {
+                    updateAddProgress(100);
+                    updateAddProgressStatus('success', 'Artwork created successfully!');
+                    
+                    setTimeout(() => {
+                        if (data.success) {
+                            showAlert(data.success, 'success');
+                            closeAddArtworkModal();
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                        } else {
+                            hideAddProgress();
+                            showAlert(data.error || 'Error creating artwork', 'error');
+                        }
+                    }, 500);
+                })
+                .catch(error => {
+                    console.error('Error creating artwork:', error);
+                    hideAddProgress();
+                    showAlert('Error creating artwork', 'error');
+                });
+            }, 300);
+        });
+
+        // Add Progress bar functions
+        function showAddProgress() {
+            document.getElementById('addProgressContainer').classList.add('active');
+            document.getElementById('addProgressText').style.display = 'block';
+            document.getElementById('addBtnText').style.display = 'none';
+            document.getElementById('addBtnSpinner').style.display = 'inline';
+            document.getElementById('addArtworkBtn').disabled = true;
+            document.getElementById('addCancelBtn').disabled = true;
+            
+            // Disable all form inputs
+            const formInputs = document.querySelectorAll('#addArtworkForm input, #addArtworkForm select, #addArtworkForm textarea');
+            formInputs.forEach(input => input.disabled = true);
+        }
+
+        function hideAddProgress() {
+            document.getElementById('addProgressContainer').classList.remove('active');
+            document.getElementById('addProgressText').style.display = 'none';
+            document.getElementById('addStatus').classList.remove('active');
+            document.getElementById('addBtnText').style.display = 'inline';
+            document.getElementById('addBtnSpinner').style.display = 'none';
+            document.getElementById('addArtworkBtn').disabled = false;
+            document.getElementById('addCancelBtn').disabled = false;
+            
+            // Re-enable all form inputs
+            const formInputs = document.querySelectorAll('#addArtworkForm input, #addArtworkForm select, #addArtworkForm textarea');
+            formInputs.forEach(input => input.disabled = false);
+            
+            // Reset progress
+            updateAddProgress(0);
+        }
+
+        function updateAddProgress(percentage) {
+            const progressBar = document.getElementById('addProgressBar');
+            const progressText = document.getElementById('addProgressText');
+            
+            progressBar.style.width = percentage + '%';
+            progressText.textContent = `${percentage}% Complete`;
+            
+            if (percentage > 0) {
+                progressBar.classList.add('animated');
+            } else {
+                progressBar.classList.remove('animated');
+            }
+        }
+
+        function updateAddProgressStatus(type, message) {
+            const statusElement = document.getElementById('addStatus');
+            statusElement.className = `update-status active ${type}`;
+            statusElement.innerHTML = type === 'uploading' || type === 'processing' 
+                ? `<span class="loading-spinner"></span>${message}`
+                : message;
+        }
+
+        function deleteArtwork(artworkId, artworkName) {
+            if (confirm(`Are you sure you want to delete the artwork "${artworkName}"? This action cannot be undone.`)) {
+                fetch(`/admin/artworks/${artworkId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert(data.success, 'success');
+                        // Remove the artwork card from DOM
+                        const artworkCard = document.querySelector(`[data-id="${artworkId}"]`);
+                        if (artworkCard) {
+                            artworkCard.style.transition = 'all 0.3s ease';
+                            artworkCard.style.opacity = '0';
+                            artworkCard.style.transform = 'scale(0.8)';
+                            setTimeout(() => {
+                                artworkCard.remove();
+                                // Reload to update stats
+                                setTimeout(() => window.location.reload(), 1000);
+                            }, 300);
+                        }
+                    } else {
+                        showAlert(data.error || 'Error deleting artwork', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting artwork:', error);
+                    showAlert('Error deleting artwork', 'error');
+                });
+            }
+        }
+
+        function showAlert(message, type) {
+            // Remove existing alerts
+            const existingAlerts = document.querySelectorAll('.alert');
+            existingAlerts.forEach(alert => alert.remove());
+            
+            // Create new alert
+            const alert = document.createElement('div');
+            alert.className = `alert ${type}`;
+            alert.textContent = message;
+            
+            // Insert after header
+            const header = document.querySelector('.header');
+            header.insertAdjacentElement('afterend', alert);
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-20px)';
+                    setTimeout(() => alert.remove(), 300);
+                }
+            }, 5000);
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                if (e.target.id === 'editArtworkModal') {
+                    closeEditArtworkModal();
+                } else if (e.target.id === 'addArtworkModal') {
+                    closeAddArtworkModal();
+                }
+            }
+        });
+
+        // Close modals with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeEditArtworkModal();
+                closeAddArtworkModal();
+            }
+        });
+    </script>
+</body>
+</html>
