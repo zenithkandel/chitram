@@ -25,6 +25,12 @@ router.use('/artists', require('./admin/artists'));
 // Artworks management routes
 router.use('/artworks', require('./admin/artworks'));
 
+// Orders management routes
+router.use('/orders', require('./admin/orders'));
+
+// Messages management routes
+router.use('/messages', require('./admin/messages'));
+
 // Logout
 router.post('/logout', adminLogout);
 router.get('/logout', adminLogout);

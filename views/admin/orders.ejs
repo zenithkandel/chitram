@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>चित्रम् - Orders Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar styles - same as dashboard */
+        .sidebar {
+            position: fixed;
+            left: -280px;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 1000;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-header h2 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-header p {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            margin: 0.5rem 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            border-left-color: white;
+            color: white;
+        }
+
+        .nav-link.active {
+            background: rgba(255,255,255,0.15);
+            border-left-color: white;
+            color: white;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        /* Main content */
+        .main-content {
+            margin-left: 0;
+            transition: margin-left 0.3s ease;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #333;
+            padding: 0.5rem;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            color: #333;
+            flex: 1;
+            text-align: center;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Orders content */
+        .orders-content {
+            padding: 1.5rem;
+        }
+
+        .orders-header {
+            margin-bottom: 2rem;
+        }
+
+        .artists-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .artists-stats-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stats-title {
+            font-size: 1.2rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .stat-card {
+            background: #f8f9ff;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .orders-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .orders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .order-card {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid #e1e8ed;
+        }
+
+        .order-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .order-id {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .order-date {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .order-info h3 {
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .order-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-placed { background: #fff3e0; color: #f57c00; }
+        .status-seen { background: #e3f2fd; color: #1976d2; }
+        .status-contacted { background: #f3e5f5; color: #7b1fa2; }
+        .status-sold { background: #e8f5e8; color: #2e7d32; }
+        .status-delivered { background: #e0f2f1; color: #00695c; }
+        .status-canceled { background: #ffebee; color: #c62828; }
+
+        .order-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e1e8ed;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.85rem;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-view {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Desktop sidebar active state */
+        @media (min-width: 769px) {
+            .main-content {
+                margin-left: 280px;
+            }
+            
+            .sidebar {
+                left: 0;
+            }
+            
+            .menu-toggle {
+                display: none;
+            }
+        }
+
+        /* Mobile styles */
+        @media (max-width: 768px) {
+            .orders-content {
+                padding: 1rem;
+            }
+
+            .artists-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+
+            .orders-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-title {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Overlay for mobile sidebar */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            backdrop-filter: blur(3px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        .modal-header h2 {
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background: #f0f2f5;
+            color: #333;
+        }
+
+        .order-detail-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #e1e8ed;
+            padding-bottom: 0.5rem;
+        }
+
+        .status-update-section {
+            background: #f8f9ff;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .update-status-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .update-status-btn:hover {
+            opacity: 0.9;
+        }
+
+        .item-list {
+            background: #f8f9ff;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        .item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>चित्रम्</h2>
+            <p>Art Management System</p>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-item">
+                <a href="/admin/dashboard" class="nav-link">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/admin/artists" class="nav-link">
+                    <span class="nav-icon">👨‍🎨</span>
+                    Artists
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/admin/artworks" class="nav-link">
+                    <span class="nav-icon">🎨</span>
+                    Artworks
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/admin/orders" class="nav-link active">
+                    <span class="nav-icon">📦</span>
+                    Orders
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/admin/messages" class="nav-link">
+                    <span class="nav-icon">📧</span>
+                    Messages
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <button class="menu-toggle" id="menuToggle">☰</button>
+            <h1 class="header-title">📦 Orders Management</h1>
+            <a href="/admin/logout" class="logout-btn">Logout</a>
+        </header>
+
+        <!-- Orders Content -->
+        <div class="orders-content">
+            <% if (error) { %>
+                <div class="alert error" id="errorAlert">
+                    <%= error %>
+                </div>
+            <% } %>
+
+            <% if (success) { %>
+                <div class="alert success" id="successAlert">
+                    <%= success %>
+                </div>
+            <% } %>
+
+            <!-- Orders Stats -->
+            <div class="artists-stats-section">
+                <div class="stats-header">
+                    <h2 class="stats-title">Orders Overview</h2>
+                </div>
+
+                <div class="artists-stats">
+                    <div class="stat-card">
+                        <div class="stat-number"><%= orders.filter(o => o.status === 'placed').length %></div>
+                        <div class="stat-label">New Orders</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number"><%= orders.filter(o => o.status === 'seen' || o.status === 'contacted').length %></div>
+                        <div class="stat-label">Processing Orders</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number"><%= orders.filter(o => o.status === 'delivered').length %></div>
+                        <div class="stat-label">Delivered Orders</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number"><%= orders.length %></div>
+                        <div class="stat-label">Total Orders</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Grid -->
+            <div class="orders-container">
+                <div class="orders-grid">
+                    <% if (orders.length === 0) { %>
+                        <div class="order-card" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+                            <h3 style="color: #666; margin-bottom: 1rem;">No orders found</h3>
+                            <p style="color: #999;">Orders will appear here when customers place them.</p>
+                        </div>
+                    <% } else { %>
+                        <% orders.forEach(order => { %>
+                            <div class="order-card" data-id="<%= order.unique_id %>">
+                                <div class="order-header">
+                                    <div>
+                                        <div class="order-id">#<%= order.order_id %></div>
+                                        <div class="order-date"><%= new Date(order.creation_date_time).toLocaleDateString() %></div>
+                                    </div>
+                                    <span class="status-badge status-<%= order.status %>"><%= order.status %></span>
+                                </div>
+                                
+                                <div class="order-info">
+                                    <h3><%= order.customer_name %></h3>
+                                    
+                                    <div class="order-details">
+                                        <div class="detail-item">
+                                            <span class="detail-label">Email</span>
+                                            <span class="detail-value"><%= order.customer_email %></span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Phone</span>
+                                            <span class="detail-value"><%= order.customer_phone %></span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Total Amount</span>
+                                            <span class="detail-value">Rs. <%= Number(order.total_amount).toLocaleString() %></span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Items</span>
+                                            <span class="detail-value"><%= order.item_count %> item<%= order.item_count > 1 ? 's' : '' %></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <% if (order.customer_message) { %>
+                                        <p style="margin: 0.75rem 0; color: #666; font-size: 0.85rem; line-height: 1.4;">
+                                            <strong>Message:</strong> <%= order.customer_message.substring(0, 100) %><%= order.customer_message.length > 100 ? '...' : '' %>
+                                        </p>
+                                    <% } %>
+                                </div>
+
+                                <div class="order-actions">
+                                    <button class="btn btn-view" onclick="viewOrder('<%= order.unique_id %>')">
+                                        👁️ View Details
+                                    </button>
+                                    <button class="btn btn-delete" onclick="deleteOrder('<%= order.unique_id %>', '<%= order.order_id %>')">
+                                        🗑️ Delete
+                                    </button>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Order Modal -->
+    <div id="viewOrderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Order Details</h2>
+                <button class="close-btn" onclick="closeViewOrderModal()">&times;</button>
+            </div>
+            
+            <div id="orderDetailsContent">
+                <!-- Order details will be loaded here -->
+            </div>
+
+            <div class="status-update-section">
+                <h3 class="section-title">Update Status</h3>
+                <select id="statusSelect" class="status-select">
+                    <option value="placed">Placed</option>
+                    <option value="seen">Seen</option>
+                    <option value="contacted">Contacted</option>
+                    <option value="sold">Sold</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="canceled">Canceled</option>
+                </select>
+                <button onclick="updateOrderStatus()" class="update-status-btn">Update Status</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentOrderId = null;
+
+        // View order function
+        async function viewOrder(orderId) {
+            currentOrderId = orderId;
+            
+            try {
+                const response = await fetch(`/admin/orders/${orderId}`);
+                const data = await response.json();
+                
+                if (data.order) {
+                    const order = data.order;
+                    
+                    // Set current status in select
+                    document.getElementById('statusSelect').value = order.status;
+                    
+                    // Build order details HTML
+                    let itemsHtml = '';
+                    if (order.item_list && order.item_list.length > 0) {
+                        itemsHtml = order.item_list.map(item => 
+                            `<div class="item">
+                                <strong>${item.art_name || 'Unknown Item'}</strong><br>
+                                <small>Price: Rs. ${Number(item.cost || 0).toLocaleString()}</small>
+                            </div>`
+                        ).join('');
+                    } else {
+                        itemsHtml = '<div class="item">No items found</div>';
+                    }
+                    
+                    const detailsHtml = `
+                        <div class="order-detail-section">
+                            <h3 class="section-title">Customer Information</h3>
+                            <div class="order-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Order ID</span>
+                                    <span class="detail-value">#${order.order_id}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Customer Name</span>
+                                    <span class="detail-value">${order.customer_name}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Email</span>
+                                    <span class="detail-value">${order.customer_email}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Phone</span>
+                                    <span class="detail-value">${order.customer_phone}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Total Amount</span>
+                                    <span class="detail-value">Rs. ${Number(order.total_amount).toLocaleString()}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Status</span>
+                                    <span class="status-badge status-${order.status}">${order.status}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="order-detail-section">
+                            <h3 class="section-title">Shipping Address</h3>
+                            <p>${order.shipping_address}</p>
+                        </div>
+
+                        ${order.customer_message ? `
+                        <div class="order-detail-section">
+                            <h3 class="section-title">Customer Message</h3>
+                            <p>${order.customer_message}</p>
+                        </div>
+                        ` : ''}
+
+                        <div class="order-detail-section">
+                            <h3 class="section-title">Order Items</h3>
+                            <div class="item-list">
+                                ${itemsHtml}
+                            </div>
+                        </div>
+
+                        <div class="order-detail-section">
+                            <h3 class="section-title">Order Timeline</h3>
+                            <div class="order-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Order Placed</span>
+                                    <span class="detail-value">${new Date(order.creation_date_time).toLocaleString()}</span>
+                                </div>
+                                ${order.received_date_time ? `
+                                <div class="detail-item">
+                                    <span class="detail-label">Order Seen</span>
+                                    <span class="detail-value">${new Date(order.received_date_time).toLocaleString()}</span>
+                                </div>
+                                ` : ''}
+                                ${order.delivered_date_time ? `
+                                <div class="detail-item">
+                                    <span class="detail-label">Order Delivered</span>
+                                    <span class="detail-value">${new Date(order.delivered_date_time).toLocaleString()}</span>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.getElementById('orderDetailsContent').innerHTML = detailsHtml;
+                    document.getElementById('viewOrderModal').classList.add('active');
+                } else {
+                    showAlert('Error loading order data', 'error');
+                }
+            } catch (error) {
+                console.error('Error fetching order:', error);
+                showAlert('Error loading order data', 'error');
+            }
+        }
+
+        function closeViewOrderModal() {
+            document.getElementById('viewOrderModal').classList.remove('active');
+            currentOrderId = null;
+        }
+
+        // Update order status
+        async function updateOrderStatus() {
+            if (!currentOrderId) {
+                showAlert('No order selected', 'error');
+                return;
+            }
+
+            const status = document.getElementById('statusSelect').value;
+
+            try {
+                const response = await fetch(`/admin/orders/${currentOrderId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert(data.success, 'success');
+                    closeViewOrderModal();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showAlert(data.error || 'Error updating order status', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating order status:', error);
+                showAlert('Error updating order status', 'error');
+            }
+        }
+
+        function deleteOrder(orderId, orderIdDisplay) {
+            if (confirm(`Are you sure you want to delete order "${orderIdDisplay}"? This action cannot be undone.`)) {
+                fetch(`/admin/orders/${orderId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert(data.success, 'success');
+                        // Remove the order card from DOM
+                        const orderCard = document.querySelector(`[data-id="${orderId}"]`);
+                        if (orderCard) {
+                            orderCard.style.transition = 'all 0.3s ease';
+                            orderCard.style.opacity = '0';
+                            orderCard.style.transform = 'scale(0.8)';
+                            setTimeout(() => {
+                                orderCard.remove();
+                                // Reload to update stats
+                                setTimeout(() => window.location.reload(), 1000);
+                            }, 300);
+                        }
+                    } else {
+                        showAlert(data.error || 'Error deleting order', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting order:', error);
+                    showAlert('Error deleting order', 'error');
+                });
+            }
+        }
+
+        function showAlert(message, type) {
+            // Remove existing alerts
+            const existingAlerts = document.querySelectorAll('.alert');
+            existingAlerts.forEach(alert => alert.remove());
+            
+            // Create new alert
+            const alert = document.createElement('div');
+            alert.className = `alert ${type}`;
+            alert.textContent = message;
+            
+            // Insert after header
+            const ordersContent = document.querySelector('.orders-content');
+            ordersContent.insertBefore(alert, ordersContent.firstChild);
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-10px)';
+                    setTimeout(() => alert.remove(), 300);
+                }
+            }, 5000);
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                if (e.target.id === 'viewOrderModal') {
+                    closeViewOrderModal();
+                }
+            }
+        });
+
+        // Close modals with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeViewOrderModal();
+            }
+        });
+
+        // Sidebar toggle functionality
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        menuToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+        });
+
+        sidebarOverlay.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        // Auto-hide alerts
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                if (alert) {
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-10px)';
+                    setTimeout(() => alert.remove(), 300);
+                }
+            });
+        }, 5000);
+    </script>
+</body>
+</html>
