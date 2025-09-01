@@ -351,6 +351,15 @@
             color: white;
         }
 
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn:disabled:hover {
+            opacity: 0.6;
+        }
+
         /* Modal styles */
         .modal {
             display: none;
@@ -439,6 +448,106 @@
             gap: 1rem;
             justify-content: flex-end;
             margin-top: 1.5rem;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            display: none;
+            margin: 1rem 0;
+            background: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 8px;
+            position: relative;
+        }
+
+        .progress-container.active {
+            display: block;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+            position: relative;
+            animation: progressShine 2s infinite;
+        }
+
+        @keyframes progressShine {
+            0% { background-position: -200px 0; }
+            100% { background-position: calc(200px + 100%) 0; }
+        }
+
+        .progress-bar.animated {
+            background: linear-gradient(
+                90deg,
+                #667eea 0%,
+                #764ba2 25%,
+                #89f7fe 50%,
+                #764ba2 75%,
+                #667eea 100%
+            );
+            background-size: 200px 100%;
+            animation: progressShine 1.5s infinite;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .update-status {
+            display: none;
+            text-align: center;
+            margin: 1rem 0;
+            padding: 0.75rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .update-status.active {
+            display: block;
+        }
+
+        .update-status.uploading {
+            background: #e3f2fd;
+            color: #1976d2;
+            border: 1px solid #bbdefb;
+        }
+
+        .update-status.processing {
+            background: #fff3e0;
+            color: #f57c00;
+            border: 1px solid #ffcc02;
+        }
+
+        .update-status.success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #c8e6c8;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* Alerts */
@@ -777,12 +886,33 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Profile Picture</label>
-                    <input type="file" class="form-input" id="edit_profile_picture" accept="image/*">
+                    <input type="file" class="form-input" id="edit_profile_picture" accept="image/*" onchange="previewProfilePicture(this)">
                     <small style="color: #666; font-size: 0.8rem;">Current: <span id="current_profile_picture">None</span></small>
+                    
+                    <!-- Image Preview -->
+                    <div id="imagePreview" style="display: none; margin-top: 10px;">
+                        <div style="font-size: 0.8rem; color: #666; margin-bottom: 5px;">Preview:</div>
+                        <img id="previewImage" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 2px solid #ddd;">
+                    </div>
                 </div>
+                
+                <!-- Progress Bar -->
+                <div class="progress-container" id="updateProgressContainer">
+                    <div class="progress-bar" id="updateProgressBar"></div>
+                </div>
+                <div class="progress-text" id="updateProgressText" style="display: none;"></div>
+                
+                <!-- Update Status -->
+                <div class="update-status" id="updateStatus"></div>
+                
                 <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Update Artist</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="updateBtn">
+                        <span id="updateBtnText">Update Artist</span>
+                        <span id="updateBtnSpinner" style="display: none;">
+                            <span class="loading-spinner"></span>Updating...
+                        </span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -861,6 +991,7 @@
 
         function closeEditModal() {
             document.getElementById('editModal').classList.remove('active');
+            hideUpdateProgress(); // Reset progress bar when closing modal
         }
 
         // Handle edit form submission
@@ -868,6 +999,9 @@
             e.preventDefault();
             
             const artistId = this.dataset.artistId;
+            
+            // Show progress bar and disable form
+            showUpdateProgress();
             
             // Create FormData object to handle file upload
             const formData = new FormData();
@@ -887,29 +1021,102 @@
             const profilePictureFile = document.getElementById('edit_profile_picture').files[0];
             if (profilePictureFile) {
                 formData.append('profile_picture', profilePictureFile);
+                updateProgressStatus('uploading', 'Uploading profile picture...');
+            } else {
+                updateProgressStatus('processing', 'Updating artist information...');
             }
 
-            fetch(`/admin/artists/${artistId}`, {
-                method: 'PUT',
-                body: formData // Don't set Content-Type header, let browser set it for FormData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showAlert(data.success, 'success');
-                    closeEditModal();
+            // Simulate progress steps
+            updateProgress(20);
+            
+            setTimeout(() => {
+                updateProgress(50);
+                
+                fetch(`/admin/artists/${artistId}`, {
+                    method: 'PUT',
+                    body: formData // Don't set Content-Type header, let browser set it for FormData
+                })
+                .then(response => {
+                    updateProgress(80);
+                    return response.json();
+                })
+                .then(data => {
+                    updateProgress(100);
+                    updateProgressStatus('success', 'Artist updated successfully!');
+                    
                     setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
-                } else {
-                    showAlert(data.error || 'Error updating artist', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error updating artist:', error);
-                showAlert('Error updating artist', 'error');
-            });
+                        if (data.success) {
+                            showAlert(data.success, 'success');
+                            closeEditModal();
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                        } else {
+                            hideUpdateProgress();
+                            showAlert(data.error || 'Error updating artist', 'error');
+                        }
+                    }, 500);
+                })
+                .catch(error => {
+                    console.error('Error updating artist:', error);
+                    hideUpdateProgress();
+                    showAlert('Error updating artist', 'error');
+                });
+            }, 300);
         });
+
+        // Progress bar functions
+        function showUpdateProgress() {
+            document.getElementById('updateProgressContainer').classList.add('active');
+            document.getElementById('updateProgressText').style.display = 'block';
+            document.getElementById('updateBtnText').style.display = 'none';
+            document.getElementById('updateBtnSpinner').style.display = 'inline';
+            document.getElementById('updateBtn').disabled = true;
+            document.getElementById('cancelBtn').disabled = true;
+            
+            // Disable all form inputs
+            const formInputs = document.querySelectorAll('#editForm input, #editForm select, #editForm textarea');
+            formInputs.forEach(input => input.disabled = true);
+        }
+
+        function hideUpdateProgress() {
+            document.getElementById('updateProgressContainer').classList.remove('active');
+            document.getElementById('updateProgressText').style.display = 'none';
+            document.getElementById('updateStatus').classList.remove('active');
+            document.getElementById('updateBtnText').style.display = 'inline';
+            document.getElementById('updateBtnSpinner').style.display = 'none';
+            document.getElementById('updateBtn').disabled = false;
+            document.getElementById('cancelBtn').disabled = false;
+            
+            // Re-enable all form inputs
+            const formInputs = document.querySelectorAll('#editForm input, #editForm select, #editForm textarea');
+            formInputs.forEach(input => input.disabled = false);
+            
+            // Reset progress
+            updateProgress(0);
+        }
+
+        function updateProgress(percentage) {
+            const progressBar = document.getElementById('updateProgressBar');
+            const progressText = document.getElementById('updateProgressText');
+            
+            progressBar.style.width = percentage + '%';
+            progressText.textContent = `${percentage}% Complete`;
+            
+            if (percentage > 0) {
+                progressBar.classList.add('animated');
+            } else {
+                progressBar.classList.remove('animated');
+            }
+        }
+
+        function updateProgressStatus(type, message) {
+            const statusElement = document.getElementById('updateStatus');
+            statusElement.className = `update-status active ${type}`;
+            statusElement.innerHTML = type === 'uploading' || type === 'processing' 
+                ? `<span class="loading-spinner"></span>${message}`
+                : message;
+        }
 
         function deleteArtist(artistId, artistName) {
             if (confirm(`Are you sure you want to delete artist "${artistName}"?`)) {
@@ -933,6 +1140,25 @@
                         showAlert('Error deleting artist', 'error');
                     });
                 }
+            }
+        }
+
+        // Preview profile picture before upload
+        function previewProfilePicture(input) {
+            const preview = document.getElementById('imagePreview');
+            const previewImage = document.getElementById('previewImage');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
             }
         }
 
