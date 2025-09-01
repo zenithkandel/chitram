@@ -633,27 +633,58 @@
             <!-- Applications Stats -->
             <div class="artists-stats-section">
                 <div class="stats-header">
-                    <h2 class="stats-title">Applications Overview</h2>
+                    <h2 class="stats-title">
+                        <% if (pageType === 'approved') { %>
+                            ✅ Approved Applications
+                        <% } else if (pageType === 'rejected') { %>
+                            ❌ Rejected Applications
+                        <% } else { %>
+                            📝 New Applications
+                        <% } %>
+                    </h2>
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="/admin/applications" class="btn <%= pageType === 'new' ? 'btn-view' : 'btn-archive' %>" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 5px; font-size: 0.85rem;">
+                            📝 New Applications
+                        </a>
+                        <a href="/admin/applications/approved" class="btn <%= pageType === 'approved' ? 'btn-view' : 'btn-archive' %>" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 5px; font-size: 0.85rem;">
+                            ✅ Approved
+                        </a>
+                        <a href="/admin/applications/rejected" class="btn <%= pageType === 'rejected' ? 'btn-view' : 'btn-archive' %>" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 5px; font-size: 0.85rem;">
+                            ❌ Rejected
+                        </a>
+                    </div>
                 </div>
 
-                <div class="artists-stats">
-                    <div class="stat-card">
-                        <div class="stat-number"><%= applications.filter(a => a.status === 'pending').length %></div>
-                        <div class="stat-label">Pending</div>
+                <% if (pageType === 'approved') { %>
+                    <div class="artists-stats">
+                        <div class="stat-card">
+                            <div class="stat-number"><%= applications.length %></div>
+                            <div class="stat-label">Approved Applications</div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-number"><%= applications.filter(a => a.status === 'under_review').length %></div>
-                        <div class="stat-label">Under Review</div>
+                <% } else if (pageType === 'rejected') { %>
+                    <div class="artists-stats">
+                        <div class="stat-card">
+                            <div class="stat-number"><%= applications.length %></div>
+                            <div class="stat-label">Rejected Applications</div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-number"><%= applications.filter(a => a.status === 'approved').length %></div>
-                        <div class="stat-label">Approved</div>
+                <% } else { %>
+                    <div class="artists-stats">
+                        <div class="stat-card">
+                            <div class="stat-number"><%= applications.filter(a => a.status === 'pending').length %></div>
+                            <div class="stat-label">Pending</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number"><%= applications.filter(a => a.status === 'under_review').length %></div>
+                            <div class="stat-label">Under Review</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number"><%= applications.length %></div>
+                            <div class="stat-label">Total New</div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-number"><%= applications.length %></div>
-                        <div class="stat-label">Total Applications</div>
-                    </div>
-                </div>
+                <% } %>
             </div>
 
             <!-- Applications Grid -->
@@ -703,9 +734,30 @@
                                 </div>
 
                                 <div class="application-actions">
-                                    <button class="btn btn-view" onclick="viewApplication('<%= application.unique_id %>')">
-                                        👁️ View Details
-                                    </button>
+                                    <% if (pageType === 'approved' || pageType === 'rejected') { %>
+                                        <button class="btn btn-view" onclick="viewApplication('<%= application.unique_id %>')">
+                                            👁️ View Details
+                                        </button>
+                                    <% } else { %>
+                                        <% if (application.status === 'pending') { %>
+                                            <button class="btn btn-pending" onclick="updateStatus('<%= application.unique_id %>', 'under_review')" style="background: #ffa500; color: white;">
+                                                ⏳ Under Review
+                                            </button>
+                                        <% } %>
+                                        
+                                        <button class="btn btn-approve" onclick="updateStatus('<%= application.unique_id %>', 'approved')" style="background: #28a745; color: white;">
+                                            ✅ Approve
+                                        </button>
+                                        
+                                        <button class="btn btn-reject" onclick="updateStatus('<%= application.unique_id %>', 'rejected')" style="background: #dc3545; color: white;">
+                                            ❌ Reject
+                                        </button>
+                                        
+                                        <button class="btn btn-view" onclick="viewApplication('<%= application.unique_id %>')">
+                                            👁️ View Details
+                                        </button>
+                                    <% } %>
+                                    
                                     <button class="btn btn-delete" onclick="deleteApplication('<%= application.unique_id %>', '<%= application.full_name %>')">
                                         🗑️ Delete
                                     </button>
@@ -729,24 +781,39 @@
             <div id="applicationDetailsContent">
                 <!-- Application details will be loaded here -->
             </div>
-
-            <div class="status-update-section">
-                <h3 class="section-title">Update Status</h3>
-                <select id="statusSelect" class="status-select" onchange="toggleRejectionReason()">
-                    <option value="pending">Pending</option>
-                    <option value="under_review">Under Review</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
-                </select>
-                <textarea id="rejectionReason" class="rejection-reason" placeholder="Please provide a reason for rejection..."></textarea>
-                <button onclick="updateApplicationStatus()" class="update-status-btn">Update Status</button>
-            </div>
         </div>
     </div>
 
     <script>
         // Global variables
         let currentApplicationId = null;
+
+        // Function to update application status with individual buttons
+        function updateStatus(applicationId, newStatus) {
+            const confirmMessage = `Are you sure you want to ${newStatus.replace('_', ' ')} this application?`;
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+
+            fetch(`/admin/applications/${applicationId}/status`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `status=${newStatus}`
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Error updating status. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating status. Please try again.');
+            });
+        }
 
         // View application function
         async function viewApplication(applicationId) {
@@ -894,53 +961,6 @@
         function closeViewApplicationModal() {
             document.getElementById('viewApplicationModal').classList.remove('active');
             currentApplicationId = null;
-        }
-
-        function toggleRejectionReason() {
-            const status = document.getElementById('statusSelect').value;
-            const rejectionReason = document.getElementById('rejectionReason');
-            
-            if (status === 'rejected') {
-                rejectionReason.style.display = 'block';
-            } else {
-                rejectionReason.style.display = 'none';
-            }
-        }
-
-        // Update application status
-        async function updateApplicationStatus() {
-            if (!currentApplicationId) {
-                showAlert('No application selected', 'error');
-                return;
-            }
-
-            const status = document.getElementById('statusSelect').value;
-            const rejectionReason = document.getElementById('rejectionReason').value;
-
-            try {
-                const response = await fetch(`/admin/applications/${currentApplicationId}/status`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ status, rejectionReason })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    showAlert(data.success, 'success');
-                    closeViewApplicationModal();
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
-                } else {
-                    showAlert(data.error || 'Error updating application status', 'error');
-                }
-            } catch (error) {
-                console.error('Error updating application status:', error);
-                showAlert('Error updating application status', 'error');
-            }
         }
 
         function deleteApplication(applicationId, applicantName) {
