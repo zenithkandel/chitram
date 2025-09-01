@@ -22,6 +22,9 @@ router.get('/dashboard', authenticateAdmin, getDashboardData);
 // Artists management routes
 router.use('/artists', require('./admin/artists'));
 
+// Artworks management routes
+router.use('/artworks', require('./admin/artworks'));
+
 // Logout
 router.post('/logout', adminLogout);
 router.get('/logout', adminLogout);

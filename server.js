@@ -16,6 +16,7 @@ const PORT = process.env.PORT || 3000;
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads');
 const profilesDir = path.join(uploadsDir, 'profiles');
+const artworksDir = path.join(uploadsDir, 'artworks');
 
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir);
@@ -23,6 +24,10 @@ if (!fs.existsSync(uploadsDir)) {
 
 if (!fs.existsSync(profilesDir)) {
     fs.mkdirSync(profilesDir);
+}
+
+if (!fs.existsSync(artworksDir)) {
+    fs.mkdirSync(artworksDir);
 }
 
 // Middleware

@@ -4,8 +4,14 @@ const fs = require('fs');
 
 // Ensure upload directories exist
 const uploadDir = path.join(__dirname, '../uploads/profiles');
+const artworkUploadDir = path.join(__dirname, '../uploads/artworks');
+
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+if (!fs.existsSync(artworkUploadDir)) {
+    fs.mkdirSync(artworkUploadDir, { recursive: true });
 }
 
 // Configure multer for profile picture uploads
@@ -39,6 +45,28 @@ const upload = multer({
     }
 });
 
+// Configure multer for artwork image uploads
+const artworkStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, artworkUploadDir);
+    },
+    filename: function (req, file, cb) {
+        // Generate unique filename: artwork_timestamp.extension
+        const extension = path.extname(file.originalname);
+        const filename = `artwork_${Date.now()}${extension}`;
+        cb(null, filename);
+    }
+});
+
+const artworkUpload = multer({
+    storage: artworkStorage,
+    fileFilter: fileFilter,
+    limits: {
+        fileSize: 10 * 1024 * 1024 // 10MB limit for artworks
+    }
+});
+
 module.exports = {
-    uploadProfilePicture: upload.single('profile_picture')
+    uploadProfilePicture: upload.single('profile_picture'),
+    uploadArtworkImage: artworkUpload.single('art_image')
 };
