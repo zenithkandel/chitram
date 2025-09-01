@@ -135,24 +135,40 @@ const getArtistsPage = async (req, res) => {
         
         const [artists] = await db.execute(`
             SELECT 
-                unique_id,
+                id,
                 full_name,
                 age,
-                started_art_since,
+                started_art_at,
                 city,
                 district,
                 profile_picture,
                 bio,
-                arts_uploaded,
-                arts_sold
-            FROM artists 
-            WHERE status = 'active'
-            ORDER BY arts_uploaded DESC, full_name ASC
+                socials,
+                school_college,
+                created_at
+            FROM applications 
+            WHERE status = 'approved'
+            ORDER BY created_at DESC
         `);
+
+        // Get stats for the page
+        const [totalArtists] = await db.execute('SELECT COUNT(*) as count FROM applications WHERE status = "approved"');
+        const [totalArtworks] = await db.execute('SELECT COUNT(*) as count FROM arts WHERE status = "available"');
+        const [avgAgeResult] = await db.execute('SELECT AVG(age) as avg FROM applications WHERE status = "approved"');
+        const [locationsResult] = await db.execute('SELECT COUNT(DISTINCT city) as count FROM applications WHERE status = "approved"');
+
+        const stats = {
+            totalArtists: totalArtists[0].count || 0,
+            totalArtworks: totalArtworks[0].count || 0,
+            avgAge: Math.round(avgAgeResult[0].avg || 0),
+            locations: locationsResult[0].count || 0
+        };
 
         res.render('client/artists', {
             title: 'Our Artists - चित्रम्',
             artists,
+            stats,
+            pagination: null,
             error: null
         });
     } catch (error) {
@@ -160,6 +176,8 @@ const getArtistsPage = async (req, res) => {
         res.render('client/artists', {
             title: 'Our Artists - चित्रम्',
             artists: [],
+            stats: { totalArtists: 0, totalArtworks: 0, avgAge: 0, locations: 0 },
+            pagination: null,
             error: 'Error loading artists data'
         });
     }
