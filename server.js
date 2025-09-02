@@ -56,6 +56,7 @@ app.post('/api/contact', submitContactForm);
 app.get('/api/artists/search', searchArtists);
 app.get('/api/gallery/search', searchAndFilterArtworks);
 app.get('/api/gallery/categories', getArtCategories);
+app.post('/api/track-order', trackOrder);
 
 // Root route
 app.get('/', getHomePage);
