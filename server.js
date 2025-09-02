@@ -13,7 +13,7 @@ const applicationRoutes = require('./routes/applications');
 const { getHomePage } = require('./controllers/homeController');
 const { submitContactForm } = require('./controllers/contactController');
 const { getPublicArtists, searchArtists } = require('./controllers/artistController');
-const { getGalleryArtworks } = require('./controllers/galleryController');
+const { getGalleryArtworks, searchAndFilterArtworks, getArtCategories } = require('./controllers/galleryController');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -53,6 +53,8 @@ app.use('/api/applications', applicationRoutes);
 // API Routes
 app.post('/api/contact', submitContactForm);
 app.get('/api/artists/search', searchArtists);
+app.get('/api/gallery/search', searchAndFilterArtworks);
+app.get('/api/gallery/categories', getArtCategories);
 
 // Root route
 app.get('/', getHomePage);
