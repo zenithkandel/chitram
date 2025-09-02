@@ -10,6 +10,7 @@ const { testConnection } = require('./config/database');
 // Import routes
 const adminRoutes = require('./routes/admin');
 const applicationRoutes = require('./routes/applications');
+const { getHomePage } = require('./controllers/homeController');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -47,9 +48,7 @@ app.use('/admin', adminRoutes);
 app.use('/api/applications', applicationRoutes);
 
 // Root route
-app.get('/', (req, res) => {
-    res.render('index');
-});
+app.get('/', getHomePage);
 
 // Placeholder routes for navigation links
 app.get('/about', (req, res) => {
