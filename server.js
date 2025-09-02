@@ -11,6 +11,7 @@ const { testConnection } = require('./config/database');
 const adminRoutes = require('./routes/admin');
 const applicationRoutes = require('./routes/applications');
 const { getHomePage } = require('./controllers/homeController');
+const { submitContactForm } = require('./controllers/contactController');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -46,6 +47,9 @@ app.set('views', path.join(__dirname, 'views'));
 // Routes
 app.use('/admin', adminRoutes);
 app.use('/api/applications', applicationRoutes);
+
+// API Routes
+app.post('/api/contact', submitContactForm);
 
 // Root route
 app.get('/', getHomePage);
