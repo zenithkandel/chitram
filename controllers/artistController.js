@@ -282,10 +282,127 @@ const deleteArtist = async (req, res) => {
     }
 };
 
+// Get public artists page (for front-end)
+const getPublicArtists = async (req, res) => {
+    try {
+        const [artists] = await db.execute(`
+            SELECT 
+                unique_id,
+                full_name,
+                bio,
+                profile_picture
+            FROM artists 
+            WHERE status = 'active'
+            ORDER BY joined_at DESC
+        `);
+
+        // Process artists data to get first 5 words of bio
+        const processedArtists = artists.map(artist => {
+            let shortBio = '';
+            if (artist.bio) {
+                const words = artist.bio.split(' ').slice(0, 5);
+                shortBio = words.join(' ') + (artist.bio.split(' ').length > 5 ? '...' : '');
+            }
+            
+            return {
+                ...artist,
+                shortBio
+            };
+        });
+
+        res.render('artists', { 
+            artists: processedArtists,
+            error: null
+        });
+    } catch (error) {
+        console.error('Public artists fetch error:', error);
+        res.render('artists', { 
+            artists: [],
+            error: 'Error loading artists data'
+        });
+    }
+};
+
+// Search artists API endpoint
+const searchArtists = async (req, res) => {
+    try {
+        const { q } = req.query;
+        
+        if (!q || q.trim() === '') {
+            // If no search query, return all active artists
+            const [artists] = await db.execute(`
+                SELECT 
+                    unique_id,
+                    full_name,
+                    bio,
+                    profile_picture
+                FROM artists 
+                WHERE status = 'active'
+                ORDER BY joined_at DESC
+            `);
+            
+            const processedArtists = artists.map(artist => {
+                let shortBio = '';
+                if (artist.bio) {
+                    const words = artist.bio.split(' ').slice(0, 5);
+                    shortBio = words.join(' ') + (artist.bio.split(' ').length > 5 ? '...' : '');
+                }
+                
+                return {
+                    ...artist,
+                    shortBio
+                };
+            });
+            
+            return res.json({ artists: processedArtists });
+        }
+
+        // Search artists by name or bio
+        const searchTerm = `%${q.trim()}%`;
+        const [artists] = await db.execute(`
+            SELECT 
+                unique_id,
+                full_name,
+                bio,
+                profile_picture
+            FROM artists 
+            WHERE status = 'active' 
+            AND (full_name LIKE ? OR bio LIKE ?)
+            ORDER BY 
+                CASE 
+                    WHEN full_name LIKE ? THEN 1 
+                    ELSE 2 
+                END,
+                joined_at DESC
+        `, [searchTerm, searchTerm, searchTerm]);
+
+        // Process artists data to get first 5 words of bio
+        const processedArtists = artists.map(artist => {
+            let shortBio = '';
+            if (artist.bio) {
+                const words = artist.bio.split(' ').slice(0, 5);
+                shortBio = words.join(' ') + (artist.bio.split(' ').length > 5 ? '...' : '');
+            }
+            
+            return {
+                ...artist,
+                shortBio
+            };
+        });
+
+        res.json({ artists: processedArtists });
+    } catch (error) {
+        console.error('Search artists error:', error);
+        res.status(500).json({ error: 'Error searching artists' });
+    }
+};
+
 module.exports = {
     getAllArtists,
     getArtist,
     createArtist,
     updateArtist,
-    deleteArtist
+    deleteArtist,
+    getPublicArtists,
+    searchArtists
 };
