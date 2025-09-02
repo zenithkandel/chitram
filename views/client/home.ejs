@@ -1,0 +1,138 @@
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <h1 class="hero-title">Welcome to चित्रम्</h1>
+        <p class="hero-subtitle">Discover Amazing Artworks from Talented Artists</p>
+        <a href="/arts" class="btn">Explore Arts</a>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-bar">
+    <div class="stats-container">
+        <div class="stat-item">
+            <div class="stat-number" id="today-views"><%= stats.todayViews %></div>
+            <div class="stat-label">Today's Views</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number"><%= stats.totalViews %></div>
+            <div class="stat-label">Total Views</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number"><%= stats.totalArts %></div>
+            <div class="stat-label">Arts Available</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number"><%= stats.totalArtists %></div>
+            <div class="stat-label">Artists</div>
+        </div>
+    </div>
+</section>
+
+<!-- Search Section -->
+<section class="container">
+    <div class="search-container">
+        <input 
+            type="text" 
+            class="search-input" 
+            placeholder="Search for arts, artists..." 
+            id="search-input"
+            oninput="searchArts(this.value)"
+        >
+        <button class="search-btn" onclick="window.location.href='/arts?search=' + document.getElementById('search-input').value">🔍</button>
+        <div class="search-results" id="search-results"></div>
+    </div>
+</section>
+
+<!-- Latest Arts Section -->
+<section class="container">
+    <h2 class="section-title">Latest Artworks</h2>
+    
+    <% if (error) { %>
+        <div class="alert alert-error"><%= error %></div>
+    <% } %>
+
+    <% if (latestArts.length === 0) { %>
+        <div class="card">
+            <p style="text-align: center; color: #666; padding: 2rem;">
+                No artworks available at the moment. Check back soon!
+            </p>
+        </div>
+    <% } else { %>
+        <div class="art-grid">
+            <% latestArts.forEach(art => { %>
+                <div class="art-card">
+                    <img src="/uploads/artworks/<%= art.art_image %>" alt="<%= art.art_name %>" class="art-image">
+                    <div class="art-info">
+                        <div class="art-title"><%= art.art_name %></div>
+                        <div class="art-artist">by <a href="/artist/<%= art.artist_id %>" style="color: #667eea; text-decoration: none;"><%= art.artist_name %></a></div>
+                        <div class="art-price">Rs. <%= art.cost %></div>
+                        <div class="art-meta">
+                            <span><%= art.size_of_art || 'Size not specified' %></span>
+                            <span><%= art.color_type === 'color' ? 'Color' : 'B&W' %></span>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <a href="/art/<%= art.unique_id %>" class="btn btn-outline" style="margin-right: 0.5rem;">View Details</a>
+                            <button 
+                                onclick="addToCart('<%= art.unique_id %>', '<%= art.art_name %>', '<%= art.cost %>', '<%= art.art_image %>', '<%= art.artist_name %>')" 
+                                class="btn"
+                            >
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+
+        <!-- Load More Button -->
+        <div style="text-align: center; margin-top: 3rem;">
+            <button 
+                id="load-more-btn" 
+                class="btn" 
+                onclick="loadMoreArts(1, 'load-more-btn')"
+            >
+                Load More Arts
+            </button>
+            <p style="margin-top: 1rem; color: #666;">
+                Or <a href="/arts" style="color: #667eea;">view all arts</a>
+            </p>
+        </div>
+    <% } %>
+</section>
+
+<!-- Artists Section -->
+<section class="container">
+    <h2 class="section-title">Meet Our Artists</h2>
+    <div style="text-align: center;">
+        <p style="margin-bottom: 2rem; color: #666;">
+            Discover talented artists and their amazing creations
+        </p>
+        <a href="/artists" class="btn">View All Artists</a>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="container">
+    <div class="card" style="text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <h2 style="margin-bottom: 1rem;">Are You an Artist?</h2>
+        <p style="margin-bottom: 2rem; opacity: 0.9;">
+            Join our platform and showcase your artwork to art lovers worldwide
+        </p>
+        <a href="/apply" class="btn" style="background: white; color: #667eea;">Apply Now</a>
+    </div>
+</section>
+
+<script>
+    // Update today's views every 30 seconds
+    setInterval(function() {
+        const viewsElement = document.getElementById('today-views');
+        if (viewsElement) {
+            const currentViews = parseInt(viewsElement.textContent);
+            // Simulate random view increment (in real app, fetch from server)
+            if (Math.random() > 0.7) {
+                viewsElement.textContent = currentViews + 1;
+            }
+        }
+    }, 30000);
+</script>

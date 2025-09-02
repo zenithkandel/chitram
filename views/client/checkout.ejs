@@ -1,0 +1,491 @@
+<!-- Checkout Hero Section -->
+<section class="hero" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 3rem 0; color: white; text-align: center;">
+    <div class="container">
+        <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">
+            <i class="fas fa-credit-card" style="margin-right: 1rem;"></i>
+            Checkout
+        </h1>
+        <p style="font-size: 1.2rem; opacity: 0.9; max-width: 600px; margin: 0 auto;">
+            Complete your purchase securely
+        </p>
+    </div>
+</section>
+
+<!-- Checkout Process -->
+<section class="container" style="margin-top: 2rem;">
+    <div style="display: grid; grid-template-columns: 1fr 400px; gap: 3rem;">
+        <!-- Checkout Form -->
+        <div>
+            <!-- Progress Indicator -->
+            <div style="display: flex; align-items: center; margin-bottom: 3rem; padding: 1rem; background: #f8f9ff; border-radius: 10px;">
+                <div class="step active" data-step="1" style="display: flex; align-items: center; margin-right: 2rem;">
+                    <div style="width: 30px; height: 30px; border-radius: 50%; background: #667eea; color: white; display: flex; align-items: center; justify-content: center; margin-right: 0.5rem; font-size: 0.9rem;">1</div>
+                    <span style="color: #667eea; font-weight: bold;">Shipping Info</span>
+                </div>
+                
+                <div style="flex: 1; height: 2px; background: #e1e8ed; margin: 0 1rem; position: relative;">
+                    <div style="height: 100%; background: #e1e8ed; width: 0%; transition: width 0.3s;" id="progress-bar"></div>
+                </div>
+                
+                <div class="step" data-step="2" style="display: flex; align-items: center; margin-right: 2rem;">
+                    <div style="width: 30px; height: 30px; border-radius: 50%; background: #e1e8ed; color: #999; display: flex; align-items: center; justify-content: center; margin-right: 0.5rem; font-size: 0.9rem;">2</div>
+                    <span style="color: #999;">Payment</span>
+                </div>
+                
+                <div style="flex: 1; height: 2px; background: #e1e8ed; margin: 0 1rem;"></div>
+                
+                <div class="step" data-step="3" style="display: flex; align-items: center;">
+                    <div style="width: 30px; height: 30px; border-radius: 50%; background: #e1e8ed; color: #999; display: flex; align-items: center; justify-content: center; margin-right: 0.5rem; font-size: 0.9rem;">3</div>
+                    <span style="color: #999;">Confirmation</span>
+                </div>
+            </div>
+
+            <!-- Step 1: Shipping Information -->
+            <div id="step-1" class="checkout-step">
+                <div class="card" style="margin-bottom: 2rem;">
+                    <h3 style="color: #333; margin-bottom: 1.5rem; display: flex; align-items: center;">
+                        <i class="fas fa-shipping-fast" style="color: #667eea; margin-right: 0.75rem;"></i>
+                        Shipping Information
+                    </h3>
+                    
+                    <form id="shipping-form" style="display: grid; gap: 1rem;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: bold;">First Name *</label>
+                                <input type="text" name="firstName" required style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: bold;">Last Name *</label>
+                                <input type="text" name="lastName" required style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: bold;">Email Address *</label>
+                            <input type="email" name="email" required style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: bold;">Phone Number *</label>
+                            <input type="tel" name="phone" required style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: bold;">Complete Address *</label>
+                            <textarea name="address" required rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem; resize: vertical;" placeholder="Street address, city, postal code"></textarea>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: bold;">Province *</label>
+                                <select name="province" required style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
+                                    <option value="">Select Province</option>
+                                    <option value="Province 1">Province 1</option>
+                                    <option value="Province 2">Province 2</option>
+                                    <option value="Bagmati">Bagmati</option>
+                                    <option value="Gandaki">Gandaki</option>
+                                    <option value="Lumbini">Lumbini</option>
+                                    <option value="Karnali">Karnali</option>
+                                    <option value="Sudurpashchim">Sudurpashchim</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: bold;">Postal Code</label>
+                                <input type="text" name="postalCode" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 1rem;">
+                            <label style="display: flex; align-items: center; color: #666; cursor: pointer;">
+                                <input type="checkbox" name="saveInfo" style="margin-right: 0.5rem;">
+                                Save this information for faster checkout next time
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                
+                <div style="text-align: right;">
+                    <button onclick="nextStep()" class="btn" style="padding: 0.75rem 2rem;">
+                        Continue to Payment
+                        <i class="fas fa-arrow-right" style="margin-left: 0.5rem;"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Payment Information -->
+            <div id="step-2" class="checkout-step" style="display: none;">
+                <div class="card" style="margin-bottom: 2rem;">
+                    <h3 style="color: #333; margin-bottom: 1.5rem; display: flex; align-items: center;">
+                        <i class="fas fa-credit-card" style="color: #667eea; margin-right: 0.75rem;"></i>
+                        Payment Method
+                    </h3>
+                    
+                    <!-- Payment Options -->
+                    <div style="margin-bottom: 2rem;">
+                        <div style="display: grid; gap: 1rem;">
+                            <label style="display: flex; align-items: center; padding: 1rem; border: 2px solid #e1e8ed; border-radius: 10px; cursor: pointer; transition: all 0.3s;" onclick="selectPaymentMethod('esewa')">
+                                <input type="radio" name="paymentMethod" value="esewa" style="margin-right: 1rem;">
+                                <img src="/images/esewa-logo.png" alt="eSewa" style="width: 60px; height: auto; margin-right: 1rem;" onerror="this.style.display='none'">
+                                <div>
+                                    <div style="font-weight: bold; color: #333;">eSewa</div>
+                                    <div style="color: #666; font-size: 0.9rem;">Pay with eSewa digital wallet</div>
+                                </div>
+                            </label>
+                            
+                            <label style="display: flex; align-items: center; padding: 1rem; border: 2px solid #e1e8ed; border-radius: 10px; cursor: pointer; transition: all 0.3s;" onclick="selectPaymentMethod('khalti')">
+                                <input type="radio" name="paymentMethod" value="khalti" style="margin-right: 1rem;">
+                                <img src="/images/khalti-logo.png" alt="Khalti" style="width: 60px; height: auto; margin-right: 1rem;" onerror="this.style.display='none'">
+                                <div>
+                                    <div style="font-weight: bold; color: #333;">Khalti</div>
+                                    <div style="color: #666; font-size: 0.9rem;">Pay with Khalti digital wallet</div>
+                                </div>
+                            </label>
+                            
+                            <label style="display: flex; align-items: center; padding: 1rem; border: 2px solid #e1e8ed; border-radius: 10px; cursor: pointer; transition: all 0.3s;" onclick="selectPaymentMethod('cod')">
+                                <input type="radio" name="paymentMethod" value="cod" style="margin-right: 1rem;">
+                                <i class="fas fa-truck" style="font-size: 2rem; color: #667eea; margin-right: 1rem; width: 60px; text-align: center;"></i>
+                                <div>
+                                    <div style="font-weight: bold; color: #333;">Cash on Delivery</div>
+                                    <div style="color: #666; font-size: 0.9rem;">Pay when you receive your order</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Special Instructions -->
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: bold;">Special Instructions (Optional)</label>
+                        <textarea name="instructions" rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem; resize: vertical;" placeholder="Any special delivery instructions or notes for the artist..."></textarea>
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between;">
+                    <button onclick="prevStep()" class="btn btn-outline" style="padding: 0.75rem 2rem;">
+                        <i class="fas fa-arrow-left" style="margin-right: 0.5rem;"></i>
+                        Back to Shipping
+                    </button>
+                    
+                    <button onclick="nextStep()" class="btn" style="padding: 0.75rem 2rem;" id="review-btn" disabled>
+                        Review Order
+                        <i class="fas fa-arrow-right" style="margin-left: 0.5rem;"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Order Confirmation -->
+            <div id="step-3" class="checkout-step" style="display: none;">
+                <div class="card" style="margin-bottom: 2rem;">
+                    <h3 style="color: #333; margin-bottom: 1.5rem; display: flex; align-items: center;">
+                        <i class="fas fa-check-circle" style="color: #43e97b; margin-right: 0.75rem;"></i>
+                        Review Your Order
+                    </h3>
+                    
+                    <div id="order-review">
+                        <!-- Order details will be populated here -->
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between;">
+                    <button onclick="prevStep()" class="btn btn-outline" style="padding: 0.75rem 2rem;">
+                        <i class="fas fa-arrow-left" style="margin-right: 0.5rem;"></i>
+                        Back to Payment
+                    </button>
+                    
+                    <button onclick="placeOrder()" class="btn" style="padding: 0.75rem 2rem; background: #43e97b;">
+                        <i class="fas fa-shopping-bag" style="margin-right: 0.5rem;"></i>
+                        Place Order
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary Sidebar -->
+        <div style="position: sticky; top: 2rem; height: fit-content;">
+            <div class="card" style="background: #f8f9ff; border: none;">
+                <h3 style="color: #667eea; margin-bottom: 1.5rem;">Order Summary</h3>
+                
+                <!-- Cart Items Preview -->
+                <div id="order-items" style="margin-bottom: 1.5rem;">
+                    <!-- Cart items will be loaded here -->
+                </div>
+                
+                <!-- Order Totals -->
+                <div style="border-top: 1px solid #e1e8ed; padding-top: 1rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="color: #666;">Items (<span id="item-count">0</span>):</span>
+                        <span style="color: #333; font-weight: bold;" id="items-total">रू 0</span>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="color: #666;">Delivery:</span>
+                        <span style="color: #43e97b; font-weight: bold;">Free</span>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="color: #666;">Platform Fee:</span>
+                        <span style="color: #333;">रू 50</span>
+                    </div>
+                    
+                    <div style="border-top: 1px solid #e1e8ed; margin-top: 1rem; padding-top: 1rem;">
+                        <div style="display: flex; justify-content: space-between; font-size: 1.2rem;">
+                            <strong style="color: #333;">Total:</strong>
+                            <strong style="color: #667eea;" id="order-total">रू 50</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Security Info -->
+                <div style="margin-top: 2rem; padding: 1rem; background: #f0f8ff; border-radius: 8px;">
+                    <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                        <i class="fas fa-lock" style="color: #667eea; margin-right: 0.5rem;"></i>
+                        <strong style="color: #333; font-size: 0.9rem;">Secure Checkout</strong>
+                    </div>
+                    <p style="color: #666; font-size: 0.8rem; margin: 0;">Your payment information is encrypted and secure</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    let currentStep = 1;
+    let cart = JSON.parse(localStorage.getItem('chitram_cart')) || [];
+    let orderData = {};
+    
+    // Initialize checkout page
+    document.addEventListener('DOMContentLoaded', function() {
+        // Redirect if cart is empty
+        if (cart.length === 0) {
+            alert('Your cart is empty!');
+            window.location.href = '/cart';
+            return;
+        }
+        
+        loadOrderSummary();
+    });
+    
+    // Load order summary
+    async function loadOrderSummary() {
+        const itemsContainer = document.getElementById('order-items');
+        const itemCountEl = document.getElementById('item-count');
+        const itemsTotalEl = document.getElementById('items-total');
+        const orderTotalEl = document.getElementById('order-total');
+        
+        try {
+            const artworkIds = cart.map(item => item.id).join(',');
+            const response = await fetch('/api/arts/details?ids=' + artworkIds);
+            const artworks = await response.json();
+            
+            let itemsHtml = '';
+            let subtotal = 0;
+            let totalItems = 0;
+            
+            artworks.forEach(artwork => {
+                const cartItem = cart.find(item => item.id == artwork.id);
+                const itemTotal = artwork.price * cartItem.quantity;
+                subtotal += itemTotal;
+                totalItems += cartItem.quantity;
+                
+                itemsHtml += 
+                    '<div style="display: flex; align-items: center; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #e1e8ed;">' +
+                        '<img src="/uploads/' + (artwork.image || 'placeholder.jpg') + '" ' +
+                             'alt="' + artwork.title + '" ' +
+                             'style="width: 60px; height: 60px; border-radius: 5px; object-fit: cover; margin-right: 1rem;">' +
+                        '<div style="flex: 1;">' +
+                            '<div style="font-weight: bold; color: #333; font-size: 0.9rem; margin-bottom: 0.25rem;">' + artwork.title + '</div>' +
+                            '<div style="color: #666; font-size: 0.8rem;">Qty: ' + cartItem.quantity + '</div>' +
+                        '</div>' +
+                        '<div style="font-weight: bold; color: #333; font-size: 0.9rem;">रू ' + itemTotal.toLocaleString() + '</div>' +
+                    '</div>';
+            });
+            
+            itemsContainer.innerHTML = itemsHtml;
+            itemCountEl.textContent = totalItems;
+            itemsTotalEl.textContent = 'रू ' + subtotal.toLocaleString();
+            orderTotalEl.textContent = 'रू ' + (subtotal + 50).toLocaleString();
+            
+        } catch (error) {
+            console.error('Error loading order summary:', error);
+        }
+    }
+    
+    // Navigation functions
+    function nextStep() {
+        if (currentStep === 1) {
+            if (validateShippingForm()) {
+                showStep(2);
+            }
+        } else if (currentStep === 2) {
+            if (validatePaymentForm()) {
+                populateOrderReview();
+                showStep(3);
+            }
+        }
+    }
+    
+    function prevStep() {
+        if (currentStep > 1) {
+            showStep(currentStep - 1);
+        }
+    }
+    
+    function showStep(step) {
+        // Hide all steps
+        document.querySelectorAll('.checkout-step').forEach(el => el.style.display = 'none');
+        
+        // Show current step
+        document.getElementById('step-' + step).style.display = 'block';
+        
+        // Update progress indicator
+        updateProgressIndicator(step);
+        
+        currentStep = step;
+    }
+    
+    function updateProgressIndicator(step) {
+        document.querySelectorAll('.step').forEach(el => {
+            const stepNum = parseInt(el.dataset.step);
+            const circle = el.querySelector('div');
+            const text = el.querySelector('span');
+            
+            if (stepNum <= step) {
+                circle.style.background = '#667eea';
+                circle.style.color = 'white';
+                text.style.color = '#667eea';
+                text.style.fontWeight = 'bold';
+            } else {
+                circle.style.background = '#e1e8ed';
+                circle.style.color = '#999';
+                text.style.color = '#999';
+                text.style.fontWeight = 'normal';
+            }
+        });
+    }
+    
+    // Validation functions
+    function validateShippingForm() {
+        const form = document.getElementById('shipping-form');
+        const formData = new FormData(form);
+        
+        // Check required fields
+        const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'address', 'province'];
+        for (let field of requiredFields) {
+            if (!formData.get(field)) {
+                alert('Please fill in all required fields');
+                return false;
+            }
+        }
+        
+        // Save shipping data
+        orderData.shipping = Object.fromEntries(formData);
+        return true;
+    }
+    
+    function validatePaymentForm() {
+        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+        if (!paymentMethod) {
+            alert('Please select a payment method');
+            return false;
+        }
+        
+        orderData.paymentMethod = paymentMethod.value;
+        orderData.instructions = document.querySelector('textarea[name="instructions"]').value;
+        return true;
+    }
+    
+    // Payment method selection
+    function selectPaymentMethod(method) {
+        // Remove previous selection styling
+        document.querySelectorAll('label').forEach(label => {
+            label.style.borderColor = '#e1e8ed';
+            label.style.background = 'white';
+        });
+        
+        // Add selection styling
+        event.currentTarget.style.borderColor = '#667eea';
+        event.currentTarget.style.background = '#f8f9ff';
+        
+        // Enable review button
+        document.getElementById('review-btn').disabled = false;
+    }
+    
+    // Populate order review
+    function populateOrderReview() {
+        const reviewContainer = document.getElementById('order-review');
+        
+        const shippingInfo = orderData.shipping;
+        const paymentMethod = orderData.paymentMethod;
+        
+        let paymentText = '';
+        switch(paymentMethod) {
+            case 'esewa': paymentText = 'eSewa Digital Wallet'; break;
+            case 'khalti': paymentText = 'Khalti Digital Wallet'; break;
+            case 'cod': paymentText = 'Cash on Delivery'; break;
+        }
+        
+        reviewContainer.innerHTML = 
+            '<div style="display: grid; gap: 2rem;">' +
+                '<div>' +
+                    '<h4 style="color: #333; margin-bottom: 1rem;">Shipping Address</h4>' +
+                    '<div style="background: #f8f9ff; padding: 1rem; border-radius: 8px;">' +
+                        '<div style="font-weight: bold; margin-bottom: 0.5rem;">' + shippingInfo.firstName + ' ' + shippingInfo.lastName + '</div>' +
+                        '<div style="color: #666; margin-bottom: 0.25rem;">' + shippingInfo.email + '</div>' +
+                        '<div style="color: #666; margin-bottom: 0.25rem;">' + shippingInfo.phone + '</div>' +
+                        '<div style="color: #666; margin-bottom: 0.25rem;">' + shippingInfo.address + '</div>' +
+                        '<div style="color: #666;">' + shippingInfo.province + (shippingInfo.postalCode ? ', ' + shippingInfo.postalCode : '') + '</div>' +
+                    '</div>' +
+                '</div>' +
+                
+                '<div>' +
+                    '<h4 style="color: #333; margin-bottom: 1rem;">Payment Method</h4>' +
+                    '<div style="background: #f8f9ff; padding: 1rem; border-radius: 8px; font-weight: bold;">' +
+                        paymentText +
+                    '</div>' +
+                '</div>' +
+                
+                (orderData.instructions ? 
+                    '<div>' +
+                        '<h4 style="color: #333; margin-bottom: 1rem;">Special Instructions</h4>' +
+                        '<div style="background: #f8f9ff; padding: 1rem; border-radius: 8px; color: #666;">' +
+                            orderData.instructions +
+                        '</div>' +
+                    '</div>' : '') +
+            '</div>';
+    }
+    
+    // Place order
+    async function placeOrder() {
+        try {
+            const orderPayload = {
+                shipping: orderData.shipping,
+                paymentMethod: orderData.paymentMethod,
+                instructions: orderData.instructions,
+                items: cart
+            };
+            
+            const response = await fetch('/api/orders/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderPayload)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // Clear cart
+                localStorage.removeItem('chitram_cart');
+                
+                // Redirect to tracking page
+                window.location.href = '/track?order=' + result.orderId;
+            } else {
+                alert('Error placing order: ' + result.message);
+            }
+            
+        } catch (error) {
+            console.error('Error placing order:', error);
+            alert('Error placing order. Please try again.');
+        }
+    }
+</script>
