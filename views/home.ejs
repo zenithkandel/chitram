@@ -129,7 +129,9 @@
                                 <div class="artwork-image">
                                     <img src="/uploads/artworks/<%= artwork.art_image %>" 
                                          alt="<%= artwork.art_name %>" 
-                                         onerror="this.src='/images/placeholder-artwork.jpg'">
+                                         class="artwork-img"
+                                         data-src="/uploads/artworks/<%= artwork.art_image %>"
+                                         onerror="handleImageError(this)">
                                 </div>
                                 <div class="artwork-info">
                                     <h4 class="artwork-title"><%= artwork.art_name %></h4>
@@ -235,5 +237,42 @@
 
     <!-- JavaScript -->
     <script src="/js/main.js"></script>
+    <script>
+        // Handle image loading errors to prevent infinite retry
+        function handleImageError(img) {
+            // Check if we've already tried the fallback
+            if (img.getAttribute('data-error-handled') === 'true') {
+                return; // Don't try again
+            }
+            
+            // Mark as error handled
+            img.setAttribute('data-error-handled', 'true');
+            
+            // Set the placeholder image
+            img.src = '/images/placeholder-artwork.svg';
+            img.alt = 'Image not available';
+            
+            // Add a class for styling if needed
+            img.classList.add('placeholder-image');
+        }
+        
+        // Preload images and handle errors gracefully
+        document.addEventListener('DOMContentLoaded', function() {
+            const artworkImages = document.querySelectorAll('.artwork-img');
+            
+            artworkImages.forEach(img => {
+                // Create a new image to test loading
+                const testImg = new Image();
+                testImg.onload = function() {
+                    // Image loaded successfully, no action needed
+                };
+                testImg.onerror = function() {
+                    // Image failed to load, set placeholder immediately
+                    handleImageError(img);
+                };
+                testImg.src = img.getAttribute('data-src');
+            });
+        });
+    </script>
 </body>
 </html>
