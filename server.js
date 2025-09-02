@@ -50,13 +50,9 @@ app.use('/api/applications', applicationRoutes);
 // Root route
 app.get('/', getHomePage);
 
-// Placeholder routes for navigation links
+// About page route
 app.get('/about', (req, res) => {
-    res.send(`
-        <h1>About चित्रम्</h1>
-        <p>About page coming soon...</p>
-        <a href="/">← Back to Home</a>
-    `);
+    res.render('about');
 });
 
 app.get('/apply', (req, res) => {
