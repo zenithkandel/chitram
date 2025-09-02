@@ -49,9 +49,60 @@
         <div class="container">
             <h1>Our Artists</h1>
             <p>Discover talented artists from चित्रम् community.</p>
+
+            <% if (error) { %>
+                <div class="error-message">
+                    <p><%= error %></p>
+                </div>
+            <% } %>
+
+            <% if (artists && artists.length > 0) { %>
+                <div class="artists-grid">
+                    <% artists.forEach(function(artist) { %>
+                        <div class="artist-card">
+                            <div class="artist-image">
+                                <% if (artist.profile_picture) { %>
+                                    <img src="/uploads/profiles/<%= artist.profile_picture %>" 
+                                         alt="<%= artist.full_name %>" 
+                                         onerror="handleImageError(this)">
+                                <% } else { %>
+                                    <div class="placeholder-image">
+                                        <span>No Image</span>
+                                    </div>
+                                <% } %>
+                            </div>
+                            <div class="artist-info">
+                                <h3 class="artist-name"><%= artist.full_name %></h3>
+                                <% if (artist.shortBio) { %>
+                                    <p class="artist-bio"><%= artist.shortBio %></p>
+                                <% } else { %>
+                                    <p class="artist-bio">No bio available</p>
+                                <% } %>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <div class="no-artists">
+                    <p>No artists found at the moment.</p>
+                </div>
+            <% } %>
         </div>
     </main>
 
     <script src="/js/main.js"></script>
+    <script>
+        function handleImageError(img) {
+            // Prevent infinite loading attempts
+            if (img.dataset.failed) return;
+            img.dataset.failed = 'true';
+            
+            // Replace with placeholder
+            const placeholder = document.createElement('div');
+            placeholder.className = 'placeholder-image';
+            placeholder.innerHTML = '<span>No Image</span>';
+            img.parentNode.replaceChild(placeholder, img);
+        }
+    </script>
 </body>
 </html>

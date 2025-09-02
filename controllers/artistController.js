@@ -282,10 +282,52 @@ const deleteArtist = async (req, res) => {
     }
 };
 
+// Get public artists page (for front-end)
+const getPublicArtists = async (req, res) => {
+    try {
+        const [artists] = await db.execute(`
+            SELECT 
+                unique_id,
+                full_name,
+                bio,
+                profile_picture
+            FROM artists 
+            WHERE status = 'active'
+            ORDER BY joined_at DESC
+        `);
+
+        // Process artists data to get first 5 words of bio
+        const processedArtists = artists.map(artist => {
+            let shortBio = '';
+            if (artist.bio) {
+                const words = artist.bio.split(' ').slice(0, 5);
+                shortBio = words.join(' ') + (artist.bio.split(' ').length > 5 ? '...' : '');
+            }
+            
+            return {
+                ...artist,
+                shortBio
+            };
+        });
+
+        res.render('artists', { 
+            artists: processedArtists,
+            error: null
+        });
+    } catch (error) {
+        console.error('Public artists fetch error:', error);
+        res.render('artists', { 
+            artists: [],
+            error: 'Error loading artists data'
+        });
+    }
+};
+
 module.exports = {
     getAllArtists,
     getArtist,
     createArtist,
     updateArtist,
-    deleteArtist
+    deleteArtist,
+    getPublicArtists
 };
