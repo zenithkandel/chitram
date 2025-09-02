@@ -14,6 +14,7 @@ const { getHomePage } = require('./controllers/homeController');
 const { submitContactForm } = require('./controllers/contactController');
 const { getPublicArtists, searchArtists } = require('./controllers/artistController');
 const { getGalleryArtworks, searchAndFilterArtworks, getArtCategories } = require('./controllers/galleryController');
+const { getTrackOrdersPage, trackOrder } = require('./controllers/trackOrderController');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
