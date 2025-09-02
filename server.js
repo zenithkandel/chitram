@@ -64,12 +64,9 @@ app.get('/apply', (req, res) => {
     res.render('apply');
 });
 
+// Artists page route
 app.get('/artists', (req, res) => {
-    res.send(`
-        <h1>Our Artists</h1>
-        <p>Artists page coming soon...</p>
-        <a href="/">← Back to Home</a>
-    `);
+    res.render('artists');
 });
 
 app.get('/gallery', (req, res) => {
