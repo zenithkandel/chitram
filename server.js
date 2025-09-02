@@ -83,12 +83,14 @@ app.get('/cart', (req, res) => {
     `);
 });
 
+// Track Orders page route
+app.get('/track-orders', (req, res) => {
+    res.render('track-orders');
+});
+
+// Legacy track route (redirect to track-orders)
 app.get('/track', (req, res) => {
-    res.send(`
-        <h1>Track Orders</h1>
-        <p>Order tracking page coming soon...</p>
-        <a href="/">← Back to Home</a>
-    `);
+    res.redirect('/track-orders');
 });
 
 // 404 handler
