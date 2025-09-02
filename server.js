@@ -48,10 +48,55 @@ app.use('/api/applications', applicationRoutes);
 
 // Root route
 app.get('/', (req, res) => {
+    res.render('index');
+});
+
+// Placeholder routes for navigation links
+app.get('/about', (req, res) => {
     res.send(`
-        <h1>चित्रम् Art Platform</h1>
-        <p>Welcome to चित्रम् - Online Art Selling Platform</p>
-        <a href="/admin">Admin Panel</a>
+        <h1>About चित्रम्</h1>
+        <p>About page coming soon...</p>
+        <a href="/">← Back to Home</a>
+    `);
+});
+
+app.get('/apply', (req, res) => {
+    res.send(`
+        <h1>Artist Application</h1>
+        <p>Artist application form coming soon...</p>
+        <a href="/">← Back to Home</a>
+    `);
+});
+
+app.get('/artists', (req, res) => {
+    res.send(`
+        <h1>Our Artists</h1>
+        <p>Artists page coming soon...</p>
+        <a href="/">← Back to Home</a>
+    `);
+});
+
+app.get('/gallery', (req, res) => {
+    res.send(`
+        <h1>Art Gallery</h1>
+        <p>Gallery page coming soon...</p>
+        <a href="/">← Back to Home</a>
+    `);
+});
+
+app.get('/cart', (req, res) => {
+    res.send(`
+        <h1>Shopping Cart</h1>
+        <p>Cart page coming soon...</p>
+        <a href="/">← Back to Home</a>
+    `);
+});
+
+app.get('/track', (req, res) => {
+    res.send(`
+        <h1>Track Orders</h1>
+        <p>Order tracking page coming soon...</p>
+        <a href="/">← Back to Home</a>
     `);
 });
 

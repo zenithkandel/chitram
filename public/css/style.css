@@ -204,6 +204,99 @@ body {
     }
 }
 
+/* Quick Links Section */
+.quick-links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.quick-link-card {
+    background: white;
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.quick-link-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.quick-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.quick-link i {
+    color: #3498db;
+    margin-bottom: 1rem;
+}
+
+.quick-link h4 {
+    color: #2c3e50;
+    margin: 1rem 0 0.5rem 0;
+    font-size: 1.3rem;
+}
+
+.quick-link p {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Features Section */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.feature-item {
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.feature-item i {
+    color: #e74c3c;
+    margin-bottom: 1rem;
+}
+
+.feature-item h4 {
+    color: #2c3e50;
+    margin: 1rem 0 0.5rem 0;
+    font-size: 1.2rem;
+}
+
+.feature-item p {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Cart count badge */
+.cart-count {
+    background-color: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.8rem;
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    min-width: 18px;
+    text-align: center;
+}
+
+.nav-item {
+    position: relative;
+}
+
 /* Utility classes */
 .text-center {
     text-align: center;
