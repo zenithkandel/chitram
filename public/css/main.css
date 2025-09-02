@@ -1,0 +1,18 @@
+/* Main CSS File - Imports all component and page styles */
+
+/* Base Styles */
+@import url('./base.css');
+
+/* Components */
+@import url('./components/navbar.css');
+@import url('./components/footer.css');
+
+/* Page Specific Styles */
+@import url('./pages/home.css');
+@import url('./pages/about.css');
+@import url('./pages/artists.css');
+@import url('./pages/gallery.css');
+@import url('./pages/contact.css');
+@import url('./pages/apply.css');
+@import url('./pages/track-orders.css');
+@import url('./pages/artist-detail.css');
