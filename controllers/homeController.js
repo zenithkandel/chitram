@@ -23,6 +23,22 @@ const getHomePage = async (req, res) => {
         );
         const totalArts = listedArts[0].total;
 
+        // Get latest 5 artworks
+        const [latestArtworks] = await db.execute(`
+            SELECT 
+                a.unique_id,
+                a.art_name,
+                a.cost,
+                a.art_image,
+                a.art_category,
+                ar.full_name as artist_name
+            FROM arts a
+            LEFT JOIN artists ar ON a.artist_unique_id = ar.unique_id
+            WHERE a.status = 'listed'
+            ORDER BY a.uploaded_at DESC
+            LIMIT 5
+        `);
+
         // Update page views for today
         await db.execute(`
             INSERT INTO page_views (view_date, view_count) 
@@ -34,7 +50,8 @@ const getHomePage = async (req, res) => {
             title: 'चित्रम् - Art Platform',
             dailyViews: dailyViews + 1, // Include current view
             totalArtists,
-            totalArts
+            totalArts,
+            latestArtworks
         });
     } catch (error) {
         console.error('Home page error:', error);
@@ -42,7 +59,8 @@ const getHomePage = async (req, res) => {
             title: 'चित्रम् - Art Platform',
             dailyViews: 0,
             totalArtists: 0,
-            totalArts: 0
+            totalArts: 0,
+            latestArtworks: []
         });
     }
 };

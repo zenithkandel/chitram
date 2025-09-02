@@ -118,6 +118,36 @@
             </div>
         </section>
 
+        <!-- Latest Artworks Section -->
+        <section class="latest-artworks-section">
+            <div class="container">
+                <h3 class="text-center mb-2">Latest Artworks</h3>
+                <div class="artworks-grid">
+                    <% if (latestArtworks && latestArtworks.length > 0) { %>
+                        <% latestArtworks.forEach(artwork => { %>
+                            <div class="artwork-card">
+                                <div class="artwork-image">
+                                    <img src="/uploads/artworks/<%= artwork.art_image %>" 
+                                         alt="<%= artwork.art_name %>" 
+                                         onerror="this.src='/images/placeholder-artwork.jpg'">
+                                </div>
+                                <div class="artwork-info">
+                                    <h4 class="artwork-title"><%= artwork.art_name %></h4>
+                                    <p class="artwork-artist">by <%= artwork.artist_name %></p>
+                                    <p class="artwork-category"><%= artwork.art_category %></p>
+                                    <p class="artwork-price">Rs. <%= artwork.cost %></p>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="no-artworks">
+                            <p>No artworks available at the moment.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </section>
+
         <!-- Quick Links Section -->
         <section class="quick-links-section">
             <div class="container">
