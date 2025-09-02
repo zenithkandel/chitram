@@ -13,6 +13,7 @@ const applicationRoutes = require('./routes/applications');
 const { getHomePage } = require('./controllers/homeController');
 const { submitContactForm } = require('./controllers/contactController');
 const { getPublicArtists, searchArtists } = require('./controllers/artistController');
+const { getGalleryArtworks } = require('./controllers/galleryController');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -70,9 +71,7 @@ app.get('/apply', (req, res) => {
 app.get('/artists', getPublicArtists);
 
 // Gallery page route
-app.get('/gallery', (req, res) => {
-    res.render('gallery');
-});
+app.get('/gallery', getGalleryArtworks);
 
 app.get('/cart', (req, res) => {
     res.send(`
