@@ -69,12 +69,9 @@ app.get('/apply', (req, res) => {
 // Artists page route
 app.get('/artists', getPublicArtists);
 
+// Gallery page route
 app.get('/gallery', (req, res) => {
-    res.send(`
-        <h1>Art Gallery</h1>
-        <p>Gallery page coming soon...</p>
-        <a href="/">← Back to Home</a>
-    `);
+    res.render('gallery');
 });
 
 app.get('/cart', (req, res) => {
