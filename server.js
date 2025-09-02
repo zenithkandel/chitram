@@ -12,7 +12,7 @@ const adminRoutes = require('./routes/admin');
 const applicationRoutes = require('./routes/applications');
 const { getHomePage } = require('./controllers/homeController');
 const { submitContactForm } = require('./controllers/contactController');
-const { getPublicArtists } = require('./controllers/artistController');
+const { getPublicArtists, searchArtists } = require('./controllers/artistController');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -51,6 +51,7 @@ app.use('/api/applications', applicationRoutes);
 
 // API Routes
 app.post('/api/contact', submitContactForm);
+app.get('/api/artists/search', searchArtists);
 
 // Root route
 app.get('/', getHomePage);

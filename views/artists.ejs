@@ -50,43 +50,60 @@
             <h1>Our Artists</h1>
             <p>Discover talented artists from चित्रम् community.</p>
 
+            <!-- Search Bar -->
+            <div class="search-container">
+                <div class="search-bar">
+                    <input type="text" 
+                           id="searchInput" 
+                           placeholder="Search artists by name or bio..." 
+                           autocomplete="off">
+                    <button type="button" id="searchBtn" class="search-button">
+                        <span id="searchIcon">🔍</span>
+                        <span id="searchSpinner" class="loading-spinner" style="display: none;"></span>
+                    </button>
+                </div>
+            </div>
+
             <% if (error) { %>
-                <div class="error-message">
+                <div class="error-message" id="errorMessage">
                     <p><%= error %></p>
                 </div>
             <% } %>
 
-            <% if (artists && artists.length > 0) { %>
-                <div class="artists-grid">
-                    <% artists.forEach(function(artist) { %>
-                        <div class="artist-card">
-                            <div class="artist-image">
-                                <% if (artist.profile_picture) { %>
-                                    <img src="/uploads/profiles/<%= artist.profile_picture %>" 
-                                         alt="<%= artist.full_name %>" 
-                                         onerror="handleImageError(this)">
-                                <% } else { %>
-                                    <div class="placeholder-image">
-                                        <span>No Image</span>
-                                    </div>
-                                <% } %>
+            <!-- Artists Grid -->
+            <div id="artistsContainer">
+                <% if (artists && artists.length > 0) { %>
+                    <div class="artists-grid" id="artistsGrid">
+                        <% artists.forEach(function(artist) { %>
+                            <div class="artist-card">
+                                <div class="artist-image">
+                                    <% if (artist.profile_picture) { %>
+                                        <img src="/uploads/profiles/<%= artist.profile_picture %>" 
+                                             alt="<%= artist.full_name %>" 
+                                             onerror="handleImageError(this)">
+                                    <% } else { %>
+                                        <div class="placeholder-image">
+                                            <span>No Image</span>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <div class="artist-info">
+                                    <h3 class="artist-name"><%= artist.full_name %></h3>
+                                    <% if (artist.shortBio) { %>
+                                        <p class="artist-bio"><%= artist.shortBio %></p>
+                                    <% } else { %>
+                                        <p class="artist-bio">No bio available</p>
+                                    <% } %>
+                                </div>
                             </div>
-                            <div class="artist-info">
-                                <h3 class="artist-name"><%= artist.full_name %></h3>
-                                <% if (artist.shortBio) { %>
-                                    <p class="artist-bio"><%= artist.shortBio %></p>
-                                <% } else { %>
-                                    <p class="artist-bio">No bio available</p>
-                                <% } %>
-                            </div>
-                        </div>
-                    <% }); %>
-                </div>
-            <% } else { %>
-                <div class="no-artists">
-                    <p>No artists found at the moment.</p>
-                </div>
-            <% } %>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="no-artists" id="noArtists">
+                        <p>No artists found at the moment.</p>
+                    </div>
+                <% } %>
+            </div>
         </div>
     </main>
 
