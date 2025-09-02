@@ -75,6 +75,9 @@ app.get('/apply', (req, res) => {
 // Artists page route
 app.get('/artists', getPublicArtists);
 
+// Individual artist detail page route
+app.get('/artist/:id', getArtistDetail);
+
 // Gallery page route
 app.get('/gallery', getGalleryArtworks);
 
