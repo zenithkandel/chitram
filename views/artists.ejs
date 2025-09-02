@@ -109,6 +109,8 @@
 
     <script src="/js/main.js"></script>
     <script>
+        let searchTimeout;
+        
         function handleImageError(img) {
             // Prevent infinite loading attempts
             if (img.dataset.failed) return;
@@ -120,6 +122,120 @@
             placeholder.innerHTML = '<span>No Image</span>';
             img.parentNode.replaceChild(placeholder, img);
         }
+        
+        // Search functionality
+        async function searchArtists(query = '') {
+            const searchBtn = document.getElementById('searchBtn');
+            const searchIcon = document.getElementById('searchIcon');
+            const searchSpinner = document.getElementById('searchSpinner');
+            const artistsContainer = document.getElementById('artistsContainer');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Show loading state
+            searchIcon.style.display = 'none';
+            searchSpinner.style.display = 'inline-block';
+            searchBtn.disabled = true;
+            
+            // Hide error message
+            if (errorMessage) {
+                errorMessage.style.display = 'none';
+            }
+            
+            try {
+                const response = await fetch(`/api/artists/search?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                // Update artists display
+                updateArtistsDisplay(data.artists);
+                
+            } catch (error) {
+                console.error('Search error:', error);
+                artistsContainer.innerHTML = `
+                    <div class="error-message">
+                        <p>Error searching artists. Please try again.</p>
+                    </div>
+                `;
+            } finally {
+                // Reset button state
+                searchIcon.style.display = 'inline-block';
+                searchSpinner.style.display = 'none';
+                searchBtn.disabled = false;
+            }
+        }
+        
+        function updateArtistsDisplay(artists) {
+            const artistsContainer = document.getElementById('artistsContainer');
+            
+            if (artists.length === 0) {
+                artistsContainer.innerHTML = `
+                    <div class="no-artists">
+                        <p>No artists found matching your search.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let artistsHTML = '<div class="artists-grid" id="artistsGrid">';
+            
+            artists.forEach(artist => {
+                const imageHTML = artist.profile_picture 
+                    ? `<img src="/uploads/profiles/${artist.profile_picture}" 
+                           alt="${artist.full_name}" 
+                           onerror="handleImageError(this)">`
+                    : `<div class="placeholder-image"><span>No Image</span></div>`;
+                
+                const bioHTML = artist.shortBio 
+                    ? `<p class="artist-bio">${artist.shortBio}</p>`
+                    : `<p class="artist-bio">No bio available</p>`;
+                
+                artistsHTML += `
+                    <div class="artist-card">
+                        <div class="artist-image">
+                            ${imageHTML}
+                        </div>
+                        <div class="artist-info">
+                            <h3 class="artist-name">${artist.full_name}</h3>
+                            ${bioHTML}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            artistsHTML += '</div>';
+            artistsContainer.innerHTML = artistsHTML;
+        }
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            
+            // Search on keydown with debounce
+            searchInput.addEventListener('keydown', function(e) {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    searchArtists(this.value);
+                }, 300); // 300ms delay
+            });
+            
+            // Search on button click
+            searchBtn.addEventListener('click', function() {
+                clearTimeout(searchTimeout);
+                searchArtists(searchInput.value);
+            });
+            
+            // Search on Enter key
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    clearTimeout(searchTimeout);
+                    searchArtists(this.value);
+                }
+            });
+        });
     </script>
 </body>
 </html>
