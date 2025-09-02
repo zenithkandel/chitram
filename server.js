@@ -86,9 +86,7 @@ app.get('/cart', (req, res) => {
 });
 
 // Track Orders page route
-app.get('/track-orders', (req, res) => {
-    res.render('track-orders');
-});
+app.get('/track-orders', getTrackOrdersPage);
 
 // Legacy track route (redirect to track-orders)
 app.get('/track', (req, res) => {
