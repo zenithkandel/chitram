@@ -1,4 +1,4 @@
-const db = require('../config/database');
+const { db } = require('../config/database');
 const { formatDate } = require('../utils/dateFormatter');
 
 // Get individual artist page
@@ -20,20 +20,21 @@ const getArtistDetail = async (req, res) => {
                 full_name,
                 email,
                 phone,
-                address,
+                city,
+                district,
                 age,
-                gender,
-                experience_years,
-                art_style,
+                started_art_since as experience_years,
+                college_school,
                 bio,
-                profile_image,
-                portfolio_images,
-                certificates,
+                profile_picture as profile_image,
+                socials,
+                arts_uploaded,
+                arts_sold,
                 status,
-                created_at,
-                updated_at
+                joined_at as created_at,
+                joined_at as updated_at
             FROM artists 
-            WHERE unique_id = ? AND status = 'approved'
+            WHERE unique_id = ? AND status = 'active'
         `;
 
         const [artistResults] = await db.execute(artistQuery, [artistId]);
@@ -47,30 +48,40 @@ const getArtistDetail = async (req, res) => {
 
         const artist = artistResults[0];
 
-        // Parse JSON fields
+        // Parse JSON fields safely
         try {
-            artist.portfolio_images = artist.portfolio_images ? JSON.parse(artist.portfolio_images) : [];
-            artist.certificates = artist.certificates ? JSON.parse(artist.certificates) : [];
+            // Since the database doesn't have portfolio_images and certificates columns,
+            // we'll set them as empty arrays for now
+            artist.portfolio_images = [];
+            artist.certificates = [];
+            
+            // Parse socials if it exists
+            if (artist.socials) {
+                artist.socials_parsed = JSON.parse(artist.socials);
+            } else {
+                artist.socials_parsed = {};
+            }
         } catch (parseError) {
             console.error('Error parsing JSON fields:', parseError);
             artist.portfolio_images = [];
             artist.certificates = [];
+            artist.socials_parsed = {};
         }
 
         // Get artist's artworks
         const artworksQuery = `
             SELECT 
-                id,
-                title,
-                description,
-                price,
-                category,
-                image_url,
+                unique_id as id,
+                art_name as title,
+                art_description as description,
+                cost as price,
+                art_category as category,
+                art_image as image_url,
                 status,
-                created_at
+                uploaded_at as created_at
             FROM arts 
-            WHERE artist_id = ? AND status = 'approved'
-            ORDER BY created_at DESC
+            WHERE artist_unique_id = ? AND status = 'listed'
+            ORDER BY uploaded_at DESC
         `;
 
         const [artworkResults] = await db.execute(artworksQuery, [artistId]);
@@ -88,12 +99,12 @@ const getArtistDetail = async (req, res) => {
         const statsQuery = `
             SELECT 
                 COUNT(*) as total_artworks,
-                AVG(price) as average_price,
-                MIN(price) as min_price,
-                MAX(price) as max_price,
-                COUNT(DISTINCT category) as categories_count
+                AVG(cost) as average_price,
+                MIN(cost) as min_price,
+                MAX(cost) as max_price,
+                COUNT(DISTINCT art_category) as categories_count
             FROM arts 
-            WHERE artist_id = ? AND status = 'approved'
+            WHERE artist_unique_id = ? AND status = 'listed'
         `;
 
         const [statsResults] = await db.execute(statsQuery, [artistId]);
