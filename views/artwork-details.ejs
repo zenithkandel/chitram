@@ -110,7 +110,7 @@
                                     data-artwork-name="<%= artwork.art_name.replace(/"/g, '&quot;') %>"
                                     data-artwork-cost="<%= artwork.cost %>"
                                     data-artwork-image="<%= artwork.art_image %>"
-                                    data-artist-name="<%= artwork.artist.full_name.replace(/"/g, '&quot;') %>"
+                                    data-artist-name="<%= (artwork.artist.name || '').replace(/"/g, '&quot;') %>"
                                     data-artist-id="<%= artwork.artist.unique_id %>">
                                 <i class="fas fa-shopping-cart"></i>
                                 Add to Cart

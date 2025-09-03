@@ -86,11 +86,9 @@ app.get('/gallery', getGalleryArtworks);
 app.get('/artwork/:id', getArtworkDetails);
 
 app.get('/cart', (req, res) => {
-    res.send(`
-        <h1>Shopping Cart</h1>
-        <p>Cart page coming soon...</p>
-        <a href="/">← Back to Home</a>
-    `);
+    res.render('cart', {
+        title: 'Shopping Cart - चित्रम्'
+    });
 });
 
 // Track Orders page route
