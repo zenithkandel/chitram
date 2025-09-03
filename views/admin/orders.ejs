@@ -747,7 +747,7 @@
                     if (order.item_list && order.item_list.length > 0) {
                         itemsHtml = order.item_list.map(item => 
                             `<div class="item">
-                                <strong>${item.art_name || 'Unknown Item'}</strong><br>
+                                <strong><a href="/artwork/${item.art_id}">${item.art_name || 'Unknown Item'}</a></strong><br>
                                 <small>Price: Rs. ${Number(item.price || 0).toLocaleString()}</small>
                             </div>`
                         ).join('');
