@@ -228,6 +228,169 @@
             border: 1px solid #f5c6cb;
         }
 
+        /* Admin Search and Filter Styles */
+        .admin-search-filter-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .search-filter-header h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .admin-gallery-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .admin-search-container {
+            flex: 1;
+        }
+
+        .admin-search-bar {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .admin-search-bar:focus-within {
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+        }
+
+        .admin-search-bar input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: none;
+            outline: none;
+            font-size: 0.95rem;
+            background: transparent;
+        }
+
+        .admin-search-bar input::placeholder {
+            color: #6c757d;
+        }
+
+        .admin-search-button, .admin-clear-button {
+            padding: 0.8rem 1.2rem;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .admin-search-button:hover, .admin-clear-button:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        }
+
+        .admin-clear-button {
+            background: #6c757d;
+            margin-left: 1px;
+        }
+
+        .admin-clear-button:hover {
+            background: #5a6268;
+        }
+
+        .admin-filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .admin-filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 150px;
+        }
+
+        .admin-filter-group label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 0.4rem;
+        }
+
+        .admin-filter-select {
+            padding: 0.6rem 0.8rem;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            background: white;
+            font-size: 0.9rem;
+            color: #495057;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .admin-filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+        }
+
+        .admin-reset-button {
+            padding: 0.6rem 1.2rem;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+            height: fit-content;
+        }
+
+        .admin-reset-button:hover {
+            background: #5a6268;
+        }
+
+        .admin-loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive design for search and filter */
+        @media (min-width: 768px) {
+            .admin-gallery-controls {
+                flex-direction: row;
+                align-items: center;
+            }
+
+            .admin-search-container {
+                max-width: 400px;
+            }
+
+            .admin-filter-container {
+                flex: 1;
+                justify-content: flex-end;
+            }
+        }
+
         .artworks-container {
             background: white;
             padding: 1.5rem;
@@ -1262,6 +1425,251 @@
 
         // Load artists on page load
         document.addEventListener('DOMContentLoaded', loadArtists);
+
+        // Admin Artwork Search and Filter functionality
+        let adminArtworkSearchTimeout;
+        let originalArtworksHTML = '';
+
+        // Store original content on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            originalArtworksHTML = document.getElementById('adminArtworksContainer').innerHTML;
+            
+            // Load categories for filter dropdown
+            loadAdminArtCategories();
+            
+            // Set up event listeners
+            setupAdminArtworkSearchListeners();
+        });
+
+        // Load categories for admin filter dropdown
+        async function loadAdminArtCategories() {
+            try {
+                const response = await fetch('/admin/artworks/categories');
+                const data = await response.json();
+                
+                if (data.categories) {
+                    const categorySelect = document.getElementById('adminCategoryFilter');
+                    
+                    // Clear existing options except 'All Categories'
+                    categorySelect.innerHTML = '<option value="all">All Categories</option>';
+                    
+                    // Add category options
+                    data.categories.forEach(category => {
+                        const option = new Option(category, category);
+                        categorySelect.add(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        // Set up event listeners for search and filter
+        function setupAdminArtworkSearchListeners() {
+            const searchInput = document.getElementById('adminArtworkSearchInput');
+            const searchBtn = document.getElementById('adminArtworkSearchBtn');
+            const clearBtn = document.getElementById('adminArtworkClearBtn');
+            const resetBtn = document.getElementById('adminArtworkResetBtn');
+            const sortBy = document.getElementById('adminSortBy');
+            const categoryFilter = document.getElementById('adminCategoryFilter');
+            const statusFilter = document.getElementById('adminStatusFilter');
+            
+            // Search on input with debounce
+            searchInput.addEventListener('input', function() {
+                clearTimeout(adminArtworkSearchTimeout);
+                adminArtworkSearchTimeout = setTimeout(() => {
+                    adminSearchAndFilterArtworks();
+                }, 300);
+            });
+            
+            // Search on button click
+            searchBtn.addEventListener('click', function() {
+                clearTimeout(adminArtworkSearchTimeout);
+                adminSearchAndFilterArtworks();
+            });
+            
+            // Search on Enter key
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    clearTimeout(adminArtworkSearchTimeout);
+                    adminSearchAndFilterArtworks();
+                }
+            });
+            
+            // Filter on dropdown change
+            sortBy.addEventListener('change', adminSearchAndFilterArtworks);
+            categoryFilter.addEventListener('change', adminSearchAndFilterArtworks);
+            statusFilter.addEventListener('change', adminSearchAndFilterArtworks);
+            
+            // Clear search
+            clearBtn.addEventListener('click', clearAdminArtworkSearch);
+            
+            // Reset all filters
+            resetBtn.addEventListener('click', resetAdminArtworkFilters);
+        }
+
+        // Main search and filter function
+        async function adminSearchAndFilterArtworks() {
+            const searchInput = document.getElementById('adminArtworkSearchInput');
+            const searchBtn = document.getElementById('adminArtworkSearchBtn');
+            const searchIcon = document.getElementById('adminArtworkSearchIcon');
+            const searchSpinner = document.getElementById('adminArtworkSearchSpinner');
+            const clearBtn = document.getElementById('adminArtworkClearBtn');
+            const sortBy = document.getElementById('adminSortBy');
+            const categoryFilter = document.getElementById('adminCategoryFilter');
+            const statusFilter = document.getElementById('adminStatusFilter');
+            const artworksContainer = document.getElementById('adminArtworksContainer');
+            
+            // Show loading state
+            searchIcon.style.display = 'none';
+            searchSpinner.style.display = 'inline-block';
+            searchBtn.disabled = true;
+            
+            // Show/hide clear button
+            if (searchInput.value.trim()) {
+                clearBtn.style.display = 'block';
+            } else {
+                clearBtn.style.display = 'none';
+            }
+            
+            try {
+                const params = new URLSearchParams({
+                    q: searchInput.value || '',
+                    sortBy: sortBy.value || 'date_newest',
+                    category: categoryFilter.value || 'all',
+                    status: statusFilter.value || 'all'
+                });
+                
+                const response = await fetch(`/admin/artworks/search?${params}`);
+                const data = await response.json();
+                
+                if (data.artworks) {
+                    updateAdminArtworksDisplay(data.artworks);
+                } else {
+                    console.error('Search error:', data.error);
+                    artworksContainer.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #666;">
+                            <p>Error searching artworks. Please try again.</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                artworksContainer.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #666;">
+                        <p>Error searching artworks. Please try again.</p>
+                    </div>
+                `;
+            } finally {
+                // Reset button state
+                searchIcon.style.display = 'inline-block';
+                searchSpinner.style.display = 'none';
+                searchBtn.disabled = false;
+            }
+        }
+
+        // Update artworks display with search results
+        function updateAdminArtworksDisplay(artworks) {
+            const artworksContainer = document.getElementById('adminArtworksContainer');
+            
+            if (artworks.length === 0) {
+                artworksContainer.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #666;">
+                        <h3 style="color: #666; margin-bottom: 1rem;">No artworks found</h3>
+                        <p style="color: #999;">Try adjusting your search or filter criteria.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let artworksHTML = '';
+            artworks.forEach(artwork => {
+                const imageHTML = artwork.art_image 
+                    ? `<img src="/uploads/artworks/${artwork.art_image}" alt="${artwork.art_name}">`
+                    : '🖼️ No Image';
+                
+                const description = artwork.art_description 
+                    ? `<p style="margin: 0.75rem 0; color: #666; font-size: 0.85rem; line-height: 1.4;">
+                           ${artwork.art_description.substring(0, 100)}${artwork.art_description.length > 100 ? '...' : ''}
+                       </p>`
+                    : '';
+                
+                artworksHTML += `
+                    <div class="artwork-card" data-id="${artwork.unique_id}">
+                        <div class="artwork-image ${artwork.art_image ? '' : 'no-image'}">
+                            ${imageHTML}
+                        </div>
+                        
+                        <div class="artwork-info">
+                            <h3>${artwork.art_name}</h3>
+                            
+                            <div class="artwork-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Artist</span>
+                                    <span class="detail-value">${artwork.artist_name || 'Unknown'}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Category</span>
+                                    <span class="detail-value">${artwork.art_category}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Price</span>
+                                    <span class="detail-value">Rs. ${Number(artwork.cost).toLocaleString()}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Status</span>
+                                    <span class="status-badge status-${artwork.status}">${artwork.status}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Size</span>
+                                    <span class="detail-value">${artwork.size_of_art || 'N/A'}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Color Type</span>
+                                    <span class="detail-value">${artwork.color_type === 'black_and_white' ? 'B&W' : 'Color'}</span>
+                                </div>
+                            </div>
+                            
+                            ${description}
+                        </div>
+
+                        <div class="artwork-actions">
+                            <button class="action-btn view-btn" onclick="viewArtwork(${artwork.unique_id})">
+                                👁️ View
+                            </button>
+                            <button class="action-btn edit-btn" onclick="editArtwork(${artwork.unique_id})">
+                                ✏️ Edit
+                            </button>
+                            <button class="action-btn delete-btn" onclick="deleteArtwork(${artwork.unique_id})">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            artworksContainer.innerHTML = artworksHTML;
+        }
+
+        // Clear search function
+        function clearAdminArtworkSearch() {
+            document.getElementById('adminArtworkSearchInput').value = '';
+            document.getElementById('adminArtworkClearBtn').style.display = 'none';
+            adminSearchAndFilterArtworks();
+        }
+
+        // Reset all filters function
+        function resetAdminArtworkFilters() {
+            document.getElementById('adminArtworkSearchInput').value = '';
+            document.getElementById('adminSortBy').value = 'date_newest';
+            document.getElementById('adminCategoryFilter').value = 'all';
+            document.getElementById('adminStatusFilter').value = 'all';
+            document.getElementById('adminArtworkClearBtn').style.display = 'none';
+            
+            // Restore original content
+            const artworksContainer = document.getElementById('adminArtworksContainer');
+            artworksContainer.innerHTML = originalArtworksHTML;
+        }
 
         // Edit artwork function
         async function editArtwork(artworkId) {
