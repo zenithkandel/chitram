@@ -1512,11 +1512,127 @@ input[type="file"]:hover {
     }
 }
 
-/* Artist Profile Page Styles */
-.artist-profile-section {
+/* Simple Artist Profile Page Styles */
+.simple-artist-profile {
     padding: 2rem 0;
     background: #f8f9fa;
     min-height: calc(100vh - 200px);
+}
+
+.artist-profile-card {
+    background: white;
+    border-radius: 10px;
+    padding: 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-picture {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.profile-picture img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #e9ecef;
+}
+
+.artist-name {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.artist-name h1 {
+    font-size: 2rem;
+    color: #333;
+    margin: 0;
+}
+
+.artist-profile-card > div {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.artist-profile-card > div:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.artist-profile-card h3 {
+    color: #007bff;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.artist-profile-card p {
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f8f9fa;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    text-decoration: none;
+    color: #007bff;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.social-link:hover {
+    background: #e9ecef;
+    color: #0056b3;
+}
+
+.social-link i {
+    font-size: 1rem;
+}
+
+/* Responsive Design for Simple Profile */
+@media (max-width: 768px) {
+    .simple-artist-profile {
+        padding: 1rem 0;
+    }
+    
+    .artist-profile-card {
+        margin: 0 1rem;
+        padding: 1.5rem;
+    }
+    
+    .profile-picture img {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .artist-name h1 {
+        font-size: 1.6rem;
+    }
+    
+    .social-links {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .social-link {
+        width: fit-content;
+    }
 }
 
 .artist-header {

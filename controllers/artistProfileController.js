@@ -11,25 +11,20 @@ const getArtistProfile = async (req, res) => {
             });
         }
 
-        // Get artist details
+        // Get artist details using unique_id
         const [artistRows] = await connection.execute(
             `SELECT 
-                id,
-                name,
-                email,
-                phone,
+                unique_id,
+                full_name,
+                started_art_since,
+                college_school,
+                district,
+                socials,
                 bio,
-                specialty,
-                experience_years,
-                education,
-                awards,
-                exhibition_history,
-                artistic_style,
-                profile_image,
-                status,
-                created_at
+                profile_picture,
+                status
             FROM artists 
-            WHERE id = ? AND status = 'active'`,
+            WHERE unique_id = ? AND status = 'active'`,
             [artistId]
         );
 
@@ -42,51 +37,42 @@ const getArtistProfile = async (req, res) => {
 
         const artist = artistRows[0];
 
-        // Get artist's artworks
-        const [artworkRows] = await connection.execute(
-            `SELECT 
-                id,
-                title,
-                description,
-                price,
-                category,
-                medium,
-                dimensions,
-                image_url,
-                status,
-                created_at
-            FROM arts 
-            WHERE artist_id = ? AND status = 'available'
-            ORDER BY created_at DESC`,
-            [artistId]
-        );
+        // Calculate experience in field (current year - started year)
+        let experienceYears = 0;
+        if (artist.started_art_since) {
+            const currentYear = new Date().getFullYear();
+            const startedYear = parseInt(artist.started_art_since);
+            if (!isNaN(startedYear) && startedYear > 0) {
+                experienceYears = currentYear - startedYear;
+            }
+        }
 
-        // Format the data
+        // Parse social media from JSON
+        let socialMedia = {};
+        if (artist.socials) {
+            try {
+                socialMedia = JSON.parse(artist.socials);
+            } catch (error) {
+                console.log('Error parsing social media JSON:', error);
+                socialMedia = {};
+            }
+        }
+
+        // Format the artist data
         const formattedArtist = {
-            ...artist,
-            profile_image: artist.profile_image || '/images/default-artist.jpg',
+            unique_id: artist.unique_id,
+            full_name: artist.full_name || 'Unknown Artist',
+            experience_years: experienceYears,
+            college_school: artist.college_school || 'Not specified',
+            district: artist.district || 'Not specified',
             bio: artist.bio || 'No biography available',
-            specialty: artist.specialty || 'General Art',
-            experience_years: artist.experience_years || 0,
-            education: artist.education || 'Not specified',
-            awards: artist.awards || 'None listed',
-            exhibition_history: artist.exhibition_history || 'No exhibitions listed',
-            artistic_style: artist.artistic_style || 'Contemporary'
+            profile_picture: artist.profile_picture ? `/uploads/profiles/${artist.profile_picture}` : '/images/default-artist.jpg',
+            social_media: socialMedia
         };
 
-        const formattedArtworks = artworkRows.map(artwork => ({
-            ...artwork,
-            image_url: artwork.image_url || '/images/placeholder-art.jpg',
-            price: parseFloat(artwork.price) || 0,
-            formatted_price: (parseFloat(artwork.price) || 0).toLocaleString('en-IN'),
-            description: artwork.description || 'No description available'
-        }));
-
         res.render('artist-profile', {
-            title: `${formattedArtist.name} - Artist Profile`,
-            artist: formattedArtist,
-            artworks: formattedArtworks,
-            artworkCount: formattedArtworks.length
+            title: `${formattedArtist.full_name} - Artist Profile`,
+            artist: formattedArtist
         });
 
     } catch (error) {
