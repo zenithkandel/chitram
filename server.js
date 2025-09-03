@@ -91,6 +91,12 @@ app.get('/cart', (req, res) => {
     });
 });
 
+app.get('/checkout', (req, res) => {
+    res.render('checkout', {
+        title: 'Checkout - चित्रम्'
+    });
+});
+
 // Track Orders page route
 app.get('/track-orders', getTrackOrdersPage);
 

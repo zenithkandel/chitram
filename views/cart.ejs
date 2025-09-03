@@ -223,10 +223,11 @@
         // Initialize cart page
         const cartPage = new CartPage();
 
-        // Checkout button functionality (placeholder for now)
+        // Checkout button functionality
         document.getElementById('checkout-btn').addEventListener('click', function() {
             if (!this.disabled) {
-                alert('Checkout functionality will be implemented next!');
+                // Redirect to checkout page
+                window.location.href = '/checkout';
             }
         });
     </script>
