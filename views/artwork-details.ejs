@@ -32,7 +32,93 @@
     <!-- Main Content Section -->
     <section class="artwork-details-section">
         <div class="container">
-            <!-- Content will be added later -->
+            <div class="artwork-details-container">
+                
+                <!-- Artwork Image Section -->
+                <div class="artwork-image-section">
+                    <div class="artwork-main-image">
+                        <img src="<%= artwork.art_image %>" alt="<%= artwork.art_name %>" 
+                             onerror="handleArtworkImageError(this)">
+                    </div>
+                </div>
+
+                <!-- Artwork Information Section -->
+                <div class="artwork-info-section">
+                    
+                    <!-- Artwork Name -->
+                    <h1 class="artwork-title"><%= artwork.art_name %></h1>
+                    
+                    <!-- Artist Information -->
+                    <div class="artist-info-box">
+                        <a href="/artist/<%= artwork.artist.unique_id %>" class="artist-link">
+                            <div class="artist-profile">
+                                <img src="<%= artwork.artist.profile_picture %>" alt="<%= artwork.artist.name %>" 
+                                     class="artist-avatar" onerror="handleProfileImageError(this)">
+                                <div class="artist-details">
+                                    <span class="artist-label">Artist</span>
+                                    <span class="artist-name"><%= artwork.artist.name %></span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Artwork Price -->
+                    <div class="price-section">
+                        <span class="price-label">Price</span>
+                        <span class="price-value"><%= artwork.formatted_cost %></span>
+                    </div>
+
+                    <!-- Artwork Details Grid -->
+                    <div class="artwork-details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Category</span>
+                            <span class="detail-value"><%= artwork.art_category %></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Work Hours</span>
+                            <span class="detail-value"><%= artwork.work_hours %></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Size</span>
+                            <span class="detail-value"><%= artwork.size_of_art %></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Color Type</span>
+                            <span class="detail-value"><%= artwork.color_type %></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Listed</span>
+                            <span class="detail-value"><%= artwork.relative_time %></span>
+                        </div>
+                    </div>
+
+                    <!-- Artwork Description -->
+                    <div class="description-section">
+                        <h3>Description</h3>
+                        <p><%= artwork.art_description %></p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <% if (artwork.status === 'listed') { %>
+                            <button class="btn-primary add-to-cart" onclick="addToCart('<%= artwork.unique_id %>')">
+                                <i class="fas fa-shopping-cart"></i>
+                                Add to Cart
+                            </button>
+                            <button class="btn-secondary contact-artist" onclick="contactArtist('<%= artwork.artist.unique_id %>')">
+                                <i class="fas fa-envelope"></i>
+                                Contact Artist
+                            </button>
+                        <% } else { %>
+                            <div class="status-badge <%= artwork.status %>">
+                                <i class="fas fa-info-circle"></i>
+                                <%= artwork.status.charAt(0).toUpperCase() + artwork.status.slice(1) %>
+                            </div>
+                        <% } %>
+                    </div>
+
+                </div>
+            </div>
         </div>
     </section>
 
@@ -45,5 +131,57 @@
 
     <!-- JavaScript -->
     <script src="/js/main.js"></script>
+    <script>
+        function addToCart(artworkId) {
+            // Placeholder for add to cart functionality
+            alert('Add to cart functionality coming soon! Artwork ID: ' + artworkId);
+        }
+
+        function contactArtist(artistId) {
+            // Redirect to artist profile page
+            window.location.href = '/artist/' + artistId;
+        }
+
+        // Handle artwork image loading errors
+        function handleArtworkImageError(img) {
+            if (img.src.includes('placeholder-art.jpg')) {
+                return;
+            }
+            
+            img.src = '/images/placeholder-art.jpg';
+            
+            img.onerror = function() {
+                createPlaceholderDiv(this);
+            };
+        }
+
+        // Handle profile image error
+        function handleProfileImageError(img) {
+            if (img.src.includes('default-artist.jpg')) {
+                return;
+            }
+            
+            img.src = '/images/default-artist.jpg';
+            
+            img.onerror = function() {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'profile-placeholder-small';
+                placeholder.innerHTML = '<i class="fas fa-user"></i>';
+                img.parentNode.replaceChild(placeholder, img);
+            };
+        }
+
+        // Create a colored placeholder div if no images work
+        function createPlaceholderDiv(img) {
+            const placeholder = document.createElement('div');
+            placeholder.className = 'image-placeholder-large';
+            placeholder.innerHTML = `
+                <i class="fas fa-image"></i>
+                <span>Image Not Available</span>
+            `;
+            
+            img.parentNode.replaceChild(placeholder, img);
+        }
+    </script>
 </body>
 </html>

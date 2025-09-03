@@ -98,13 +98,19 @@
                     <div class="artworks-grid">
                         <% artworks.forEach(artwork => { %>
                             <div class="artwork-card">
-                                <div class="artwork-image">
-                                    <img src="<%= artwork.art_image %>" alt="<%= artwork.art_name %>" 
-                                         onerror="handleArtworkImageError(this)">
-                                    <div class="artwork-status <%= artwork.status %>">
-                                        <%= artwork.status.charAt(0).toUpperCase() + artwork.status.slice(1) %>
+                                <a href="/artwork/<%= artwork.unique_id %>" class="artwork-image-link">
+                                    <div class="artwork-image">
+                                        <img src="<%= artwork.art_image %>" alt="<%= artwork.art_name %>" 
+                                             onerror="handleArtworkImageError(this)">
+                                        <div class="artwork-status <%= artwork.status %>">
+                                            <%= artwork.status.charAt(0).toUpperCase() + artwork.status.slice(1) %>
+                                        </div>
+                                        <div class="image-overlay">
+                                            <i class="fas fa-eye"></i>
+                                            <span>View Details</span>
+                                        </div>
                                     </div>
-                                </div>
+                                </a>
                                 <div class="artwork-info">
                                     <h4><%= artwork.art_name %></h4>
                                     <p class="artwork-category"><%= artwork.art_category %></p>

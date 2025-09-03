@@ -102,23 +102,25 @@
                     <div class="gallery-grid" id="galleryGrid">
                         <% artworks.forEach(function(artwork) { %>
                             <div class="artwork-card">
-                                <div class="artwork-image">
-                                    <% if (artwork.art_image) { %>
-                                        <img src="/uploads/artworks/<%= artwork.art_image %>" 
-                                             alt="<%= artwork.art_name %>" 
-                                             onerror="handleImageError(this)">
-                                    <% } else { %>
-                                        <div class="placeholder-image">
-                                            <span>No Image</span>
-                                        </div>
-                                    <% } %>
-                                </div>
-                                <div class="artwork-info">
-                                    <h3 class="artwork-name"><%= artwork.art_name %></h3>
-                                    <p class="artist-name">by <%= artwork.artist_name || 'Unknown Artist' %></p>
-                                    <p class="artwork-category"><%= artwork.art_category %></p>
-                                    <p class="artwork-price">₹<%= parseFloat(artwork.cost).toLocaleString() %></p>
-                                </div>
+                                <a href="/artwork/<%= artwork.unique_id %>" class="artwork-link">
+                                    <div class="artwork-image">
+                                        <% if (artwork.art_image) { %>
+                                            <img src="/uploads/artworks/<%= artwork.art_image %>" 
+                                                 alt="<%= artwork.art_name %>" 
+                                                 onerror="handleImageError(this)">
+                                        <% } else { %>
+                                            <div class="placeholder-image">
+                                                <span>No Image</span>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                    <div class="artwork-info">
+                                        <h3 class="artwork-name"><%= artwork.art_name %></h3>
+                                        <p class="artist-name">by <%= artwork.artist_name || 'Unknown Artist' %></p>
+                                        <p class="artwork-category"><%= artwork.art_category %></p>
+                                        <p class="artwork-price">₹<%= parseFloat(artwork.cost).toLocaleString() %></p>
+                                    </div>
+                                </a>
                             </div>
                         <% }); %>
                     </div>
@@ -250,15 +252,17 @@
                 
                 artworksHTML += `
                     <div class="artwork-card">
-                        <div class="artwork-image">
-                            ${imageHTML}
-                        </div>
-                        <div class="artwork-info">
-                            <h3 class="artwork-name">${artwork.art_name}</h3>
-                            <p class="artist-name">by ${artwork.artist_name || 'Unknown Artist'}</p>
-                            <p class="artwork-category">${artwork.art_category}</p>
-                            <p class="artwork-price">₹${price}</p>
-                        </div>
+                        <a href="/artwork/${artwork.unique_id}" class="artwork-link">
+                            <div class="artwork-image">
+                                ${imageHTML}
+                            </div>
+                            <div class="artwork-info">
+                                <h3 class="artwork-name">${artwork.art_name}</h3>
+                                <p class="artist-name">by ${artwork.artist_name || 'Unknown Artist'}</p>
+                                <p class="artwork-category">${artwork.art_category}</p>
+                                <p class="artwork-price">₹${price}</p>
+                            </div>
+                        </a>
                     </div>
                 `;
             });

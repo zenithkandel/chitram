@@ -976,6 +976,13 @@ body {
     box-shadow: 0 12px 30px rgba(0,0,0,0.15);
 }
 
+.artwork-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    height: 100%;
+}
+
 .artwork-image {
     width: 100%;
     height: 220px;
@@ -1932,6 +1939,378 @@ input[type="file"]:hover {
     
     .profile-placeholder i {
         font-size: 2.5rem;
+    }
+}
+
+/* Artwork Details Page Styles */
+.artwork-details-section {
+    padding: 2rem 0;
+    background: #f8f9fa;
+    min-height: calc(100vh - 200px);
+}
+
+.artwork-details-container {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+}
+
+.artwork-image-section {
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.artwork-main-image {
+    width: 100%;
+    max-width: 500px;
+    height: 500px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.artwork-main-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.artwork-info-section {
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.artwork-title {
+    font-size: 2.5rem;
+    color: #333;
+    margin: 0;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.artist-info-box {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    border-left: 4px solid #007bff;
+}
+
+.artist-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.artist-link:hover {
+    transform: translateX(5px);
+}
+
+.artist-profile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.artist-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.artist-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.artist-label {
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.artist-name {
+    color: #333;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-top: 0.2rem;
+}
+
+.price-section {
+    background: #e8f5e8;
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    border: 2px solid #28a745;
+}
+
+.price-label {
+    display: block;
+    color: #666;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.price-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #28a745;
+    display: block;
+}
+
+.artwork-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.detail-item {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.detail-label {
+    color: #666;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-value {
+    color: #333;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.description-section {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 10px;
+}
+
+.description-section h3 {
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.description-section p {
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+    font-size: 1rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    flex: 1;
+    justify-content: center;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.3s ease;
+    flex: 1;
+    justify-content: center;
+}
+
+.btn-secondary:hover {
+    background: #545b62;
+}
+
+.status-badge {
+    padding: 1rem 2rem;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    width: 100%;
+}
+
+.status-badge.ordered {
+    background: #fff3cd;
+    color: #856404;
+    border: 2px solid #ffc107;
+}
+
+.status-badge.sold {
+    background: #f8d7da;
+    color: #721c24;
+    border: 2px solid #dc3545;
+}
+
+/* Placeholder Styles for Artwork Details */
+.image-placeholder-large {
+    width: 100%;
+    height: 100%;
+    background: #e9ecef;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    border: 2px dashed #ced4da;
+    border-radius: 10px;
+}
+
+.image-placeholder-large i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.image-placeholder-large span {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.profile-placeholder-small {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-placeholder-small i {
+    font-size: 1.5rem;
+    opacity: 0.5;
+}
+
+/* Responsive Design for Artwork Details */
+@media (max-width: 768px) {
+    .artwork-details-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .artwork-image-section {
+        padding: 1.5rem;
+    }
+    
+    .artwork-main-image {
+        height: 300px;
+    }
+    
+    .artwork-info-section {
+        padding: 2rem;
+        gap: 1.5rem;
+    }
+    
+    .artwork-title {
+        font-size: 2rem;
+    }
+    
+    .price-value {
+        font-size: 2rem;
+    }
+    
+    .artwork-details-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .artist-profile {
+        gap: 0.8rem;
+    }
+    
+    .artist-avatar {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .artist-name {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .artwork-details-section {
+        padding: 1rem 0;
+    }
+    
+    .artwork-info-section {
+        padding: 1.5rem;
+    }
+    
+    .artwork-title {
+        font-size: 1.6rem;
+    }
+    
+    .price-section {
+        padding: 1rem;
+    }
+    
+    .price-value {
+        font-size: 1.8rem;
+    }
+    
+    .btn-primary, .btn-secondary {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
     }
 }
 
