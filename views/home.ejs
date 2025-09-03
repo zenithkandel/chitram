@@ -6,7 +6,7 @@
     <title>चित्रम् - Online Art Platform</title>
     
     <!-- CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/main.css">
     
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -126,19 +126,21 @@
                     <% if (latestArtworks && latestArtworks.length > 0) { %>
                         <% latestArtworks.forEach(artwork => { %>
                             <div class="artwork-card">
-                                <div class="artwork-image">
-                                    <img src="/uploads/artworks/<%= artwork.art_image %>" 
-                                         alt="<%= artwork.art_name %>" 
-                                         class="artwork-img"
-                                         data-src="/uploads/artworks/<%= artwork.art_image %>"
-                                         onerror="handleImageError(this)">
-                                </div>
-                                <div class="artwork-info">
-                                    <h4 class="artwork-title"><%= artwork.art_name %></h4>
-                                    <p class="artwork-artist">by <%= artwork.artist_name %></p>
-                                    <p class="artwork-category"><%= artwork.art_category %></p>
-                                    <p class="artwork-price">Rs. <%= artwork.cost %></p>
-                                </div>
+                                <a href="/artwork/<%= artwork.unique_id %>" class="artwork-link">
+                                    <div class="artwork-image">
+                                        <img src="/uploads/artworks/<%= artwork.art_image %>" 
+                                             alt="<%= artwork.art_name %>" 
+                                             class="artwork-img"
+                                             data-src="/uploads/artworks/<%= artwork.art_image %>"
+                                             onerror="handleImageError(this)">
+                                    </div>
+                                    <div class="artwork-info">
+                                        <h4 class="artwork-title"><%= artwork.art_name %></h4>
+                                        <p class="artwork-artist">by <%= artwork.artist_name %></p>
+                                        <p class="artwork-category"><%= artwork.art_category %></p>
+                                        <p class="artwork-price">Rs. <%= artwork.cost %></p>
+                                    </div>
+                                </a>
                             </div>
                         <% }); %>
                     <% } else { %>
@@ -236,6 +238,7 @@
     </footer>
 
     <!-- JavaScript -->
+    <script src="/js/cart.js"></script>
     <script src="/js/main.js"></script>
     <script>
         // Handle image loading errors to prevent infinite retry

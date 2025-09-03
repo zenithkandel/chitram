@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artists - चित्रम् Art Platform</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -90,11 +90,37 @@
                                     </div>
                                     <div class="artist-info">
                                         <h3 class="artist-name"><%= artist.full_name %></h3>
+                                        <% if (artist.age) { %>
+                                            <p class="artist-age"><i class="fas fa-birthday-cake"></i> <%= artist.age %> years old</p>
+                                        <% } %>
+                                        <% if (artist.location) { %>
+                                            <p class="artist-location"><i class="fas fa-map-marker-alt"></i> <%= artist.location %></p>
+                                        <% } %>
+                                        <% if (artist.experienceYears > 0) { %>
+                                            <p class="artist-experience"><i class="fas fa-clock"></i> <%= artist.experienceYears %> years of experience</p>
+                                        <% } %>
                                         <% if (artist.shortBio) { %>
                                             <p class="artist-bio"><%= artist.shortBio %></p>
                                         <% } else { %>
                                             <p class="artist-bio">No bio available</p>
                                         <% } %>
+                                        
+                                        <!-- Artist Stats -->
+                                        <div class="artist-stats">
+                                            <div class="stat-item">
+                                                <span class="stat-number"><%= artist.total_artworks %></span>
+                                                <span class="stat-label">Artworks</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span class="stat-number"><%= artist.available_artworks %></span>
+                                                <span class="stat-label">Available</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span class="stat-number"><%= artist.sold_artworks %></span>
+                                                <span class="stat-label">Sold</span>
+                                            </div>
+                                        </div>
+                                        
                                         <div class="view-profile-btn">
                                             <i class="fas fa-arrow-right"></i>
                                             View Profile
@@ -198,15 +224,52 @@
                     ? `<p class="artist-bio">${artist.shortBio}</p>`
                     : `<p class="artist-bio">No bio available</p>`;
                 
+                const ageHTML = artist.age 
+                    ? `<p class="artist-age"><i class="fas fa-birthday-cake"></i> ${artist.age} years old</p>`
+                    : '';
+                
+                const locationHTML = artist.location 
+                    ? `<p class="artist-location"><i class="fas fa-map-marker-alt"></i> ${artist.location}</p>`
+                    : '';
+                
+                const experienceHTML = artist.experienceYears > 0 
+                    ? `<p class="artist-experience"><i class="fas fa-clock"></i> ${artist.experienceYears} years of experience</p>`
+                    : '';
+                
                 artistsHTML += `
                     <div class="artist-card">
-                        <div class="artist-image">
-                            ${imageHTML}
-                        </div>
-                        <div class="artist-info">
-                            <h3 class="artist-name">${artist.full_name}</h3>
-                            ${bioHTML}
-                        </div>
+                        <a href="/artist/${artist.unique_id}" class="artist-link">
+                            <div class="artist-image">
+                                ${imageHTML}
+                            </div>
+                            <div class="artist-info">
+                                <h3 class="artist-name">${artist.full_name}</h3>
+                                ${ageHTML}
+                                ${locationHTML}
+                                ${experienceHTML}
+                                ${bioHTML}
+                                
+                                <div class="artist-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-number">${artist.total_artworks || 0}</span>
+                                        <span class="stat-label">Artworks</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-number">${artist.available_artworks || 0}</span>
+                                        <span class="stat-label">Available</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-number">${artist.sold_artworks || 0}</span>
+                                        <span class="stat-label">Sold</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="view-profile-btn">
+                                    <i class="fas fa-arrow-right"></i>
+                                    View Profile
+                                </div>
+                            </div>
+                        </a>
                     </div>
                 `;
             });
@@ -243,5 +306,97 @@
             });
         });
     </script>
+
+    <!-- Enhanced Artist Card Styles -->
+    <style>
+        .artist-age, .artist-location, .artist-experience {
+            font-size: 0.85rem;
+            color: #666;
+            margin: 0.3rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .artist-age i, .artist-location i, .artist-experience i {
+            color: #667eea;
+            font-size: 0.8rem;
+        }
+        
+        .artist-stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 1rem 0;
+            padding: 0.8rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stat-number {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.2rem;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .artist-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .artist-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .artist-info {
+            padding: 1.5rem;
+        }
+        
+        .artist-bio {
+            color: #555;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin: 0.8rem 0;
+        }
+        
+        .view-profile-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.8rem 1rem;
+            border-radius: 6px;
+            text-align: center;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .view-profile-btn:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+            transform: translateY(-2px);
+        }
+        
+        .view-profile-btn i {
+            margin-left: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .artist-card:hover .view-profile-btn i {
+            transform: translateX(3px);
+        }
+    </style>
 </body>
 </html>

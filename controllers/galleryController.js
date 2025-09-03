@@ -10,7 +10,14 @@ const getGalleryArtworks = async (req, res) => {
                 a.art_image,
                 a.cost,
                 a.art_category,
-                ar.full_name as artist_name
+                a.art_description,
+                a.work_hours,
+                a.size_of_art,
+                a.color_type,
+                a.status,
+                a.uploaded_at,
+                ar.full_name as artist_name,
+                ar.unique_id as artist_unique_id
             FROM arts a
             LEFT JOIN artists ar ON a.artist_unique_id = ar.unique_id
             WHERE a.status = 'listed'
@@ -78,8 +85,14 @@ const searchAndFilterArtworks = async (req, res) => {
                 a.art_image,
                 a.cost,
                 a.art_category,
+                a.art_description,
+                a.work_hours,
+                a.size_of_art,
+                a.color_type,
+                a.status,
                 a.uploaded_at,
-                ar.full_name as artist_name
+                ar.full_name as artist_name,
+                ar.unique_id as artist_unique_id
             FROM arts a
             LEFT JOIN artists ar ON a.artist_unique_id = ar.unique_id
             ${whereClause}

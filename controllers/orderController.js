@@ -150,9 +150,94 @@ const deleteOrder = async (req, res) => {
     }
 };
 
+// Create a new order (for customer checkout)
+const createOrder = async (req, res) => {
+    try {
+        const {
+            order_id,
+            customer_name,
+            customer_phone,
+            customer_email,
+            shipping_address,
+            customer_message,
+            total_amount,
+            item_count,
+            item_list
+        } = req.body;
+
+        // Validate required fields
+        if (!order_id || !customer_name || !customer_phone || !customer_email || 
+            !shipping_address || !total_amount || !item_count || !item_list) {
+            return res.status(400).json({ 
+                error: 'Missing required fields for order creation' 
+            });
+        }
+
+        // Validate item_list is an array
+        if (!Array.isArray(item_list) || item_list.length === 0) {
+            return res.status(400).json({ 
+                error: 'Item list must be a non-empty array' 
+            });
+        }
+
+        // Check if order_id already exists
+        const [existingOrder] = await db.execute(
+            'SELECT order_id FROM orders WHERE order_id = ?',
+            [order_id]
+        );
+
+        if (existingOrder.length > 0) {
+            return res.status(400).json({ 
+                error: 'Order ID already exists' 
+            });
+        }
+
+        // Insert the new order
+        const [result] = await db.execute(`
+            INSERT INTO orders (
+                order_id,
+                customer_name,
+                customer_phone,
+                customer_email,
+                shipping_address,
+                customer_message,
+                total_amount,
+                item_count,
+                item_list,
+                status
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'placed')
+        `, [
+            order_id,
+            customer_name,
+            customer_phone,
+            customer_email,
+            shipping_address,
+            customer_message || '',
+            total_amount,
+            item_count,
+            JSON.stringify(item_list)
+        ]);
+
+        // Return success response
+        res.status(201).json({
+            success: true,
+            message: 'Order placed successfully',
+            order_id: order_id,
+            order_unique_id: result.insertId
+        });
+
+    } catch (error) {
+        console.error('Create order error:', error);
+        res.status(500).json({ 
+            error: 'Error placing order. Please try again.' 
+        });
+    }
+};
+
 module.exports = {
     getAllOrders,
     getOrder,
     updateOrderStatus,
-    deleteOrder
+    deleteOrder,
+    createOrder
 };

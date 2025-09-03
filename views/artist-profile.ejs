@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %> - चित्रम्</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -24,7 +24,10 @@
                 <li><a href="/gallery">Gallery</a></li>
                 <li><a href="/apply">Apply</a></li>
                 <li><a href="/track-orders">Track Orders</a></li>
-                <li><a href="/cart">Cart</a></li>
+                <li><a href="/cart">
+                    <i class="fas fa-shopping-cart"></i> Cart
+                    <span id="cart-count" class="cart-count" style="display: none;">0</span>
+                </a></li>
             </ul>
         </div>
     </nav>
@@ -98,13 +101,19 @@
                     <div class="artworks-grid">
                         <% artworks.forEach(artwork => { %>
                             <div class="artwork-card">
-                                <div class="artwork-image">
-                                    <img src="<%= artwork.art_image %>" alt="<%= artwork.art_name %>" 
-                                         onerror="handleArtworkImageError(this)">
-                                    <div class="artwork-status <%= artwork.status %>">
-                                        <%= artwork.status.charAt(0).toUpperCase() + artwork.status.slice(1) %>
+                                <a href="/artwork/<%= artwork.unique_id %>" class="artwork-image-link">
+                                    <div class="artwork-image">
+                                        <img src="<%= artwork.art_image %>" alt="<%= artwork.art_name %>" 
+                                             onerror="handleArtworkImageError(this)">
+                                        <div class="artwork-status <%= artwork.status %>">
+                                            <%= artwork.status.charAt(0).toUpperCase() + artwork.status.slice(1) %>
+                                        </div>
+                                        <div class="image-overlay">
+                                            <i class="fas fa-eye"></i>
+                                            <span>View Details</span>
+                                        </div>
                                     </div>
-                                </div>
+                                </a>
                                 <div class="artwork-info">
                                     <h4><%= artwork.art_name %></h4>
                                     <p class="artwork-category"><%= artwork.art_category %></p>
@@ -128,7 +137,14 @@
                                     <div class="artwork-footer">
                                         <span class="price"><%= artwork.formatted_cost %></span>
                                         <% if (artwork.status === 'listed') { %>
-                                            <button class="add-to-cart-btn" onclick="addToCart('<%= artwork.unique_id %>')">
+                                            <button class="add-to-cart-btn" 
+                                                    onclick="addToCartFromData(this)"
+                                                    data-artwork-id="<%= artwork.unique_id %>"
+                                                    data-artwork-name="<%= artwork.art_name.replace(/"/g, '&quot;') %>"
+                                                    data-artwork-cost="<%= artwork.cost %>"
+                                                    data-artwork-image="<%= artwork.art_image %>"
+                                                    data-artist-name="<%= artist.full_name.replace(/"/g, '&quot;') %>"
+                                                    data-artist-id="<%= artist.unique_id %>">
                                                 <i class="fas fa-shopping-cart"></i>
                                                 Add to Cart
                                             </button>
@@ -161,10 +177,25 @@
     </footer>
 
     <!-- JavaScript -->
+    <script src="/js/cart.js"></script>
     <script src="/js/main.js"></script>
     <script>
+        function addToCartFromData(button) {
+            // Extract data from button attributes
+            const artworkData = {
+                unique_id: button.getAttribute('data-artwork-id'),
+                art_name: button.getAttribute('data-artwork-name'),
+                cost: parseFloat(button.getAttribute('data-artwork-cost')),
+                art_image: button.getAttribute('data-artwork-image'),
+                artist_name: button.getAttribute('data-artist-name'),
+                artist_unique_id: button.getAttribute('data-artist-id')
+            };
+            
+            cartManager.addToCart(artworkData);
+        }
+        
+        // Keep old function for compatibility
         function addToCart(artworkId) {
-            // Placeholder for add to cart functionality
             alert('Add to cart functionality coming soon! Artwork ID: ' + artworkId);
         }
 

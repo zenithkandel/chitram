@@ -17,6 +17,7 @@ const { getGalleryArtworks, searchAndFilterArtworks, getArtCategories } = requir
 const { getTrackOrdersPage, trackOrder } = require('./controllers/trackOrderController');
 const { getArtistProfile } = require('./controllers/artistProfileController');
 const { getArtworkDetails } = require('./controllers/artworkController');
+const { createOrder } = require('./controllers/orderController');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -86,12 +87,19 @@ app.get('/gallery', getGalleryArtworks);
 app.get('/artwork/:id', getArtworkDetails);
 
 app.get('/cart', (req, res) => {
-    res.send(`
-        <h1>Shopping Cart</h1>
-        <p>Cart page coming soon...</p>
-        <a href="/">← Back to Home</a>
-    `);
+    res.render('cart', {
+        title: 'Shopping Cart - चित्रम्'
+    });
 });
+
+app.get('/checkout', (req, res) => {
+    res.render('checkout', {
+        title: 'Checkout - चित्रम्'
+    });
+});
+
+// Order creation route (POST)
+app.post('/api/orders', createOrder);
 
 // Track Orders page route
 app.get('/track-orders', getTrackOrdersPage);

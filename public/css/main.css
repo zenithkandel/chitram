@@ -1,0 +1,409 @@
+/* चित्रम् Art Platform - Main CSS File */
+/* This file imports all modular CSS files for organized maintainability */
+
+/* Base styles and CSS variables */
+@import url('./base.css');
+
+/* Layout components (navigation, footer, containers) */
+@import url('./layout.css');
+
+/* Reusable components (buttons, cards, forms, modals) */
+@import url('./components.css');
+
+/* Page-specific styles */
+@import url('./pages.css');
+
+/* Responsive design adjustments */
+@import url('./responsive.css');
+@import url('./components.css');
+
+/* Page-specific styles */
+@import url('./pages/home.css');
+@import url('./pages/gallery.css');
+@import url('./pages/artists.css');
+@import url('./pages/artist-detail.css');
+@import url('./pages/artist-profile.css');
+@import url('./pages/about.css');
+@import url('./pages/contact.css');
+@import url('./pages/apply.css');
+@import url('./pages/track-orders.css');
+@import url('./pages/admin.css');
+
+/* Responsive design utilities */
+@import url('./responsive.css');
+
+/* Print styles */
+@media print {
+    * {
+        background: white !important;
+        color: black !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+    
+    .navbar,
+    .footer,
+    .btn,
+    .modal,
+    .sidebar {
+        display: none !important;
+    }
+    
+    .container {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+        page-break-after: avoid;
+        page-break-inside: avoid;
+    }
+    
+    img {
+        max-width: 100% !important;
+        page-break-inside: avoid;
+    }
+    
+    .page-break {
+        page-break-before: always;
+    }
+    
+    .no-print {
+        display: none !important;
+    }
+    
+    .print-only {
+        display: block !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --text-primary: #000000;
+        --text-secondary: #333333;
+        --text-muted: #666666;
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8f9fa;
+        --bg-light: #e9ecef;
+        --border-light: #000000;
+        --primary-color: #0000ff;
+        --accent-color: #ff0000;
+        --success-color: #008000;
+        --warning-color: #ffa500;
+        --danger-color: #ff0000;
+        --info-color: #0000ff;
+    }
+    
+    .btn, .card, .modal-content {
+        border: 2px solid #000000 !important;
+    }
+    
+    .btn:hover {
+        background: #000000 !important;
+        color: #ffffff !important;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .hero::before,
+    .parallax-bg {
+        transform: none !important;
+    }
+    
+    .animate-on-scroll {
+        animation: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
+}
+
+/* Dark mode preference */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text-primary: #ffffff;
+        --text-secondary: #e9ecef;
+        --text-muted: #adb5bd;
+        --bg-primary: #212529;
+        --bg-secondary: #343a40;
+        --bg-light: #495057;
+        --border-light: #495057;
+        --shadow-sm: 0 0.125rem 0.25rem rgba(255, 255, 255, 0.075);
+        --shadow-md: 0 0.5rem 1rem rgba(255, 255, 255, 0.15);
+        --shadow-lg: 0 1rem 3rem rgba(255, 255, 255, 0.175);
+        --shadow-xl: 0 2rem 4rem rgba(255, 255, 255, 0.2);
+    }
+    
+    .card,
+    .modal-content,
+    .dropdown-menu {
+        background: var(--bg-primary);
+        border-color: var(--border-light);
+    }
+    
+    .form-control {
+        background: var(--bg-secondary);
+        border-color: var(--border-light);
+        color: var(--text-primary);
+    }
+    
+    .form-control:focus {
+        background: var(--bg-primary);
+        border-color: var(--accent-color);
+        color: var(--text-primary);
+    }
+}
+
+/* Focus management for accessibility */
+.focus-visible:focus {
+    outline: 3px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* Skip to content link for accessibility */
+.skip-to-content {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--accent-color);
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 4px;
+    z-index: 10000;
+    font-weight: bold;
+}
+
+.skip-to-content:focus {
+    top: 6px;
+}
+
+/* Screen reader only text */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Loading states */
+.loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin-top: -10px;
+    margin-left: -10px;
+    border: 2px solid var(--border-light);
+    border-radius: 50%;
+    border-top-color: var(--accent-color);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error states */
+.error {
+    border-color: var(--danger-color) !important;
+    background-color: var(--danger-bg) !important;
+}
+
+.error-message {
+    color: var(--danger-color);
+    font-size: var(--font-sm);
+    margin-top: var(--spacing-xs);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.error-message i {
+    font-size: var(--font-sm);
+}
+
+/* Success states */
+.success {
+    border-color: var(--success-color) !important;
+    background-color: var(--success-bg) !important;
+}
+
+.success-message {
+    color: var(--success-color);
+    font-size: var(--font-sm);
+    margin-top: var(--spacing-xs);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.success-message i {
+    font-size: var(--font-sm);
+}
+
+/* Utility classes for development */
+.debug {
+    border: 2px solid red !important;
+}
+
+.debug * {
+    border: 1px solid blue !important;
+}
+
+/* Performance optimizations */
+.lazyload {
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+}
+
+.lazyload.loaded {
+    opacity: 1;
+}
+
+.will-change-transform {
+    will-change: transform;
+}
+
+.will-change-scroll {
+    will-change: scroll-position;
+}
+
+/* Browser-specific fixes */
+/* Firefox scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-color) var(--bg-light);
+}
+
+/* Chrome/Safari scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-light);
+    border-radius: var(--radius-md);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    border-radius: var(--radius-md);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
+/* Selection styles */
+::selection {
+    background: var(--accent-color);
+    color: white;
+}
+
+::-moz-selection {
+    background: var(--accent-color);
+    color: white;
+}
+
+/* Smooth scrolling for the entire page */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Ensure proper box-sizing for all elements */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* Basic font smoothing */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* Remove default margins and paddings */
+h1, h2, h3, h4, h5, h6, p, ul, ol, li, figure, figcaption, blockquote, dl, dd {
+    margin: 0;
+    padding: 0;
+}
+
+/* Remove list styles */
+ul, ol {
+    list-style: none;
+}
+
+/* Remove default link styles */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Remove default button styles */
+button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+/* Remove default form element styles */
+input, textarea, select {
+    font-family: inherit;
+    font-size: inherit;
+}
+
+/* Ensure images are responsive by default */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Ensure videos are responsive */
+video {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Hide visually but keep accessible to screen readers */
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
