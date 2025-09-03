@@ -1177,6 +1177,201 @@
             }
         });
 
+        // Admin Search functionality
+        let adminSearchTimeout;
+        let originalArtistsHTML = '';
+
+        // Store original content on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            originalArtistsHTML = document.getElementById('adminArtistsContainer').innerHTML;
+        });
+
+        function adminSearchArtists(query = '') {
+            const searchBtn = document.getElementById('adminSearchBtn');
+            const searchIcon = document.getElementById('adminSearchIcon');
+            const searchSpinner = document.getElementById('adminSearchSpinner');
+            const clearBtn = document.getElementById('adminClearBtn');
+            const artistsContainer = document.getElementById('adminArtistsContainer');
+            
+            // Show loading state
+            searchIcon.style.display = 'none';
+            searchSpinner.style.display = 'inline-block';
+            searchBtn.disabled = true;
+            
+            // Show/hide clear button
+            if (query.trim()) {
+                clearBtn.style.display = 'block';
+            } else {
+                clearBtn.style.display = 'none';
+            }
+            
+            fetch(`/admin/artists/search?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.artists) {
+                        updateAdminArtistsDisplay(data.artists);
+                    } else {
+                        console.error('Search error:', data.error);
+                        artistsContainer.innerHTML = `
+                            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #666;">
+                                <p>Error searching artists. Please try again.</p>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Search error:', error);
+                    artistsContainer.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #666;">
+                            <p>Error searching artists. Please try again.</p>
+                        </div>
+                    `;
+                })
+                .finally(() => {
+                    // Reset button state
+                    searchIcon.style.display = 'inline-block';
+                    searchSpinner.style.display = 'none';
+                    searchBtn.disabled = false;
+                });
+        }
+
+        function updateAdminArtistsDisplay(artists) {
+            const artistsContainer = document.getElementById('adminArtistsContainer');
+            
+            if (artists.length === 0) {
+                artistsContainer.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #666;">
+                        <p>No artists found matching your search.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let artistsHTML = '';
+            artists.forEach(artist => {
+                const profileImageHTML = artist.profile_picture && artist.profile_picture.trim() !== '' 
+                    ? `<img src="/uploads/profiles/${artist.profile_picture}" 
+                           alt="${artist.full_name}" 
+                           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                           onload="this.nextElementSibling.style.display='none';">`
+                    : '';
+                
+                const avatarFallback = !artist.profile_picture || artist.profile_picture.trim() === ''
+                    ? `<div class="avatar-fallback" style="display: flex;">
+                           ${artist.full_name.charAt(0).toUpperCase()}
+                       </div>`
+                    : `<div class="avatar-fallback" style="display: none;">
+                           ${artist.full_name.charAt(0).toUpperCase()}
+                       </div>`;
+                
+                const statusClass = artist.status === 'active' ? 'active' : 'inactive';
+                const statusText = artist.status.charAt(0).toUpperCase() + artist.status.slice(1);
+                
+                artistsHTML += `
+                    <div class="artist-card">
+                        <div class="artist-header">
+                            <div class="artist-avatar">
+                                ${profileImageHTML}
+                                ${avatarFallback}
+                            </div>
+                            <div class="artist-info">
+                                <h3>${artist.full_name}</h3>
+                                <div class="artist-details">
+                                    <div class="status-badge ${statusClass}">${statusText}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="artist-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">Email:</span>
+                                <span class="meta-value">${artist.email}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Age:</span>
+                                <span class="meta-value">${artist.age} years</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Location:</span>
+                                <span class="meta-value">${artist.city || 'N/A'}, ${artist.district || 'N/A'}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Joined:</span>
+                                <span class="meta-value">${new Date(artist.joined_at).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                        <div class="artist-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">${artist.arts_uploaded || 0}</span>
+                                <span class="stat-label">Uploaded</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">${artist.arts_sold || 0}</span>
+                                <span class="stat-label">Sold</span>
+                            </div>
+                        </div>
+                        <div class="artist-actions">
+                            <button class="action-btn view" onclick="viewProfile(${artist.unique_id})">
+                                <i class="icon">👁️</i>
+                                View
+                            </button>
+                            <button class="action-btn edit" onclick="editArtist(${artist.unique_id})">
+                                <i class="icon">✏️</i>
+                                Edit
+                            </button>
+                            <button class="action-btn delete" onclick="deleteArtist(${artist.unique_id})">
+                                <i class="icon">🗑️</i>
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            artistsContainer.innerHTML = artistsHTML;
+        }
+
+        function clearAdminSearch() {
+            const searchInput = document.getElementById('adminSearchInput');
+            const clearBtn = document.getElementById('adminClearBtn');
+            const artistsContainer = document.getElementById('adminArtistsContainer');
+            
+            searchInput.value = '';
+            clearBtn.style.display = 'none';
+            artistsContainer.innerHTML = originalArtistsHTML;
+        }
+
+        // Event listeners for search
+        document.addEventListener('DOMContentLoaded', function() {
+            const adminSearchInput = document.getElementById('adminSearchInput');
+            const adminSearchBtn = document.getElementById('adminSearchBtn');
+            const adminClearBtn = document.getElementById('adminClearBtn');
+            
+            // Search on input with debounce
+            adminSearchInput.addEventListener('input', function() {
+                clearTimeout(adminSearchTimeout);
+                adminSearchTimeout = setTimeout(() => {
+                    adminSearchArtists(this.value);
+                }, 300);
+            });
+            
+            // Search on button click
+            adminSearchBtn.addEventListener('click', function() {
+                clearTimeout(adminSearchTimeout);
+                adminSearchArtists(adminSearchInput.value);
+            });
+            
+            // Search on Enter key
+            adminSearchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    clearTimeout(adminSearchTimeout);
+                    adminSearchArtists(this.value);
+                }
+            });
+            
+            // Clear search
+            adminClearBtn.addEventListener('click', clearAdminSearch);
+        });
+
         // Artist management functions
         function viewProfile(artistId) {
             // Redirect to artist profile page
