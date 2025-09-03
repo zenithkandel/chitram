@@ -36,7 +36,96 @@
     <section class="checkout-section">
         <div class="container">
             <h1>Checkout</h1>
-            <!-- Checkout content will be added here -->
+            
+            <div class="checkout-container">
+                <!-- Left Side - Order Review -->
+                <div class="order-review-section">
+                    <div class="section-header">
+                        <h3>Order Review</h3>
+                        <button id="edit-cart-btn" class="edit-cart-btn">
+                            <i class="fas fa-edit"></i>
+                            Edit Cart
+                        </button>
+                    </div>
+                    
+                    <div id="checkout-items-list" class="checkout-items">
+                        <!-- Cart items will be populated here by JavaScript -->
+                    </div>
+                    
+                    <div class="order-summary-preview">
+                        <div class="summary-row">
+                            <span>Items (<span id="preview-total-items">0</span>)</span>
+                            <span id="preview-subtotal">₹0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Platform Commission</span>
+                            <span>₹25</span>
+                        </div>
+                        <hr class="summary-divider">
+                        <div class="summary-row total-row">
+                            <span>Total Amount</span>
+                            <span id="preview-total-amount">₹25</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side - Customer Information Form -->
+                <div class="customer-form-section">
+                    <div class="form-container">
+                        <h3>Customer Information</h3>
+                        
+                        <form id="checkout-form">
+                            <div class="form-group">
+                                <label for="customer-name">Full Name *</label>
+                                <input type="text" id="customer-name" name="customerName" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="customer-email">Email Address *</label>
+                                <input type="email" id="customer-email" name="customerEmail" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="customer-phone">Phone Number *</label>
+                                <input type="tel" id="customer-phone" name="customerPhone" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="shipping-address">Shipping Address *</label>
+                                <textarea id="shipping-address" name="shippingAddress" rows="4" required 
+                                          placeholder="Enter your complete shipping address"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="customer-message">Message (Optional)</label>
+                                <textarea id="customer-message" name="customerMessage" rows="3" 
+                                          placeholder="Any special instructions or message"></textarea>
+                            </div>
+                            
+                            <div class="order-info">
+                                <h4>Order Details</h4>
+                                <div class="info-row">
+                                    <span>Total Amount:</span>
+                                    <span id="form-total-amount">₹25</span>
+                                </div>
+                                <div class="info-row">
+                                    <span>Item Count:</span>
+                                    <span id="form-item-count">0</span>
+                                </div>
+                                <div class="info-row">
+                                    <span>Order Date:</span>
+                                    <span id="form-order-date">-</span>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" id="place-order-btn" class="place-order-btn" disabled>
+                                <i class="fas fa-check-circle"></i>
+                                Place Order
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -50,5 +139,188 @@
     <!-- JavaScript -->
     <script src="/js/cart.js"></script>
     <script src="/js/main.js"></script>
+    <script>
+        // Checkout page functionality
+        class CheckoutPage {
+            constructor() {
+                this.platformCommission = 25;
+                this.cartItems = [];
+                this.init();
+            }
+
+            init() {
+                this.loadCartItems();
+                this.bindEvents();
+                this.updateOrderDate();
+            }
+
+            bindEvents() {
+                // Edit cart button
+                document.getElementById('edit-cart-btn').addEventListener('click', () => {
+                    window.location.href = '/cart';
+                });
+
+                // Form submission
+                document.getElementById('checkout-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleOrderSubmission();
+                });
+
+                // Form validation
+                this.setupFormValidation();
+            }
+
+            loadCartItems() {
+                this.cartItems = cartManager.getCartItems();
+                
+                if (this.cartItems.length === 0) {
+                    // Redirect back to cart if empty
+                    alert('Your cart is empty. Please add items before checkout.');
+                    window.location.href = '/cart';
+                    return;
+                }
+
+                this.displayCheckoutItems();
+                this.updateOrderSummary();
+            }
+
+            displayCheckoutItems() {
+                const itemsList = document.getElementById('checkout-items-list');
+                
+                const itemsHTML = this.cartItems.map(item => `
+                    <div class="checkout-item">
+                        <div class="item-image">
+                            <img src="${item.art_image}" alt="${item.art_name}" 
+                                 onerror="handleCheckoutImageError(this)">
+                        </div>
+                        <div class="item-details">
+                            <h4>${item.art_name}</h4>
+                            <p>by ${item.artist_name || 'Unknown Artist'}</p>
+                        </div>
+                        <div class="item-price">
+                            ₹${parseFloat(item.cost).toLocaleString('en-IN')}
+                        </div>
+                    </div>
+                `).join('');
+
+                itemsList.innerHTML = itemsHTML;
+            }
+
+            updateOrderSummary() {
+                const totalItems = this.cartItems.length;
+                const subtotal = this.cartItems.reduce((sum, item) => sum + parseFloat(item.cost), 0);
+                const total = subtotal + this.platformCommission;
+
+                // Update preview section
+                document.getElementById('preview-total-items').textContent = totalItems;
+                document.getElementById('preview-subtotal').textContent = `₹${subtotal.toLocaleString('en-IN')}`;
+                document.getElementById('preview-total-amount').textContent = `₹${total.toLocaleString('en-IN')}`;
+
+                // Update form section
+                document.getElementById('form-total-amount').textContent = `₹${total.toLocaleString('en-IN')}`;
+                document.getElementById('form-item-count').textContent = totalItems;
+            }
+
+            updateOrderDate() {
+                const now = new Date();
+                const dateString = now.toLocaleDateString('en-IN', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                document.getElementById('form-order-date').textContent = dateString;
+            }
+
+            setupFormValidation() {
+                const form = document.getElementById('checkout-form');
+                const submitBtn = document.getElementById('place-order-btn');
+                const requiredFields = form.querySelectorAll('input[required], textarea[required]');
+
+                const validateForm = () => {
+                    let isValid = true;
+                    requiredFields.forEach(field => {
+                        if (!field.value.trim()) {
+                            isValid = false;
+                        }
+                    });
+                    
+                    submitBtn.disabled = !isValid || this.cartItems.length === 0;
+                };
+
+                requiredFields.forEach(field => {
+                    field.addEventListener('input', validateForm);
+                    field.addEventListener('blur', validateForm);
+                });
+
+                validateForm(); // Initial validation
+            }
+
+            generateOrderId() {
+                const timestamp = Date.now();
+                const randomNum = Math.floor(Math.random() * 1000);
+                return `ORD-${timestamp}-${randomNum}`;
+            }
+
+            prepareItemList() {
+                return this.cartItems.map(item => ({
+                    art_id: parseInt(item.unique_id),
+                    art_name: item.art_name,
+                    artist_name: item.artist_name || 'Unknown Artist',
+                    price: parseFloat(item.cost),
+                    quantity: 1
+                }));
+            }
+
+            async handleOrderSubmission() {
+                const formData = new FormData(document.getElementById('checkout-form'));
+                const subtotal = this.cartItems.reduce((sum, item) => sum + parseFloat(item.cost), 0);
+                const totalAmount = subtotal + this.platformCommission;
+
+                const orderData = {
+                    order_id: this.generateOrderId(),
+                    customer_name: formData.get('customerName'),
+                    customer_phone: formData.get('customerPhone'),
+                    customer_email: formData.get('customerEmail'),
+                    shipping_address: formData.get('shippingAddress'),
+                    customer_message: formData.get('customerMessage') || '',
+                    total_amount: totalAmount,
+                    item_count: this.cartItems.length,
+                    item_list: this.prepareItemList(),
+                    status: 'placed'
+                };
+
+                try {
+                    // For now, just show the order data (will implement server submission later)
+                    console.log('Order Data:', orderData);
+                    alert(`Order placed successfully!\nOrder ID: ${orderData.order_id}\nPlease save this Order ID for tracking.`);
+                    
+                    // Clear cart after successful order
+                    cartManager.clearCart();
+                    
+                    // Redirect to home or thank you page
+                    window.location.href = '/';
+                    
+                } catch (error) {
+                    console.error('Order submission error:', error);
+                    alert('There was an error placing your order. Please try again.');
+                }
+            }
+        }
+
+        // Handle checkout image errors
+        function handleCheckoutImageError(img) {
+            if (img.src.includes('placeholder-art.jpg')) return;
+            img.src = '/images/placeholder-art.jpg';
+            img.onerror = function() {
+                this.style.display = 'none';
+                this.parentNode.innerHTML = '<div class="image-placeholder"><i class="fas fa-image"></i></div>';
+            };
+        }
+
+        // Initialize checkout page
+        const checkoutPage = new CheckoutPage();
+    </script>
 </body>
 </html>
