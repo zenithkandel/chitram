@@ -218,6 +218,80 @@
             color: #666;
         }
 
+        /* Admin Search Bar Styles */
+        .admin-search-container {
+            margin: 1.5rem 0;
+            padding: 0 0.5rem;
+        }
+
+        .admin-search-bar {
+            display: flex;
+            max-width: 500px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .admin-search-bar:focus-within {
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .admin-search-bar input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            background: transparent;
+        }
+
+        .admin-search-bar input::placeholder {
+            color: #999;
+        }
+
+        .admin-search-button, .admin-clear-button {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .admin-search-button:hover, .admin-clear-button:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+            transform: translateY(-1px);
+        }
+
+        .admin-clear-button {
+            background: #6c757d;
+            margin-left: 1px;
+        }
+
+        .admin-clear-button:hover {
+            background: #5a6268;
+        }
+
+        .admin-loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         /* Artists grid */
         .artists-grid {
             display: grid;
@@ -767,8 +841,25 @@
                 </div>
             </div>
 
+            <!-- Search Bar -->
+            <div class="admin-search-container">
+                <div class="admin-search-bar">
+                    <input type="text" 
+                           id="adminSearchInput" 
+                           placeholder="Search artists by name, email, or bio..." 
+                           autocomplete="off">
+                    <button type="button" id="adminSearchBtn" class="admin-search-button">
+                        <span id="adminSearchIcon">🔍</span>
+                        <span id="adminSearchSpinner" class="admin-loading-spinner" style="display: none;"></span>
+                    </button>
+                    <button type="button" id="adminClearBtn" class="admin-clear-button" style="display: none;">
+                        <span>Clear</span>
+                    </button>
+                </div>
+            </div>
+
             <!-- Artists grid -->
-            <div class="artists-grid">
+            <div class="artists-grid" id="adminArtistsContainer">
                 <% artists.forEach(artist => { %>
                     <div class="artist-card">
                         <div class="artist-header">

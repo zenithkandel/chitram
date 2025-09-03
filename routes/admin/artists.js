@@ -10,6 +10,9 @@ router.use(authenticateAdmin);
 // Get all artists page
 router.get('/', artistController.getAllArtists);
 
+// Search artists (admin)
+router.get('/search', artistController.searchAdminArtists);
+
 // Create new artist (with file upload)
 router.post('/', uploadProfilePicture, artistController.createArtist);
 

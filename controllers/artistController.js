@@ -43,6 +43,78 @@ const getAllArtists = async (req, res) => {
     }
 };
 
+// Search artists for admin (includes inactive artists)
+const searchAdminArtists = async (req, res) => {
+    try {
+        const { q } = req.query;
+        
+        if (!q || q.trim() === '') {
+            // If no search query, return all artists (except deleted)
+            const [artists] = await db.execute(`
+                SELECT 
+                    unique_id,
+                    full_name,
+                    age,
+                    started_art_since,
+                    college_school,
+                    city,
+                    district,
+                    email,
+                    phone,
+                    socials,
+                    arts_uploaded,
+                    arts_sold,
+                    bio,
+                    profile_picture,
+                    joined_at,
+                    status
+                FROM artists 
+                WHERE status != 'deleted' 
+                ORDER BY joined_at DESC
+            `);
+            
+            return res.json({ artists });
+        }
+
+        // Search artists by name, email, or bio
+        const searchTerm = `%${q.trim()}%`;
+        const [artists] = await db.execute(`
+            SELECT 
+                unique_id,
+                full_name,
+                age,
+                started_art_since,
+                college_school,
+                city,
+                district,
+                email,
+                phone,
+                socials,
+                arts_uploaded,
+                arts_sold,
+                bio,
+                profile_picture,
+                joined_at,
+                status
+            FROM artists 
+            WHERE status != 'deleted' 
+            AND (full_name LIKE ? OR email LIKE ? OR bio LIKE ?)
+            ORDER BY 
+                CASE 
+                    WHEN full_name LIKE ? THEN 1 
+                    WHEN email LIKE ? THEN 2
+                    ELSE 3 
+                END,
+                joined_at DESC
+        `, [searchTerm, searchTerm, searchTerm, searchTerm, searchTerm]);
+
+        res.json({ artists });
+    } catch (error) {
+        console.error('Admin search artists error:', error);
+        res.status(500).json({ error: 'Error searching artists' });
+    }
+};
+
 // Get single artist for editing
 const getArtist = async (req, res) => {
     try {
@@ -489,6 +561,7 @@ const searchArtists = async (req, res) => {
 
 module.exports = {
     getAllArtists,
+    searchAdminArtists,
     getArtist,
     createArtist,
     updateArtist,
