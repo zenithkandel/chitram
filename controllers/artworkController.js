@@ -315,11 +315,40 @@ const getAllArtistsForDropdown = async (req, res) => {
     }
 };
 
+// Get artwork details for public view
+const getArtworkDetails = async (req, res) => {
+    try {
+        const artworkId = req.params.id;
+        
+        if (!artworkId) {
+            return res.status(400).render('error', { 
+                error: 'Artwork ID is required',
+                title: 'Error - Artwork Not Found'
+            });
+        }
+
+        // Placeholder for artwork fetching logic
+        // Will be implemented later
+        
+        res.render('artwork-details', {
+            title: 'Artwork Details - चित्रम्'
+        });
+
+    } catch (error) {
+        console.error('Error fetching artwork details:', error);
+        res.status(500).render('error', { 
+            error: 'Error loading artwork details',
+            title: 'Error - Server Error'
+        });
+    }
+};
+
 module.exports = {
     getAllArtworks,
     getArtwork,
     createArtwork,
     updateArtwork,
     deleteArtwork,
-    getAllArtistsForDropdown
+    getAllArtistsForDropdown,
+    getArtworkDetails
 };

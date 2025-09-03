@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - चित्रम्</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="/">
+                    <h1>चित्रम्</h1>
+                    <span>Art Gallery</span>
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/artists" class="active">Artists</a></li>
+                <li><a href="/gallery">Gallery</a></li>
+                <li><a href="/apply">Apply</a></li>
+                <li><a href="/track-orders">Track Orders</a></li>
+                <li><a href="/cart">Cart</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Artist Profile Section -->
+    <section class="simple-artist-profile">
+        <div class="container">
+            <div class="artist-profile-card">
+                
+                <!-- Profile Picture -->
+                <div class="profile-picture">
+                    <img src="<%= artist.profile_picture %>" alt="<%= artist.full_name %>" 
+                         onerror="handleProfileImageError(this)">
+                </div>
+
+                <!-- Full Name -->
+                <div class="artist-name">
+                    <h1><%= artist.full_name %></h1>
+                </div>
+
+                <!-- Experience in field -->
+                <div class="experience">
+                    <h3>Experience in Field</h3>
+                    <p><%= artist.experience_years %> years</p>
+                </div>
+
+                <!-- School College -->
+                <div class="education">
+                    <h3>School/College</h3>
+                    <p><%= artist.college_school %></p>
+                </div>
+
+                <!-- District -->
+                <div class="location">
+                    <h3>District</h3>
+                    <p><%= artist.district %></p>
+                </div>
+
+                <!-- Social Media -->
+                <div class="social-media">
+                    <h3>Social Media</h3>
+                    <div class="social-links">
+                        <% if (artist.social_media && Object.keys(artist.social_media).length > 0) { %>
+                            <% Object.keys(artist.social_media).forEach(platform => { %>
+                                <% if (artist.social_media[platform]) { %>
+                                    <a href="<%= artist.social_media[platform] %>" target="_blank" class="social-link">
+                                        <i class="fab fa-<%= platform.toLowerCase() %>"></i>
+                                        <%= platform %>
+                                    </a>
+                                <% } %>
+                            <% }); %>
+                        <% } else { %>
+                            <p>No social media links available</p>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Bio -->
+                <div class="bio">
+                    <h3>Bio</h3>
+                    <p><%= artist.bio %></p>
+                </div>
+
+            </div>
+
+            <!-- Artist's Artworks Section -->
+            <div class="artist-artworks-section">
+                <h2>Artworks by <%= artist.full_name %> (<%= artworks ? artworks.length : 0 %>)</h2>
+                
+                <% if (artworks && artworks.length > 0) { %>
+                    <div class="artworks-grid">
+                        <% artworks.forEach(artwork => { %>
+                            <div class="artwork-card">
+                                <div class="artwork-image">
+                                    <img src="<%= artwork.art_image %>" alt="<%= artwork.art_name %>" 
+                                         onerror="handleArtworkImageError(this)">
+                                    <div class="artwork-status <%= artwork.status %>">
+                                        <%= artwork.status.charAt(0).toUpperCase() + artwork.status.slice(1) %>
+                                    </div>
+                                </div>
+                                <div class="artwork-info">
+                                    <h4><%= artwork.art_name %></h4>
+                                    <p class="artwork-category"><%= artwork.art_category %></p>
+                                    <p class="artwork-description"><%= artwork.art_description %></p>
+                                    
+                                    <div class="artwork-details">
+                                        <div class="detail-item">
+                                            <span class="label">Size:</span>
+                                            <span class="value"><%= artwork.size_of_art %></span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="label">Work Hours:</span>
+                                            <span class="value"><%= artwork.work_hours %></span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="label">Type:</span>
+                                            <span class="value"><%= artwork.color_type %></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="artwork-footer">
+                                        <span class="price"><%= artwork.formatted_cost %></span>
+                                        <% if (artwork.status === 'listed') { %>
+                                            <button class="add-to-cart-btn" onclick="addToCart('<%= artwork.unique_id %>')">
+                                                <i class="fas fa-shopping-cart"></i>
+                                                Add to Cart
+                                            </button>
+                                        <% } else { %>
+                                            <span class="status-badge <%= artwork.status %>">
+                                                <%= artwork.status.charAt(0).toUpperCase() + artwork.status.slice(1) %>
+                                            </span>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="no-artworks">
+                        <i class="fas fa-palette"></i>
+                        <h3>No Artworks Available</h3>
+                        <p>This artist hasn't uploaded any artworks yet.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 चित्रम् Art Gallery. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="/js/main.js"></script>
+    <script>
+        function addToCart(artworkId) {
+            // Placeholder for add to cart functionality
+            alert('Add to cart functionality coming soon! Artwork ID: ' + artworkId);
+        }
+
+        // Handle artwork image loading errors
+        function handleArtworkImageError(img) {
+            // Prevent infinite loop by checking if already set to placeholder
+            if (img.src.includes('placeholder-art.jpg')) {
+                return;
+            }
+            
+            // Set to placeholder image
+            img.src = '/images/placeholder-art.jpg';
+            
+            // If placeholder also fails, create a simple colored div
+            img.onerror = function() {
+                createPlaceholderDiv(this);
+            };
+        }
+
+        // Create a colored placeholder div if no images work
+        function createPlaceholderDiv(img) {
+            const placeholder = document.createElement('div');
+            placeholder.className = 'image-placeholder';
+            placeholder.innerHTML = `
+                <i class="fas fa-image"></i>
+                <span>No Image</span>
+            `;
+            
+            // Replace the img with the placeholder
+            img.parentNode.replaceChild(placeholder, img);
+        }
+
+        // Handle profile image error
+        function handleProfileImageError(img) {
+            if (img.src.includes('default-artist.jpg')) {
+                return;
+            }
+            
+            img.src = '/images/default-artist.jpg';
+            
+            img.onerror = function() {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'profile-placeholder';
+                placeholder.innerHTML = `
+                    <i class="fas fa-user"></i>
+                `;
+                img.parentNode.replaceChild(placeholder, img);
+            };
+        }
+    </script>
+</body>
+</html>

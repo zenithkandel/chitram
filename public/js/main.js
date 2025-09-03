@@ -2,13 +2,25 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     // Mobile menu toggle functionality
-    const mobileMenuToggle = document.querySelector('.nav-toggle');
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
     const navMenu = document.querySelector('.nav-menu');
     
     if (mobileMenuToggle && navMenu) {
         mobileMenuToggle.addEventListener('click', function() {
             navMenu.classList.toggle('active');
-            mobileMenuToggle.classList.toggle('active');
+            
+            // Animate hamburger lines
+            const lines = mobileMenuToggle.querySelectorAll('.hamburger-line');
+            lines.forEach((line, index) => {
+                if (navMenu.classList.contains('active')) {
+                    if (index === 0) line.style.transform = 'rotate(45deg) translate(6px, 6px)';
+                    if (index === 1) line.style.opacity = '0';
+                    if (index === 2) line.style.transform = 'rotate(-45deg) translate(6px, -6px)';
+                } else {
+                    line.style.transform = 'none';
+                    line.style.opacity = '1';
+                }
+            });
         });
     }
     
@@ -18,19 +30,15 @@ document.addEventListener('DOMContentLoaded', function() {
         link.addEventListener('click', function() {
             if (navMenu && navMenu.classList.contains('active')) {
                 navMenu.classList.remove('active');
-                mobileMenuToggle.classList.remove('active');
+                
+                // Reset hamburger lines
+                const lines = mobileMenuToggle.querySelectorAll('.hamburger-line');
+                lines.forEach(line => {
+                    line.style.transform = 'none';
+                    line.style.opacity = '1';
+                });
             }
         });
-    });
-    
-    // Close mobile menu when clicking outside
-    document.addEventListener('click', function(e) {
-        if (navMenu && navMenu.classList.contains('active')) {
-            if (!mobileMenuToggle.contains(e.target) && !navMenu.contains(e.target)) {
-                navMenu.classList.remove('active');
-                mobileMenuToggle.classList.remove('active');
-            }
-        }
     });
     
     // Set active navigation item based on current page
