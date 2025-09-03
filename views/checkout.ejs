@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - चित्रम्</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="/">
+                    <h1>चित्रम्</h1>
+                    <span>Art Gallery</span>
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/artists">Artists</a></li>
+                <li><a href="/gallery">Gallery</a></li>
+                <li><a href="/apply">Apply</a></li>
+                <li><a href="/track-orders">Track Orders</a></li>
+                <li><a href="/cart">
+                    <i class="fas fa-shopping-cart"></i> Cart
+                    <span id="cart-count" class="cart-count" style="display: none;">0</span>
+                </a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Checkout Content Section -->
+    <section class="checkout-section">
+        <div class="container">
+            <h1>Checkout</h1>
+            
+            <div class="checkout-container">
+                <!-- Left Side - Order Review -->
+                <div class="order-review-section">
+                    <div class="section-header">
+                        <h3>Order Review</h3>
+                        <button id="edit-cart-btn" class="edit-cart-btn">
+                            <i class="fas fa-edit"></i>
+                            Edit Cart
+                        </button>
+                    </div>
+                    
+                    <div id="checkout-items-list" class="checkout-items">
+                        <!-- Cart items will be populated here by JavaScript -->
+                    </div>
+                    
+                    <div class="order-summary-preview">
+                        <div class="summary-row">
+                            <span>Items (<span id="preview-total-items">0</span>)</span>
+                            <span id="preview-subtotal">₹0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Platform Commission</span>
+                            <span>₹25</span>
+                        </div>
+                        <hr class="summary-divider">
+                        <div class="summary-row total-row">
+                            <span>Total Amount</span>
+                            <span id="preview-total-amount">₹25</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side - Customer Information Form -->
+                <div class="customer-form-section">
+                    <div class="form-container">
+                        <h3>Customer Information</h3>
+                        
+                        <form id="checkout-form">
+                            <div class="form-group">
+                                <label for="customer-name">Full Name *</label>
+                                <input type="text" id="customer-name" name="customerName" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="customer-email">Email Address *</label>
+                                <input type="email" id="customer-email" name="customerEmail" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="customer-phone">Phone Number *</label>
+                                <input type="tel" id="customer-phone" name="customerPhone" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="shipping-address">Shipping Address *</label>
+                                <textarea id="shipping-address" name="shippingAddress" rows="4" required 
+                                          placeholder="Enter your complete shipping address"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="customer-message">Message (Optional)</label>
+                                <textarea id="customer-message" name="customerMessage" rows="3" 
+                                          placeholder="Any special instructions or message"></textarea>
+                            </div>
+                            
+                            <div class="order-info">
+                                <h4>Order Details</h4>
+                                <div class="info-row">
+                                    <span>Total Amount:</span>
+                                    <span id="form-total-amount">₹25</span>
+                                </div>
+                                <div class="info-row">
+                                    <span>Item Count:</span>
+                                    <span id="form-item-count">0</span>
+                                </div>
+                                <div class="info-row">
+                                    <span>Order Date:</span>
+                                    <span id="form-order-date">-</span>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" id="place-order-btn" class="place-order-btn" disabled>
+                                <i class="fas fa-check-circle"></i>
+                                Place Order
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Order Success Modal -->
+    <div id="order-success-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-check-circle success-icon"></i>
+                <h2>Order Placed Successfully!</h2>
+            </div>
+            <div class="modal-body">
+                <div class="order-details">
+                    <div class="order-id-section">
+                        <label>Your Order ID:</label>
+                        <div class="order-id-display">
+                            <span id="modal-order-id"></span>
+                            <button type="button" class="copy-btn" onclick="copyOrderId()" title="Copy Order ID">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="important-note">
+                        <div class="note-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="note-text">
+                            <strong>Please save this Order ID!</strong><br>
+                            You'll need it to track your order.
+                        </div>
+                    </div>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span>We will contact you within <strong>48 hours</strong></span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-shipping-fast"></i>
+                            <span>Your artwork will be shipped within <strong>1 week</strong></span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>For inquiries, visit our <a href="/contact">contact page</a></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-primary" onclick="closeModalAndRedirect()">
+                    <i class="fas fa-home"></i>
+                    Continue Shopping
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 चित्रम् Art Gallery. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="/js/cart.js"></script>
+    <script src="/js/main.js"></script>
+    <script>
+        // Checkout page functionality
+        class CheckoutPage {
+            constructor() {
+                this.platformCommission = 25;
+                this.cartItems = [];
+                this.init();
+            }
+
+            init() {
+                this.loadCartItems();
+                this.bindEvents();
+                this.updateOrderDate();
+            }
+
+            bindEvents() {
+                // Edit cart button
+                document.getElementById('edit-cart-btn').addEventListener('click', () => {
+                    window.location.href = '/cart';
+                });
+
+                // Form submission
+                document.getElementById('checkout-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleOrderSubmission();
+                });
+
+                // Form validation
+                this.setupFormValidation();
+            }
+
+            loadCartItems() {
+                this.cartItems = cartManager.getCartItems();
+                
+                if (this.cartItems.length === 0) {
+                    // Redirect back to cart if empty
+                    alert('Your cart is empty. Please add items before checkout.');
+                    window.location.href = '/cart';
+                    return;
+                }
+
+                this.displayCheckoutItems();
+                this.updateOrderSummary();
+            }
+
+            displayCheckoutItems() {
+                const itemsList = document.getElementById('checkout-items-list');
+                
+                const itemsHTML = this.cartItems.map(item => `
+                    <div class="checkout-item">
+                        <div class="item-image">
+                            <img src="${item.art_image}" alt="${item.art_name}" 
+                                 onerror="handleCheckoutImageError(this)">
+                        </div>
+                        <div class="item-details">
+                            <h4>${item.art_name}</h4>
+                            <p>by ${item.artist_name || 'Unknown Artist'}</p>
+                        </div>
+                        <div class="item-price">
+                            ₹${parseFloat(item.cost).toLocaleString('en-IN')}
+                        </div>
+                    </div>
+                `).join('');
+
+                itemsList.innerHTML = itemsHTML;
+            }
+
+            updateOrderSummary() {
+                const totalItems = this.cartItems.length;
+                const subtotal = this.cartItems.reduce((sum, item) => sum + parseFloat(item.cost), 0);
+                const total = subtotal + this.platformCommission;
+
+                // Update preview section
+                document.getElementById('preview-total-items').textContent = totalItems;
+                document.getElementById('preview-subtotal').textContent = `₹${subtotal.toLocaleString('en-IN')}`;
+                document.getElementById('preview-total-amount').textContent = `₹${total.toLocaleString('en-IN')}`;
+
+                // Update form section
+                document.getElementById('form-total-amount').textContent = `₹${total.toLocaleString('en-IN')}`;
+                document.getElementById('form-item-count').textContent = totalItems;
+            }
+
+            updateOrderDate() {
+                const now = new Date();
+                const dateString = now.toLocaleDateString('en-IN', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                document.getElementById('form-order-date').textContent = dateString;
+            }
+
+            setupFormValidation() {
+                const form = document.getElementById('checkout-form');
+                const submitBtn = document.getElementById('place-order-btn');
+                const requiredFields = form.querySelectorAll('input[required], textarea[required]');
+
+                const validateForm = () => {
+                    let isValid = true;
+                    requiredFields.forEach(field => {
+                        if (!field.value.trim()) {
+                            isValid = false;
+                        }
+                    });
+                    
+                    submitBtn.disabled = !isValid || this.cartItems.length === 0;
+                };
+
+                requiredFields.forEach(field => {
+                    field.addEventListener('input', validateForm);
+                    field.addEventListener('blur', validateForm);
+                });
+
+                validateForm(); // Initial validation
+            }
+
+            generateOrderId() {
+                const timestamp = Date.now();
+                const randomNum = Math.floor(Math.random() * 1000);
+                return `ORD-${timestamp}-${randomNum}`;
+            }
+
+            prepareItemList() {
+                return this.cartItems.map(item => ({
+                    art_id: parseInt(item.unique_id),
+                    art_name: item.art_name,
+                    artist_name: item.artist_name || 'Unknown Artist',
+                    price: parseFloat(item.cost),
+                    quantity: 1
+                }));
+            }
+
+            async handleOrderSubmission() {
+                const formData = new FormData(document.getElementById('checkout-form'));
+                const subtotal = this.cartItems.reduce((sum, item) => sum + parseFloat(item.cost), 0);
+                const totalAmount = subtotal + this.platformCommission;
+
+                const orderData = {
+                    order_id: this.generateOrderId(),
+                    customer_name: formData.get('customerName'),
+                    customer_phone: formData.get('customerPhone'),
+                    customer_email: formData.get('customerEmail'),
+                    shipping_address: formData.get('shippingAddress'),
+                    customer_message: formData.get('customerMessage') || '',
+                    total_amount: totalAmount,
+                    item_count: this.cartItems.length,
+                    item_list: this.prepareItemList(),
+                    status: 'placed'
+                };
+
+                try {
+                    // Disable submit button and show loading
+                    const submitBtn = document.getElementById('place-order-btn');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Placing Order...';
+
+                    // Submit order to backend
+                    const response = await fetch('/api/orders', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(orderData)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        // Order placed successfully - show modal
+                        this.showSuccessModal(result.order_id);
+                        
+                        // Clear cart after successful order
+                        cartManager.clearCart();
+                        
+                    } else {
+                        // Handle error response
+                        throw new Error(result.error || 'Failed to place order');
+                    }
+                    
+                } catch (error) {
+                    console.error('Order submission error:', error);
+                    alert(`There was an error placing your order: ${error.message}\nPlease try again.`);
+                    
+                    // Re-enable submit button
+                    const submitBtn = document.getElementById('place-order-btn');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            }
+
+            showSuccessModal(orderId) {
+                // Set the order ID in the modal
+                document.getElementById('modal-order-id').textContent = orderId;
+                
+                // Show the modal
+                const modal = document.getElementById('order-success-modal');
+                modal.style.display = 'flex';
+                
+                // Re-enable the submit button for future use
+                const submitBtn = document.getElementById('place-order-btn');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Place Order';
+            }
+        }
+
+        // Handle checkout image errors
+        function handleCheckoutImageError(img) {
+            if (img.src.includes('placeholder-art.jpg')) return;
+            img.src = '/images/placeholder-art.jpg';
+            img.onerror = function() {
+                this.style.display = 'none';
+                this.parentNode.innerHTML = '<div class="image-placeholder"><i class="fas fa-image"></i></div>';
+            };
+        }
+
+        // Modal functionality
+        function copyOrderId() {
+            const orderIdText = document.getElementById('modal-order-id').textContent;
+            navigator.clipboard.writeText(orderIdText).then(() => {
+                const copyBtn = document.querySelector('.copy-btn');
+                const originalHTML = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+                copyBtn.style.color = '#27ae60';
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalHTML;
+                    copyBtn.style.color = '';
+                }, 2000);
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = orderIdText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                const copyBtn = document.querySelector('.copy-btn');
+                const originalHTML = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+                copyBtn.style.color = '#27ae60';
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalHTML;
+                    copyBtn.style.color = '';
+                }, 2000);
+            });
+        }
+
+        function closeModalAndRedirect() {
+            const modal = document.getElementById('order-success-modal');
+            modal.style.display = 'none';
+            window.location.href = '/';
+        }
+
+        // Close modal when clicking outside of it
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('order-success-modal');
+            if (event.target === modal) {
+                closeModalAndRedirect();
+            }
+        });
+
+        // Initialize checkout page
+        const checkoutPage = new CheckoutPage();
+
+        // Handle checkout image errors
+        function handleCheckoutImageError(img) {
+            if (img.src.includes('placeholder-art.jpg')) return;
+            img.src = '/images/placeholder-art.jpg';
+            img.onerror = function() {
+                this.style.display = 'none';
+                this.parentNode.innerHTML = '<div class="image-placeholder"><i class="fas fa-image"></i></div>';
+            };
+        }
+    </script>
+</body>
+</html>

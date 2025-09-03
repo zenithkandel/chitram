@@ -5,6 +5,7 @@ const fs = require('fs');
 // Ensure upload directories exist
 const uploadDir = path.join(__dirname, '../uploads/profiles');
 const artworkUploadDir = path.join(__dirname, '../uploads/artworks');
+const applicationUploadDir = path.join(__dirname, '../uploads/applications');
 
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
@@ -12,6 +13,10 @@ if (!fs.existsSync(uploadDir)) {
 
 if (!fs.existsSync(artworkUploadDir)) {
     fs.mkdirSync(artworkUploadDir, { recursive: true });
+}
+
+if (!fs.existsSync(applicationUploadDir)) {
+    fs.mkdirSync(applicationUploadDir, { recursive: true });
 }
 
 // Configure multer for profile picture uploads
@@ -66,7 +71,29 @@ const artworkUpload = multer({
     }
 });
 
+// Configure multer for application uploads
+const applicationStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, applicationUploadDir);
+    },
+    filename: function (req, file, cb) {
+        // Generate unique filename: application_timestamp.extension
+        const extension = path.extname(file.originalname);
+        const filename = `application_${Date.now()}${extension}`;
+        cb(null, filename);
+    }
+});
+
+const applicationUpload = multer({
+    storage: applicationStorage,
+    fileFilter: fileFilter,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit for applications
+    }
+});
+
 module.exports = {
     uploadProfilePicture: upload.single('profile_picture'),
-    uploadArtworkImage: artworkUpload.single('art_image')
+    uploadArtworkImage: artworkUpload.single('art_image'),
+    uploadApplicationImage: applicationUpload.single('profile_picture')
 };

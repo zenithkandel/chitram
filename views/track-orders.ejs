@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Orders - चित्रम् Art Platform</title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="/">चित्रम्</a>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="/" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/about" class="nav-link">About</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/apply" class="nav-link">Apply</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/artists" class="nav-link">Artists</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/gallery" class="nav-link">Gallery</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/cart" class="nav-link">Cart</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/track-orders" class="nav-link active">Track Orders</a>
+                </li>
+            </ul>
+            <div class="nav-toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <h1>Track Your Orders</h1>
+            <p>Enter your order details to track the status of your artwork purchase.</p>
+
+            <!-- Order Tracking Form -->
+            <div class="tracking-form-container">
+                <form id="trackingForm" class="tracking-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="order_id">Order ID *</label>
+                            <input type="text" id="order_id" name="order_id" required placeholder="Enter your order ID">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" required placeholder="Enter your email address">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-track" id="trackBtn">
+                        <span id="trackText">Track Order</span>
+                        <span id="trackSpinner" class="loading-spinner" style="display: none;"></span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Order Details Display -->
+            <div id="orderResult" class="order-result" style="display: none;">
+                <!-- Order details will be displayed here -->
+            </div>
+
+            <!-- Error Message Display -->
+            <div id="errorMessage" class="error-message" style="display: none;">
+                <p id="errorText"></p>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/main.js"></script>
+    <script>
+        // Order tracking functionality
+        document.getElementById('trackingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const trackBtn = document.getElementById('trackBtn');
+            const trackText = document.getElementById('trackText');
+            const trackSpinner = document.getElementById('trackSpinner');
+            const orderResult = document.getElementById('orderResult');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Show loading state
+            trackBtn.disabled = true;
+            trackText.style.display = 'none';
+            trackSpinner.style.display = 'inline-block';
+            
+            // Hide previous results
+            orderResult.style.display = 'none';
+            errorMessage.style.display = 'none';
+            
+            try {
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData);
+                
+                const response = await fetch('/api/track-order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.order) {
+                    displayOrderDetails(result.order);
+                } else {
+                    showError(result.error || 'Error tracking order. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Error tracking order. Please try again.');
+            } finally {
+                // Reset button state
+                trackBtn.disabled = false;
+                trackText.style.display = 'inline-block';
+                trackSpinner.style.display = 'none';
+            }
+        });
+        
+        function displayOrderDetails(order) {
+            const orderResult = document.getElementById('orderResult');
+            
+            // Status color mapping
+            const statusColors = {
+                'placed': '#ffc107',
+                'seen': '#17a2b8',
+                'contacted': '#6f42c1',
+                'sold': '#28a745',
+                'delivered': '#28a745',
+                'canceled': '#dc3545'
+            };
+            
+            // Status descriptions
+            const statusDescriptions = {
+                'placed': 'Your order has been placed successfully',
+                'seen': 'Your order has been reviewed by our team',
+                'contacted': 'We have contacted you regarding your order',
+                'sold': 'Your artwork has been sold and is being prepared',
+                'delivered': 'Your order has been delivered successfully',
+                'canceled': 'Your order has been canceled'
+            };
+            
+            const statusColor = statusColors[order.status] || '#6c757d';
+            const statusDescription = statusDescriptions[order.status] || 'Order status update';
+            
+            // Format item list
+            let itemsHTML = '';
+            if (order.item_list && order.item_list.length > 0) {
+                itemsHTML = order.item_list.map(item => `
+                    <div class="order-item">
+                        <span class="item-name">${item.name || 'Artwork'}</span>
+                        <span class="item-price">₹${parseFloat(item.price || 0).toLocaleString()}</span>
+                    </div>
+                `).join('');
+            } else {
+                itemsHTML = '<div class="order-item">Item details not available</div>';
+            }
+            
+            orderResult.innerHTML = `
+                <div class="order-card">
+                    <div class="order-header">
+                        <h2>Order Details</h2>
+                        <div class="order-status" style="background-color: ${statusColor}">
+                            ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                        </div>
+                    </div>
+                    
+                    <div class="order-info">
+                        <div class="info-section">
+                            <h3>Order Information</h3>
+                            <div class="info-row">
+                                <span class="label">Order ID:</span>
+                                <span class="value">${order.order_id}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Customer:</span>
+                                <span class="value">${order.customer_name}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Email:</span>
+                                <span class="value">${order.customer_email}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Phone:</span>
+                                <span class="value">${order.customer_phone}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Total Amount:</span>
+                                <span class="value total-amount">₹${order.total_amount.toLocaleString()}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="info-section">
+                            <h3>Order Timeline</h3>
+                            <div class="info-row">
+                                <span class="label">Order Placed:</span>
+                                <span class="value">${order.creation_date}</span>
+                            </div>
+                            ${order.received_date ? `
+                                <div class="info-row">
+                                    <span class="label">Order Received:</span>
+                                    <span class="value">${order.received_date}</span>
+                                </div>
+                            ` : ''}
+                            ${order.delivered_date ? `
+                                <div class="info-row">
+                                    <span class="label">Order Delivered:</span>
+                                    <span class="value">${order.delivered_date}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="info-section">
+                            <h3>Items (${order.item_count})</h3>
+                            <div class="order-items">
+                                ${itemsHTML}
+                            </div>
+                        </div>
+                        
+                        <div class="status-description">
+                            <p><strong>Status:</strong> ${statusDescription}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            orderResult.style.display = 'block';
+        }
+        
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            
+            errorText.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

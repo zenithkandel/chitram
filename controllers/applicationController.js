@@ -1,40 +1,6 @@
 const { db } = require('../config/database');
-const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-
-// Configure multer for profile picture uploads
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const uploadDir = './uploads/applications/';
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-        cb(null, uploadDir);
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, 'profile-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
-
-const upload = multer({
-    storage: storage,
-    limits: {
-        fileSize: 5 * 1024 * 1024 // 5MB limit
-    },
-    fileFilter: (req, file, cb) => {
-        if (file.fieldname === 'profile_picture') {
-            if (file.mimetype.startsWith('image/')) {
-                cb(null, true);
-            } else {
-                cb(new Error('Profile picture must be an image file'));
-            }
-        } else {
-            cb(new Error('Unexpected field'));
-        }
-    }
-});
 
 // Get all applications (pending and under_review by default)
 const getAllApplications = async (req, res) => {
@@ -353,13 +319,18 @@ const submitApplication = async (req, res) => {
     try {
         const {
             full_name, age, started_art_at, school_college,
-            city, district, email, phone, message, bio,
-            instagram, facebook, twitter, tiktok, youtube
+            city, district, email, phone, message, bio, socials
         } = req.body;
 
         // Validate required fields
         if (!full_name || !age || !city || !district || !email) {
             return res.status(400).json({ error: 'Please fill in all required fields' });
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ error: 'Please enter a valid email address' });
         }
 
         // Check if email already exists
@@ -372,14 +343,21 @@ const submitApplication = async (req, res) => {
             return res.status(400).json({ error: 'An application with this email already exists' });
         }
 
-        // Prepare socials JSON
-        const socials = {
-            instagram: instagram || '',
-            facebook: facebook || '',
-            twitter: twitter || '',
-            tiktok: tiktok || '',
-            youtube: youtube || ''
-        };
+        // Prepare socials JSON - handle both string and object inputs
+        let socialsData = null;
+        if (socials) {
+            try {
+                // If it's already a string (JSON), parse it to validate
+                if (typeof socials === 'string') {
+                    socialsData = JSON.parse(socials);
+                } else {
+                    socialsData = socials;
+                }
+            } catch (error) {
+                // If JSON parsing fails, treat as empty object
+                socialsData = {};
+            }
+        }
 
         // Get profile picture filename if uploaded
         const profilePicture = req.file ? req.file.filename : null;
@@ -393,11 +371,11 @@ const submitApplication = async (req, res) => {
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [
             full_name, parseInt(age), started_art_at, school_college,
-            city, district, email, phone, JSON.stringify(socials),
+            city, district, email, phone, socialsData ? JSON.stringify(socialsData) : null,
             message, profilePicture, bio
         ]);
 
-        res.json({ success: 'Application submitted successfully! We will review your application and get back to you soon.' });
+        res.json({ success: true, message: 'Application submitted successfully! We will review your application and get back to you soon.' });
     } catch (error) {
         console.error('Submit application error:', error);
         res.status(500).json({ error: 'Error submitting application. Please try again.' });
@@ -411,6 +389,5 @@ module.exports = {
     getApplication,
     updateApplicationStatus,
     deleteApplication,
-    submitApplication,
-    upload
+    submitApplication
 };

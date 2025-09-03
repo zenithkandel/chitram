@@ -7,6 +7,12 @@ const { uploadArtworkImage } = require('../../middleware/upload');
 // All routes require authentication
 router.use(authenticateAdmin);
 
+// Search and filter artworks (admin) - must be before /:id route
+router.get('/search', artworkController.searchAndFilterAdminArtworks);
+
+// Get categories for filter dropdown (admin)
+router.get('/categories', artworkController.getAdminArtCategories);
+
 // Get all artworks page
 router.get('/', artworkController.getAllArtworks);
 

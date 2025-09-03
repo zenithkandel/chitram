@@ -7,6 +7,9 @@ const { uploadProfilePicture } = require('../../middleware/upload');
 // All routes require authentication
 router.use(authenticateAdmin);
 
+// Search artists (admin) - must be before /:id route
+router.get('/search', artistController.searchAdminArtists);
+
 // Get all artists page
 router.get('/', artistController.getAllArtists);
 

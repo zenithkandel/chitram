@@ -41,6 +41,105 @@ const getAllArtworks = async (req, res) => {
     }
 };
 
+// Search and filter artworks for admin (includes all statuses)
+const searchAndFilterAdminArtworks = async (req, res) => {
+    try {
+        const { q, sortBy, category, status } = req.query;
+        
+        let whereClause = `WHERE a.status != 'deleted'`;
+        let orderClause = `ORDER BY a.uploaded_at DESC`;
+        let queryParams = [];
+
+        // Add search functionality
+        if (q && q.trim() !== '') {
+            const searchTerm = `%${q.trim()}%`;
+            whereClause += ` AND (a.art_name LIKE ? OR ar.full_name LIKE ? OR a.art_category LIKE ? OR a.art_description LIKE ?)`;
+            queryParams.push(searchTerm, searchTerm, searchTerm, searchTerm);
+        }
+
+        // Add category filter
+        if (category && category !== 'all') {
+            whereClause += ` AND a.art_category = ?`;
+            queryParams.push(category);
+        }
+
+        // Add status filter (admin specific)
+        if (status && status !== 'all') {
+            whereClause += ` AND a.status = ?`;
+            queryParams.push(status);
+        }
+
+        // Add sorting
+        switch (sortBy) {
+            case 'date_newest':
+                orderClause = `ORDER BY a.uploaded_at DESC`;
+                break;
+            case 'date_oldest':
+                orderClause = `ORDER BY a.uploaded_at ASC`;
+                break;
+            case 'price_low_high':
+                orderClause = `ORDER BY a.cost ASC`;
+                break;
+            case 'price_high_low':
+                orderClause = `ORDER BY a.cost DESC`;
+                break;
+            case 'name_a_z':
+                orderClause = `ORDER BY a.art_name ASC`;
+                break;
+            case 'name_z_a':
+                orderClause = `ORDER BY a.art_name DESC`;
+                break;
+            default:
+                orderClause = `ORDER BY a.uploaded_at DESC`;
+        }
+
+        const [artworks] = await db.execute(`
+            SELECT 
+                a.unique_id,
+                a.art_name,
+                a.art_category,
+                a.cost,
+                a.art_image,
+                a.art_description,
+                a.work_hours,
+                a.size_of_art,
+                a.color_type,
+                a.status,
+                a.uploaded_at,
+                ar.full_name as artist_name,
+                ar.unique_id as artist_unique_id
+            FROM arts a
+            LEFT JOIN artists ar ON a.artist_unique_id = ar.unique_id
+            ${whereClause}
+            ${orderClause}
+        `, queryParams);
+
+        res.json({ artworks });
+    } catch (error) {
+        console.error('Admin search and filter artworks error:', error);
+        res.status(500).json({ error: 'Error searching artworks' });
+    }
+};
+
+// Get unique categories for admin filter dropdown
+const getAdminArtCategories = async (req, res) => {
+    try {
+        const [categories] = await db.execute(`
+            SELECT DISTINCT art_category 
+            FROM arts 
+            WHERE status != 'deleted' 
+            AND art_category IS NOT NULL 
+            AND art_category != ''
+            ORDER BY art_category ASC
+        `);
+
+        res.json({ categories: categories.map(cat => cat.art_category) });
+    } catch (error) {
+        console.error('Get admin categories error:', error);
+        res.status(500).json({ error: 'Error fetching categories' });
+    }
+};
+
 // Get single artwork for editing
 const getArtwork = async (req, res) => {
     try {
@@ -315,11 +414,141 @@ const getAllArtistsForDropdown = async (req, res) => {
     }
 };
 
+// Get artwork details for public view
+const getArtworkDetails = async (req, res) => {
+    try {
+        const artworkId = req.params.id;
+        
+        if (!artworkId) {
+            return res.status(400).render('error', { 
+                error: 'Artwork ID is required',
+                title: 'Error - Artwork Not Found'
+            });
+        }
+
+        // Fetch artwork details with artist information
+        const [artworkRows] = await db.execute(`
+            SELECT 
+                a.unique_id,
+                a.art_name,
+                a.art_category,
+                a.cost,
+                a.art_image,
+                a.art_description,
+                a.work_hours,
+                a.size_of_art,
+                a.color_type,
+                a.status,
+                a.uploaded_at,
+                ar.unique_id as artist_unique_id,
+                ar.full_name as artist_name,
+                ar.profile_picture as artist_profile_picture
+            FROM arts a
+            LEFT JOIN artists ar ON a.artist_unique_id = ar.unique_id
+            WHERE a.unique_id = ? AND a.status IN ('listed', 'ordered', 'sold')
+        `, [artworkId]);
+
+        if (artworkRows.length === 0) {
+            return res.status(404).render('error', { 
+                error: 'Artwork not found or not available',
+                title: 'Error - Artwork Not Found'
+            });
+        }
+
+        const artwork = artworkRows[0];
+
+        // Helper function to get valid image path
+        const getValidImagePath = (imageName, folder, fallback) => {
+            if (!imageName) return fallback;
+            const imagePath = path.join(__dirname, '..', 'uploads', folder, imageName);
+            try {
+                if (fs.existsSync(imagePath)) {
+                    return `/uploads/${folder}/${imageName}`;
+                }
+            } catch (error) {
+                console.log(`Image validation error for ${imageName}:`, error.message);
+            }
+            return fallback;
+        };
+
+        // Helper function to get relative time
+        const getRelativeTime = (date) => {
+            const now = new Date();
+            const uploadDate = new Date(date);
+            const diffInSeconds = Math.floor((now - uploadDate) / 1000);
+
+            if (diffInSeconds < 60) {
+                return diffInSeconds <= 1 ? '1 second ago' : `${diffInSeconds} seconds ago`;
+            }
+
+            const diffInMinutes = Math.floor(diffInSeconds / 60);
+            if (diffInMinutes < 60) {
+                return diffInMinutes === 1 ? '1 minute ago' : `${diffInMinutes} minutes ago`;
+            }
+
+            const diffInHours = Math.floor(diffInMinutes / 60);
+            if (diffInHours < 24) {
+                return diffInHours === 1 ? '1 hour ago' : `${diffInHours} hours ago`;
+            }
+
+            const diffInDays = Math.floor(diffInHours / 24);
+            if (diffInDays < 30) {
+                return diffInDays === 1 ? '1 day ago' : `${diffInDays} days ago`;
+            }
+
+            const diffInMonths = Math.floor(diffInDays / 30);
+            if (diffInMonths < 12) {
+                return diffInMonths === 1 ? '1 month ago' : `${diffInMonths} months ago`;
+            }
+
+            const diffInYears = Math.floor(diffInMonths / 12);
+            return diffInYears === 1 ? '1 year ago' : `${diffInYears} years ago`;
+        };
+
+        // Format the artwork data
+        const formattedArtwork = {
+            unique_id: artwork.unique_id,
+            art_name: artwork.art_name,
+            art_category: artwork.art_category,
+            cost: parseFloat(artwork.cost) || 0,
+            formatted_cost: `₹${(parseFloat(artwork.cost) || 0).toLocaleString('en-IN')}`,
+            art_image: getValidImagePath(artwork.art_image, 'artworks', '/images/placeholder-art.jpg'),
+            art_description: artwork.art_description || 'No description available',
+            work_hours: artwork.work_hours || 'Not specified',
+            size_of_art: artwork.size_of_art || 'Not specified',
+            color_type: artwork.color_type === 'black_and_white' ? 'Black & White' : 'Color',
+            status: artwork.status,
+            uploaded_at: artwork.uploaded_at,
+            relative_time: getRelativeTime(artwork.uploaded_at),
+            artist: {
+                unique_id: artwork.artist_unique_id,
+                name: artwork.artist_name || 'Unknown Artist',
+                profile_picture: getValidImagePath(artwork.artist_profile_picture, 'profiles', '/images/default-artist.jpg')
+            }
+        };
+        
+        res.render('artwork-details', {
+            title: `${formattedArtwork.art_name} - चित्रम्`,
+            artwork: formattedArtwork
+        });
+
+    } catch (error) {
+        console.error('Error fetching artwork details:', error);
+        res.status(500).render('error', { 
+            error: 'Error loading artwork details',
+            title: 'Error - Server Error'
+        });
+    }
+};
+
 module.exports = {
     getAllArtworks,
+    searchAndFilterAdminArtworks,
+    getAdminArtCategories,
     getArtwork,
     createArtwork,
     updateArtwork,
     deleteArtwork,
-    getAllArtistsForDropdown
+    getAllArtistsForDropdown,
+    getArtworkDetails
 };

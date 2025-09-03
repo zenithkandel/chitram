@@ -10,6 +10,14 @@ const { testConnection } = require('./config/database');
 // Import routes
 const adminRoutes = require('./routes/admin');
 const applicationRoutes = require('./routes/applications');
+const { getHomePage } = require('./controllers/homeController');
+const { submitContactForm } = require('./controllers/contactController');
+const { getPublicArtists, searchArtists } = require('./controllers/artistController');
+const { getGalleryArtworks, searchAndFilterArtworks, getArtCategories } = require('./controllers/galleryController');
+const { getTrackOrdersPage, trackOrder } = require('./controllers/trackOrderController');
+const { getArtistProfile } = require('./controllers/artistProfileController');
+const { getArtworkDetails } = require('./controllers/artworkController');
+const { createOrder } = require('./controllers/orderController');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -45,16 +53,61 @@ app.set('views', path.join(__dirname, 'views'));
 // Routes
 app.use('/admin', adminRoutes);
 app.use('/api/applications', applicationRoutes);
-app.use('/', require('./routes/client'));
 
-// Root route redirect (remove the old one)
-// app.get('/', (req, res) => {
-//     res.send(`
-//         <h1>चित्रम् Art Platform</h1>
-//         <p>Welcome to चित्रम् - Online Art Selling Platform</p>
-//         <a href="/admin">Admin Panel</a>
-//     `);
-// });
+// API Routes
+app.post('/api/contact', submitContactForm);
+app.get('/api/artists/search', searchArtists);
+app.get('/api/gallery/search', searchAndFilterArtworks);
+app.get('/api/gallery/categories', getArtCategories);
+app.post('/api/track-order', trackOrder);
+
+// Root route
+app.get('/', getHomePage);
+
+// About page route
+app.get('/about', (req, res) => {
+    res.render('about');
+});
+
+// Apply page route
+app.get('/apply', (req, res) => {
+    res.render('apply');
+});
+
+// Artists page route
+app.get('/artists', getPublicArtists);
+
+// Individual artist profile route
+app.get('/artist/:id', getArtistProfile);
+
+// Gallery page route
+app.get('/gallery', getGalleryArtworks);
+
+// Individual artwork details route
+app.get('/artwork/:id', getArtworkDetails);
+
+app.get('/cart', (req, res) => {
+    res.render('cart', {
+        title: 'Shopping Cart - चित्रम्'
+    });
+});
+
+app.get('/checkout', (req, res) => {
+    res.render('checkout', {
+        title: 'Checkout - चित्रम्'
+    });
+});
+
+// Order creation route (POST)
+app.post('/api/orders', createOrder);
+
+// Track Orders page route
+app.get('/track-orders', getTrackOrdersPage);
+
+// Legacy track route (redirect to track-orders)
+app.get('/track', (req, res) => {
+    res.redirect('/track-orders');
+});
 
 // 404 handler
 app.use((req, res) => {
