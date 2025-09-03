@@ -5,26 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>चित्रम् - Online Art Platform</title>
     
-    <!-- CSS -->
-    <link rel="stylesheet" href="/css/main.css">
+    <!-- Modern CSS -->
+    <link rel="stylesheet" href="/css/modern-main.css">
     
     <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
 </head>
 <body>
-    <!-- Navigation Bar -->
-    <nav class="navbar">
+    <!-- Modern Navigation Bar -->
+    <nav class="navbar" id="navbar">
         <div class="nav-container">
             <!-- Logo -->
-            <a href="/" class="logo">चित्रम्</a>
+            <a href="/" class="nav-logo">चित्रम्</a>
             
             <!-- Navigation Menu -->
-            <ul class="nav-menu">
+            <ul class="nav-menu" id="nav-menu">
                 <li class="nav-item">
-                    <a href="/" class="nav-link">
+                    <a href="/" class="nav-link active">
                         <i class="fas fa-home"></i> Home
                     </a>
                 </li>
@@ -62,30 +62,47 @@
             </ul>
             
             <!-- Mobile Menu Toggle -->
-            <div class="mobile-menu-toggle">
+            <button class="mobile-menu-toggle" id="mobile-toggle">
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
-            </div>
+            </button>
         </div>
     </nav>
 
     <!-- Main Content -->
     <main class="main-content">
-        <!-- Hero Section -->
-        <section class="hero-section">
-            <h1 class="hero-title">Welcome to चित्रम्</h1>
-            <p class="hero-subtitle">Discover and Purchase Beautiful Artworks from Talented Artists</p>
-            <a href="/gallery" class="cta-button">
-                <i class="fas fa-images"></i> Explore Gallery
-            </a>
+        <!-- Modern Hero Section -->
+        <section class="home-hero">
+            <div class="hero-content">
+                <div class="hero-badge animate-fade-in">
+                    <i class="fas fa-sparkles"></i>
+                    Welcome to the Future of Art
+                </div>
+                <h1 class="hero-title animate-fade-in-up">Welcome to चित्रम्</h1>
+                <p class="hero-subtitle animate-fade-in-up">
+                    Discover and Purchase Beautiful Artworks from Talented Artists in our Modern Digital Gallery
+                </p>
+                <div class="hero-actions animate-fade-in-up">
+                    <a href="/gallery" class="btn btn-gradient btn-lg">
+                        <i class="fas fa-images"></i> Explore Gallery
+                    </a>
+                    <a href="/artists" class="btn btn-outline btn-lg">
+                        <i class="fas fa-palette"></i> Meet Artists
+                    </a>
+                </div>
+            </div>
         </section>
 
-        <!-- Statistics Section -->
+        <!-- Modern Statistics Section -->
         <section class="stats-section">
             <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Platform Statistics</h2>
+                    <p class="section-subtitle">See how our community is growing and thriving</p>
+                </div>
                 <div class="stats-grid">
-                    <div class="stats-card">
+                    <div class="stats-card animate-fade-in">
                         <div class="stats-icon">
                             <i class="fas fa-eye"></i>
                         </div>
@@ -95,187 +112,329 @@
                         </div>
                     </div>
                     
-                    <div class="stats-card">
+                    <div class="stats-card animate-fade-in">
                         <div class="stats-icon">
                             <i class="fas fa-users"></i>
                         </div>
                         <div class="stats-content">
                             <h3 class="stats-number"><%= totalArtists %></h3>
-                            <p class="stats-label">Active Artists</p>
+                            <p class="stats-label">Total Artists</p>
                         </div>
                     </div>
                     
-                    <div class="stats-card">
+                    <div class="stats-card animate-fade-in">
                         <div class="stats-icon">
                             <i class="fas fa-palette"></i>
                         </div>
                         <div class="stats-content">
                             <h3 class="stats-number"><%= totalArts %></h3>
-                            <p class="stats-label">Listed Artworks</p>
+                            <p class="stats-label">Artworks Available</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card animate-fade-in">
+                        <div class="stats-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stats-content">
+                            <h3 class="stats-number"><%= totalOrders %></h3>
+                            <p class="stats-label">Orders Placed</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Latest Artworks Section -->
-        <section class="latest-artworks-section">
+        <!-- Modern Latest Artworks Section -->
+        <section class="artworks-section">
             <div class="container">
-                <h3 class="text-center mb-2">Latest Artworks</h3>
+                <div class="section-header">
+                    <h2 class="section-title">Latest Artworks</h2>
+                    <p class="section-subtitle">Discover the newest creations from our talented artists</p>
+                </div>
                 <div class="artworks-grid">
                     <% if (latestArtworks && latestArtworks.length > 0) { %>
                         <% latestArtworks.forEach(artwork => { %>
-                            <div class="artwork-card">
+                            <div class="artwork-card animate-fade-in">
                                 <a href="/artwork/<%= artwork.unique_id %>" class="artwork-link">
                                     <div class="artwork-image">
                                         <img src="/uploads/artworks/<%= artwork.art_image %>" 
                                              alt="<%= artwork.art_name %>" 
                                              class="artwork-img"
-                                             data-src="/uploads/artworks/<%= artwork.art_image %>"
                                              onerror="handleImageError(this)">
+                                        <div class="artwork-overlay">
+                                            <div class="artwork-actions">
+                                                <button class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-eye"></i> View
+                                                </button>
+                                                <button class="btn btn-secondary btn-sm">
+                                                    <i class="fas fa-heart"></i> Like
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="artwork-info">
                                         <h4 class="artwork-title"><%= artwork.art_name %></h4>
                                         <p class="artwork-artist">by <%= artwork.artist_name %></p>
-                                        <p class="artwork-category"><%= artwork.art_category %></p>
-                                        <p class="artwork-price">Rs. <%= artwork.cost %></p>
+                                        <span class="artwork-category"><%= artwork.art_category %></span>
+                                        <div class="artwork-price">₹<%= artwork.cost %></div>
+                                        <div class="artwork-actions">
+                                            <button class="btn btn-primary btn-sm">
+                                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                                            </button>
+                                            <button class="btn btn-outline btn-sm">
+                                                <i class="fas fa-info-circle"></i> Details
+                                            </button>
+                                        </div>
                                     </div>
                                 </a>
                             </div>
                         <% }); %>
                     <% } else { %>
                         <div class="no-artworks">
-                            <p>No artworks available at the moment.</p>
+                            <div class="card card-glass text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-palette text-6xl text-tertiary mb-4"></i>
+                                    <h3 class="text-2xl mb-4">No Artworks Available</h3>
+                                    <p class="text-tertiary mb-6">Check back soon for new amazing artworks from our artists.</p>
+                                    <a href="/apply" class="btn btn-primary">
+                                        <i class="fas fa-user-plus"></i> Become an Artist
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     <% } %>
                 </div>
             </div>
         </section>
 
-        <!-- Quick Links Section -->
-        <section class="quick-links-section">
+        <!-- Modern Quick Links Section -->
+        <section class="section">
             <div class="container">
-                <h3 class="text-center mb-2">Quick Access</h3>
-                <div class="quick-links-grid">
-                    <div class="quick-link-card">
-                        <a href="/gallery" class="quick-link">
-                            <i class="fas fa-images fa-3x"></i>
-                            <h4>Browse Gallery</h4>
-                            <p>Explore our collection of beautiful artworks</p>
+                <div class="section-header">
+                    <h2 class="section-title">Quick Access</h2>
+                    <p class="section-subtitle">Everything you need to explore and engage with our art community</p>
+                </div>
+                <div class="grid grid-cols-4 gap-8">
+                    <div class="card card-glass hover-lift">
+                        <a href="/gallery" class="text-center block">
+                            <div class="mb-6">
+                                <div class="quick-access-icon icon-container bg-gradient-electric">
+                                    <i class="fas fa-images text-primary"></i>
+                                </div>
+                                <h4 class="text-xl font-semibold text-primary mb-3">Browse Gallery</h4>
+                                <p class="text-tertiary">Explore our collection of beautiful artworks from talented artists</p>
+                            </div>
                         </a>
                     </div>
                     
-                    <div class="quick-link-card">
-                        <a href="/artists" class="quick-link">
-                            <i class="fas fa-palette fa-3x"></i>
-                            <h4>Meet Artists</h4>
-                            <p>Discover talented artists and their stories</p>
+                    <div class="card card-glass hover-lift">
+                        <a href="/artists" class="text-center block">
+                            <div class="mb-6">
+                                <div class="quick-access-icon icon-container bg-gradient-neon">
+                                    <i class="fas fa-palette text-primary"></i>
+                                </div>
+                                <h4 class="text-xl font-semibold text-primary mb-3">Meet Artists</h4>
+                                <p class="text-tertiary">Discover talented artists and their inspiring creative stories</p>
+                            </div>
                         </a>
                     </div>
                     
-                    <div class="quick-link-card">
-                        <a href="/apply" class="quick-link">
-                            <i class="fas fa-user-plus fa-3x"></i>
-                            <h4>Join as Artist</h4>
-                            <p>Apply to showcase your artwork on our platform</p>
+                    <div class="card card-glass hover-lift">
+                        <a href="/apply" class="text-center block">
+                            <div class="mb-6">
+                                <div class="quick-access-icon icon-container bg-gradient-sunset">
+                                    <i class="fas fa-user-plus text-primary"></i>
+                                </div>
+                                <h4 class="text-xl font-semibold text-primary mb-3">Join as Artist</h4>
+                                <p class="text-tertiary">Apply to showcase your artwork on our modern platform</p>
+                            </div>
                         </a>
                     </div>
                     
-                    <div class="quick-link-card">
-                        <a href="/track" class="quick-link">
-                            <i class="fas fa-shipping-fast fa-3x"></i>
-                            <h4>Track Orders</h4>
-                            <p>Check the status of your art purchases</p>
+                    <div class="card card-glass hover-lift">
+                        <a href="/track" class="text-center block">
+                            <div class="mb-6">
+                                <div class="quick-access-icon icon-container bg-gradient-aurora">
+                                    <i class="fas fa-shipping-fast text-primary"></i>
+                                </div>
+                                <h4 class="text-xl font-semibold text-primary mb-3">Track Orders</h4>
+                                <p class="text-tertiary">Check the status of your art purchases in real-time</p>
+                            </div>
                         </a>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Features Section -->
-        <section class="features-section mt-2">
+        <!-- Modern Features Section -->
+        <section class="section bg-secondary">
             <div class="container">
-                <h3 class="text-center mb-2">Why Choose चित्रम्?</h3>
-                <div class="features-grid">
-                    <div class="feature-item">
-                        <i class="fas fa-shield-alt fa-2x"></i>
-                        <h4>Secure Transactions</h4>
-                        <p>Safe and secure payment processing for all purchases</p>
+                <div class="section-header">
+                    <h2 class="section-title">Why Choose चित्रम्?</h2>
+                    <p class="section-subtitle">Experience the future of digital art marketplace with cutting-edge features</p>
+                </div>
+                <div class="grid grid-cols-4 gap-8">
+                    <div class="text-center">
+                        <div class="feature-icon icon-container bg-gradient-electric hover-scale">
+                            <i class="fas fa-shield-alt text-primary"></i>
+                        </div>
+                        <h4 class="text-xl font-semibold text-primary mb-4">Secure Transactions</h4>
+                        <p class="text-tertiary">Advanced encryption and secure payment processing for all purchases</p>
                     </div>
                     
-                    <div class="feature-item">
-                        <i class="fas fa-star fa-2x"></i>
-                        <h4>Quality Artworks</h4>
-                        <p>Curated collection of high-quality artworks from verified artists</p>
+                    <div class="text-center">
+                        <div class="feature-icon icon-container bg-gradient-neon hover-scale">
+                            <i class="fas fa-star text-primary"></i>
+                        </div>
+                        <h4 class="text-xl font-semibold text-primary mb-4">Quality Artworks</h4>
+                        <p class="text-tertiary">Curated collection of premium artworks from verified talented artists</p>
                     </div>
                     
-                    <div class="feature-item">
-                        <i class="fas fa-truck fa-2x"></i>
-                        <h4>Fast Delivery</h4>
-                        <p>Quick and careful delivery of your purchased artworks</p>
+                    <div class="text-center">
+                        <div class="feature-icon icon-container bg-gradient-sunset hover-scale">
+                            <i class="fas fa-truck text-primary"></i>
+                        </div>
+                        <h4 class="text-xl font-semibold text-primary mb-4">Fast Delivery</h4>
+                        <p class="text-tertiary">Quick and careful delivery with professional packaging and tracking</p>
                     </div>
                     
-                    <div class="feature-item">
-                        <i class="fas fa-headset fa-2x"></i>
-                        <h4>Customer Support</h4>
-                        <p>Dedicated support team to help with your queries</p>
+                    <div class="text-center">
+                        <div class="feature-icon icon-container bg-gradient-aurora hover-scale">
+                            <i class="fas fa-headset text-primary"></i>
+                        </div>
+                        <h4 class="text-xl font-semibold text-primary mb-4">Customer Support</h4>
+                        <p class="text-tertiary">24/7 dedicated support team to help with all your queries and concerns</p>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Footer -->
+    <!-- Modern Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 चित्रम् - Online Art Platform. All rights reserved.</p>
-            <p>
-                <a href="/admin" style="color: #bdc3c7; text-decoration: none;">
-                    <i class="fas fa-user-shield"></i> Admin Panel
-                </a>
-            </p>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>चित्रम्</h3>
+                    <p>The future of digital art marketplace. Connecting artists with art lovers through innovative technology and beautiful design.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link" aria-label="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="/gallery">Gallery</a></li>
+                        <li><a href="/artists">Artists</a></li>
+                        <li><a href="/about">About</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Services</h3>
+                    <ul class="footer-links">
+                        <li><a href="/apply">Become an Artist</a></li>
+                        <li><a href="/track">Track Orders</a></li>
+                        <li><a href="/cart">Shopping Cart</a></li>
+                        <li><a href="/support">Support</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Admin</h3>
+                    <ul class="footer-links">
+                        <li><a href="/admin">
+                            <i class="fas fa-user-shield"></i> Admin Panel
+                        </a></li>
+                        <li><a href="/admin/analytics">Analytics</a></li>
+                        <li><a href="/admin/settings">Settings</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 चित्रम् - Online Art Platform. All rights reserved.</p>
+                <p>Built with ❤️ for the art community</p>
+            </div>
         </div>
     </footer>
 
-    <!-- JavaScript -->
+    <!-- Modern JavaScript -->
+    <script src="/js/modern-main.js"></script>
     <script src="/js/cart.js"></script>
-    <script src="/js/main.js"></script>
     <script>
-        // Handle image loading errors to prevent infinite retry
+        // Enhanced image error handling
         function handleImageError(img) {
-            // Check if we've already tried the fallback
             if (img.getAttribute('data-error-handled') === 'true') {
-                return; // Don't try again
+                return;
             }
             
-            // Mark as error handled
             img.setAttribute('data-error-handled', 'true');
-            
-            // Set the placeholder image
             img.src = '/images/placeholder-artwork.svg';
             img.alt = 'Image not available';
-            
-            // Add a class for styling if needed
             img.classList.add('placeholder-image');
         }
         
-        // Preload images and handle errors gracefully
+        // Modern page initialization
         document.addEventListener('DOMContentLoaded', function() {
-            const artworkImages = document.querySelectorAll('.artwork-img');
-            
-            artworkImages.forEach(img => {
-                // Create a new image to test loading
-                const testImg = new Image();
-                testImg.onload = function() {
-                    // Image loaded successfully, no action needed
-                };
-                testImg.onerror = function() {
-                    // Image failed to load, set placeholder immediately
-                    handleImageError(img);
-                };
-                testImg.src = img.getAttribute('data-src');
+            // Add smooth animations to cards
+            const cards = document.querySelectorAll('.card, .artwork-card, .artist-card, .stats-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.classList.add('animate-fade-in');
             });
+
+            // Add intersection observer for animations
+            if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('animate-in');
+                        }
+                    });
+                }, { threshold: 0.1 });
+
+                document.querySelectorAll('.animate-on-scroll').forEach(el => {
+                    observer.observe(el);
+                });
+            }
+
+            // Enhanced artwork interaction
+            const artworkCards = document.querySelectorAll('.artwork-card');
+            artworkCards.forEach(card => {
+                const img = card.querySelector('img');
+                if (img && !img.complete) {
+                    img.addEventListener('load', () => {
+                        card.classList.add('image-loaded');
+                    });
+                }
+            });
+
+            console.log('🎨 चित्रम् page initialized with modern features!');
         });
+
+        // Progressive Web App features
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => console.log('SW registered:', registration))
+                    .catch(error => console.log('SW registration failed:', error));
+            });
+        }
     </script>
 </body>
 </html>

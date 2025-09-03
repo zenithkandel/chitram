@@ -23,6 +23,12 @@ const getHomePage = async (req, res) => {
         );
         const totalArts = listedArts[0].total;
 
+        // Get total orders
+        const [orderCount] = await db.execute(
+            'SELECT COUNT(*) as total FROM orders'
+        );
+        const totalOrders = orderCount[0].total;
+
         // Get latest 5 artworks
         const [latestArtworks] = await db.execute(`
             SELECT 
@@ -51,6 +57,7 @@ const getHomePage = async (req, res) => {
             dailyViews: dailyViews + 1, // Include current view
             totalArtists,
             totalArts,
+            totalOrders,
             latestArtworks
         });
     } catch (error) {
@@ -60,6 +67,7 @@ const getHomePage = async (req, res) => {
             dailyViews: 0,
             totalArtists: 0,
             totalArts: 0,
+            totalOrders: 0,
             latestArtworks: []
         });
     }
