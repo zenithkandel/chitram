@@ -16,6 +16,7 @@ const { getPublicArtists, searchArtists } = require('./controllers/artistControl
 const { getGalleryArtworks, searchAndFilterArtworks, getArtCategories } = require('./controllers/galleryController');
 const { getTrackOrdersPage, trackOrder } = require('./controllers/trackOrderController');
 const { getArtistProfile } = require('./controllers/artistProfileController');
+const { getArtworkDetails } = require('./controllers/artworkController');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -80,6 +81,9 @@ app.get('/artist/:id', getArtistProfile);
 
 // Gallery page route
 app.get('/gallery', getGalleryArtworks);
+
+// Individual artwork details route
+app.get('/artwork/:id', getArtworkDetails);
 
 app.get('/cart', (req, res) => {
     res.send(`
