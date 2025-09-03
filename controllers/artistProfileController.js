@@ -1,4 +1,4 @@
-const connection = require('../config/database');
+const { db } = require('../config/database');
 
 const getArtistProfile = async (req, res) => {
     try {
@@ -12,7 +12,7 @@ const getArtistProfile = async (req, res) => {
         }
 
         // Get artist details using unique_id
-        const [artistRows] = await connection.execute(
+        const [artistRows] = await db.execute(
             `SELECT 
                 unique_id,
                 full_name,

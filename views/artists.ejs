@@ -76,7 +76,7 @@
                     <div class="artists-grid" id="artistsGrid">
                         <% artists.forEach(function(artist) { %>
                             <div class="artist-card">
-                                <a href="/artist/<%= artist.id %>" class="artist-link">
+                                <a href="/artist/<%= artist.unique_id %>" class="artist-link">
                                     <div class="artist-image">
                                         <% if (artist.profile_picture) { %>
                                             <img src="/uploads/profiles/<%= artist.profile_picture %>" 
