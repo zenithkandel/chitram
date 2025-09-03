@@ -37,7 +37,7 @@
                 <!-- Profile Picture -->
                 <div class="profile-picture">
                     <img src="<%= artist.profile_picture %>" alt="<%= artist.full_name %>" 
-                         onerror="this.src='/images/default-artist.jpg'">
+                         onerror="handleProfileImageError(this)">
                 </div>
 
                 <!-- Full Name -->
@@ -92,7 +92,7 @@
 
             <!-- Artist's Artworks Section -->
             <div class="artist-artworks-section">
-                <h2>Artworks by <%= artist.full_name %> (<%= artworkCount %>)</h2>
+                <h2>Artworks by <%= artist.full_name %> (<%= artworks ? artworks.length : 0 %>)</h2>
                 
                 <% if (artworks && artworks.length > 0) { %>
                     <div class="artworks-grid">
@@ -100,7 +100,7 @@
                             <div class="artwork-card">
                                 <div class="artwork-image">
                                     <img src="<%= artwork.art_image %>" alt="<%= artwork.art_name %>" 
-                                         onerror="this.src='/images/placeholder-art.jpg'">
+                                         onerror="handleArtworkImageError(this)">
                                     <div class="artwork-status <%= artwork.status %>">
                                         <%= artwork.status.charAt(0).toUpperCase() + artwork.status.slice(1) %>
                                     </div>
@@ -166,6 +166,53 @@
         function addToCart(artworkId) {
             // Placeholder for add to cart functionality
             alert('Add to cart functionality coming soon! Artwork ID: ' + artworkId);
+        }
+
+        // Handle artwork image loading errors
+        function handleArtworkImageError(img) {
+            // Prevent infinite loop by checking if already set to placeholder
+            if (img.src.includes('placeholder-art.jpg')) {
+                return;
+            }
+            
+            // Set to placeholder image
+            img.src = '/images/placeholder-art.jpg';
+            
+            // If placeholder also fails, create a simple colored div
+            img.onerror = function() {
+                createPlaceholderDiv(this);
+            };
+        }
+
+        // Create a colored placeholder div if no images work
+        function createPlaceholderDiv(img) {
+            const placeholder = document.createElement('div');
+            placeholder.className = 'image-placeholder';
+            placeholder.innerHTML = `
+                <i class="fas fa-image"></i>
+                <span>No Image</span>
+            `;
+            
+            // Replace the img with the placeholder
+            img.parentNode.replaceChild(placeholder, img);
+        }
+
+        // Handle profile image error
+        function handleProfileImageError(img) {
+            if (img.src.includes('default-artist.jpg')) {
+                return;
+            }
+            
+            img.src = '/images/default-artist.jpg';
+            
+            img.onerror = function() {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'profile-placeholder';
+                placeholder.innerHTML = `
+                    <i class="fas fa-user"></i>
+                `;
+                img.parentNode.replaceChild(placeholder, img);
+            };
         }
     </script>
 </body>

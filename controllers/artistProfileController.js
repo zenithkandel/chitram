@@ -1,4 +1,25 @@
 const { db } = require('../config/database');
+const path = require('path');
+const fs = require('fs');
+
+// Helper function to validate image paths
+const getValidImagePath = (imageName, folder, fallback) => {
+    if (!imageName) {
+        return fallback;
+    }
+    
+    const imagePath = path.join(__dirname, '..', 'uploads', folder, imageName);
+    
+    try {
+        if (fs.existsSync(imagePath)) {
+            return `/uploads/${folder}/${imageName}`;
+        }
+    } catch (error) {
+        console.log(`Image validation error for ${imageName}:`, error.message);
+    }
+    
+    return fallback;
+};
 
 const getArtistProfile = async (req, res) => {
     try {
@@ -86,7 +107,7 @@ const getArtistProfile = async (req, res) => {
             college_school: artist.college_school || 'Not specified',
             district: artist.district || 'Not specified',
             bio: artist.bio || 'No biography available',
-            profile_picture: artist.profile_picture ? `/uploads/profiles/${artist.profile_picture}` : '/images/default-artist.jpg',
+            profile_picture: getValidImagePath(artist.profile_picture, 'profiles', '/images/default-artist.jpg'),
             social_media: socialMedia
         };
 
@@ -97,7 +118,7 @@ const getArtistProfile = async (req, res) => {
             art_category: artwork.art_category,
             cost: parseFloat(artwork.cost) || 0,
             formatted_cost: `₹${(parseFloat(artwork.cost) || 0).toLocaleString('en-IN')}`,
-            art_image: artwork.art_image ? `/uploads/artworks/${artwork.art_image}` : '/images/placeholder-art.jpg',
+            art_image: getValidImagePath(artwork.art_image, 'artworks', '/images/placeholder-art.jpg'),
             art_description: artwork.art_description || 'No description available',
             work_hours: artwork.work_hours || 'Not specified',
             size_of_art: artwork.size_of_art || 'Not specified',
