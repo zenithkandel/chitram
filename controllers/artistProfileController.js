@@ -37,6 +37,26 @@ const getArtistProfile = async (req, res) => {
 
         const artist = artistRows[0];
 
+        // Get artist's artworks
+        const [artworkRows] = await db.execute(
+            `SELECT 
+                unique_id,
+                art_name,
+                art_category,
+                cost,
+                art_image,
+                art_description,
+                work_hours,
+                size_of_art,
+                color_type,
+                status,
+                uploaded_at
+            FROM arts 
+            WHERE artist_unique_id = ? AND status IN ('listed', 'ordered', 'sold')
+            ORDER BY uploaded_at DESC`,
+            [artistId]
+        );
+
         // Calculate experience in field (current year - started year)
         let experienceYears = 0;
         if (artist.started_art_since) {
@@ -70,9 +90,27 @@ const getArtistProfile = async (req, res) => {
             social_media: socialMedia
         };
 
+        // Format the artworks data
+        const formattedArtworks = artworkRows.map(artwork => ({
+            unique_id: artwork.unique_id,
+            art_name: artwork.art_name,
+            art_category: artwork.art_category,
+            cost: parseFloat(artwork.cost) || 0,
+            formatted_cost: `₹${(parseFloat(artwork.cost) || 0).toLocaleString('en-IN')}`,
+            art_image: artwork.art_image ? `/uploads/artworks/${artwork.art_image}` : '/images/placeholder-art.jpg',
+            art_description: artwork.art_description || 'No description available',
+            work_hours: artwork.work_hours || 'Not specified',
+            size_of_art: artwork.size_of_art || 'Not specified',
+            color_type: artwork.color_type === 'black_and_white' ? 'Black & White' : 'Color',
+            status: artwork.status,
+            uploaded_at: artwork.uploaded_at
+        }));
+
         res.render('artist-profile', {
             title: `${formattedArtist.full_name} - Artist Profile`,
-            artist: formattedArtist
+            artist: formattedArtist,
+            artworks: formattedArtworks,
+            artworkCount: formattedArtworks.length
         });
 
     } catch (error) {
