@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            transform: translateY(0);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #667eea;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: #334155;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .nav-links a:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-links a:hover::before {
+            left: 0;
+        }
+
+        .nav-links a.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .cart-icon {
+            position: relative;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .cart-icon:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 8rem 0 4rem;
+            color: white;
+            text-align: center;
+            margin-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            animation: fadeInUp 1s ease;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        /* Card */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #5a6fd8, #6a5acd);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .btn:hover::before {
+            left: 0;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-outline::before {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .btn-outline:hover {
+            color: white;
+            border-color: transparent;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Cart specific styles */
+        .cart-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .cart-item {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cart-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .cart-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .cart-item:hover::before {
+            transform: scaleX(1);
+        }
+
+        .cart-item img {
+            width: 140px;
+            height: 140px;
+            border-radius: 16px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .quantity-controls button {
+            background: none;
+            border: none;
+            padding: 0.75rem;
+            cursor: pointer;
+            color: #666;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quantity-controls button:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .quantity-display {
+            padding: 0 1.5rem;
+            font-weight: bold;
+            min-width: 50px;
+            text-align: center;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 5rem 2rem;
+            color: #666;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .empty-cart i {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.3;
+            color: #cbd5e0;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Order Summary */
+        .order-summary {
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e6f2ff 100%);
+            border: none;
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .trust-indicators {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .trust-indicator {
+            display: flex;
+            align-items: center;
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+
+        .trust-indicator:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateX(5px);
+        }
+
+        .trust-indicator i {
+            margin-right: 0.75rem;
+            width: 20px;
+            font-size: 1.1rem;
+        }
+
+        /* Recommended Arts */
+        .recommended-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .recommended-item {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .recommended-item:hover {
+            transform: translateY(-10px) scale(1.02);
+        }
+
+        .recommended-item .card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .recommended-image {
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px 16px 0 0;
+            height: 200px;
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+        }
+
+        .recommended-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .recommended-item:hover .recommended-image img {
+            transform: scale(1.1);
+        }
+
+        .price-tag {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .slide-in {
+            animation: slideIn 0.8s ease;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 1024px) {
+            .cart-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .order-summary {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 6rem 0 3rem;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .cart-item {
+                flex-direction: column;
+                text-align: center;
+                padding: 1.5rem;
+            }
+
+            .cart-item img {
+                width: 120px;
+                height: 120px;
+                margin: 0 auto;
+            }
+
+            .recommended-grid {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a6fd8, #6a5acd);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar" id="navbar">
+    <div class="nav-container">
+        <a href="/" class="logo">चित्रम्</a>
+        
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/artists">Artists</a></li>
+            <li><a href="/arts">Gallery</a></li>
+            <li><a href="/apply">Apply</a></li>
+            <li><a href="/cart" class="cart-icon active">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count" id="nav-cart-count">0</span>
+            </a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Cart Hero Section -->
+<section class="hero">
+    <div class="container">
+        <h1>
+            <i class="fas fa-shopping-cart" style="margin-right: 1rem;"></i>
+            Shopping Cart
+        </h1>
+        <p>Review your selected artworks before proceeding to checkout</p>
+    </div>
+</section>
+
+<!-- Cart Content -->
+<section class="container">
+    <div class="cart-grid">
+        <!-- Cart Items -->
+        <div class="fade-in">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 style="color: #333; margin: 0; font-family: 'Playfair Display', serif; font-size: 2rem;">Cart Items</h2>
+                <button onclick="clearCart()" class="btn btn-outline" style="padding: 0.5rem 1rem;" id="clear-cart-btn">
+                    <i class="fas fa-trash"></i>
+                    Clear Cart
+                </button>
+            </div>
+
+            <!-- Cart Items Container -->
+            <div id="cart-items-container">
+                <!-- Dynamic cart items will be loaded here -->
+            </div>
+
+            <!-- Empty Cart Message -->
+            <div id="empty-cart" class="empty-cart" style="display: none;">
+                <i class="fas fa-shopping-cart"></i>
+                <h3 style="margin-bottom: 1rem; font-family: 'Playfair Display', serif;">Your Cart is Empty</h3>
+                <p style="margin-bottom: 2rem;">Looks like you haven't added any artworks to your cart yet.</p>
+                <a href="/arts" class="btn">
+                    <i class="fas fa-palette"></i>
+                    Browse Artworks
+                </a>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary slide-in">
+            <div class="card summary-card">
+                <h3 style="color: #667eea; margin-bottom: 1.5rem; font-family: 'Playfair Display', serif; font-size: 1.5rem;">Order Summary</h3>
+                
+                <div style="border-bottom: 1px solid rgba(102, 126, 234, 0.2); padding-bottom: 1rem; margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem;">
+                        <span style="color: #666; font-weight: 500;">Items (<span id="cart-count">0</span>):</span>
+                        <span style="color: #333; font-weight: bold;" id="subtotal">रू 0</span>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem;">
+                        <span style="color: #666; font-weight: 500;">Delivery:</span>
+                        <span style="color: #10b981; font-weight: bold;">Free</span>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem;">
+                        <span style="color: #666; font-weight: 500;">Platform Fee:</span>
+                        <span style="color: #333; font-weight: 500;">रू 50</span>
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: 2rem; font-size: 1.3rem;">
+                    <strong style="color: #333;">Total:</strong>
+                    <strong style="color: #667eea;" id="total">रू 50</strong>
+                </div>
+                
+                <button onclick="proceedToCheckout()" class="btn" style="width: 100%; padding: 1rem; font-size: 1.1rem; margin-bottom: 1rem;" id="checkout-btn" disabled>
+                    <i class="fas fa-credit-card"></i>
+                    Proceed to Checkout
+                </button>
+                
+                <a href="/arts" class="btn btn-outline" style="width: 100%; text-align: center; text-decoration: none; padding: 0.75rem;">
+                    <i class="fas fa-arrow-left"></i>
+                    Continue Shopping
+                </a>
+                
+                <!-- Trust Indicators -->
+                <div class="trust-indicators">
+                    <h4 style="color: #333; margin-bottom: 1rem; font-size: 1rem; font-weight: 600;">Why shop with us?</h4>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div class="trust-indicator">
+                            <i class="fas fa-shield-alt" style="color: #10b981;"></i>
+                            Secure payment processing
+                        </div>
+                        
+                        <div class="trust-indicator">
+                            <i class="fas fa-truck" style="color: #667eea;"></i>
+                            Free and safe delivery
+                        </div>
+                        
+                        <div class="trust-indicator">
+                            <i class="fas fa-headset" style="color: #8b5cf6;"></i>
+                            24/7 customer support
+                        </div>
+                        
+                        <div class="trust-indicator">
+                            <i class="fas fa-undo" style="color: #f59e0b;"></i>
+                            7-day return policy
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recommended Artworks -->
+<section class="container" style="margin-top: 4rem; margin-bottom: 4rem;">
+    <h2 style="color: #333; margin-bottom: 2rem; text-align: center; font-family: 'Playfair Display', serif; font-size: 2.5rem;">You Might Also Like</h2>
+    
+    <div id="recommended-arts" class="recommended-grid">
+        <!-- Recommended artworks will be loaded dynamically -->
+    </div>
+</section>
+
+<!-- Notification Container -->
+<div id="notification-container" style="position: fixed; top: 100px; right: 20px; z-index: 10000;"></div>
+
+<script>
+    // Cart functionality
+    let cart = JSON.parse(localStorage.getItem('chitram_cart')) || [];
+    
+    // Initialize cart on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateNavCartCount();
+        loadCartItems();
+        loadRecommendedArts();
+        updateCartSummary();
+        initScrollEffects();
+        initPageAnimations();
+    });
+    
+    // Page animations
+    function initPageAnimations() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationDelay = '0s';
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.cart-item, .recommended-item').forEach(el => {
+            observer.observe(el);
+        });
+    }
+    
+    // Navigation scroll effects
+    function initScrollEffects() {
+        const navbar = document.getElementById('navbar');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    }
+    
+    // Update navigation cart count
+    function updateNavCartCount() {
+        const count = cart.reduce((total, item) => total + item.quantity, 0);
+        const countElement = document.getElementById('nav-cart-count');
+        countElement.textContent = count;
+        
+        if (count > 0) {
+            countElement.style.display = 'flex';
+        } else {
+            countElement.style.display = 'none';
+        }
+    }
+    
+    // Load cart items
+    async function loadCartItems() {
+        const container = document.getElementById('cart-items-container');
+        const emptyCart = document.getElementById('empty-cart');
+        
+        if (cart.length === 0) {
+            container.style.display = 'none';
+            emptyCart.style.display = 'block';
+            return;
+        }
+        
+        container.style.display = 'block';
+        emptyCart.style.display = 'none';
+        
+        // Show loading state
+        container.innerHTML = '<div style="text-align: center; padding: 2rem;"><div class="loading"></div></div>';
+        
+        // Get artwork details for cart items
+        const artworkIds = cart.map(item => item.id).join(',');
+        
+        try {
+            const response = await fetch('/api/arts/details?ids=' + artworkIds);
+            const artworks = await response.json();
+            
+            container.innerHTML = '';
+            
+            artworks.forEach((artwork, index) => {
+                const cartItem = cart.find(item => item.id == artwork.id);
+                const itemElement = createCartItemElement(artwork, cartItem.quantity);
+                itemElement.style.animationDelay = (index * 0.1) + 's';
+                container.appendChild(itemElement);
+            });
+            
+        } catch (error) {
+            console.error('Error loading cart items:', error);
+            container.innerHTML = '<div class="card" style="text-align: center; color: #ef4444; padding: 2rem;"><i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i><p>Error loading cart items</p></div>';
+        }
+    }
+    
+    // Create cart item element
+    function createCartItemElement(artwork, quantity) {
+        const div = document.createElement('div');
+        div.className = 'cart-item fade-in';
+        
+        const imageUrl = '/uploads/' + (artwork.image || 'placeholder.jpg');
+        const artworkUrl = '/art/' + artwork.id;
+        const artistUrl = '/artist/' + artwork.artist_id;
+        
+        div.innerHTML = 
+            '<div style="flex-shrink: 0;">' +
+                '<img src="' + imageUrl + '" ' +
+                     'alt="' + artwork.title + '"' +
+                     'onerror="this.src=\'/images/placeholder.jpg\'">' +
+            '</div>' +
+            
+            '<div style="flex: 1; display: flex; flex-direction: column;">' +
+                '<div style="flex: 1;">' +
+                    '<h4 style="margin: 0 0 0.5rem 0; color: #333; font-family: \'Playfair Display\', serif; font-size: 1.3rem;">' +
+                        '<a href="' + artworkUrl + '" style="text-decoration: none; color: inherit; transition: color 0.3s ease;" ' +
+                           'onmouseover="this.style.color=\'#667eea\'" onmouseout="this.style.color=\'inherit\'">' +
+                            artwork.title +
+                        '</a>' +
+                    '</h4>' +
+                    
+                    '<p style="margin: 0 0 0.5rem 0; color: #666; font-size: 1rem;">' +
+                        'By <a href="' + artistUrl + '" style="color: #667eea; text-decoration: none; transition: color 0.3s ease; font-weight: 500;">' + artwork.artist_name + '</a>' +
+                    '</p>' +
+                    
+                    '<p style="margin: 0 0 1rem 0; color: #94a3b8; font-size: 0.9rem;">' +
+                        'Size: ' + (artwork.size_of_art || 'Not specified') +
+                    '</p>' +
+                '</div>' +
+                
+                '<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
+                    '<div style="display: flex; align-items: center; gap: 1rem;">' +
+                        '<div class="quantity-controls">' +
+                            '<button onclick="updateQuantity(' + artwork.id + ', -1)" title="Decrease quantity">' +
+                                '<i class="fas fa-minus"></i>' +
+                            '</button>' +
+                            '<span class="quantity-display" id="qty-' + artwork.id + '">' + quantity + '</span>' +
+                            '<button onclick="updateQuantity(' + artwork.id + ', 1)" title="Increase quantity">' +
+                                '<i class="fas fa-plus"></i>' +
+                            '</button>' +
+                        '</div>' +
+                        
+                        '<button onclick="removeFromCart(' + artwork.id + ')" ' +
+                                'class="btn-outline" style="padding: 0.5rem; color: #ef4444; border-color: #ef4444; border-radius: 10px;"' +
+                                'title="Remove from cart">' +
+                            '<i class="fas fa-trash"></i>' +
+                        '</button>' +
+                    '</div>' +
+                    
+                    '<div style="text-align: right;">' +
+                        '<div style="font-size: 1.4rem; font-weight: bold; color: #333; font-family: \'Playfair Display\', serif;">' +
+                            'रू ' + (artwork.price * quantity).toLocaleString() +
+                        '</div>' +
+                        '<div style="color: #666; font-size: 0.9rem;">' +
+                            'रू ' + artwork.price.toLocaleString() + ' each' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+        
+        return div;
+    }
+    
+    // Update quantity with animation
+    function updateQuantity(artworkId, change) {
+        const cartItem = cart.find(item => item.id == artworkId);
+        if (cartItem) {
+            const newQuantity = Math.max(1, cartItem.quantity + change);
+            cartItem.quantity = newQuantity;
+            localStorage.setItem('chitram_cart', JSON.stringify(cart));
+            
+            const qtyElement = document.getElementById('qty-' + artworkId);
+            qtyElement.textContent = newQuantity;
+            
+            // Add bounce animation
+            qtyElement.style.transform = 'scale(1.3)';
+            qtyElement.style.color = '#667eea';
+            setTimeout(() => {
+                qtyElement.style.transform = 'scale(1)';
+                qtyElement.style.color = '#333';
+            }, 200);
+            
+            updateCartSummary();
+            updateNavCartCount();
+            
+            // Reload cart items to update totals
+            setTimeout(() => loadCartItems(), 100);
+        }
+    }
+    
+    // Remove from cart with confirmation
+    function removeFromCart(artworkId) {
+        if (confirm('Remove this item from your cart?')) {
+            const itemElement = document.querySelector('[onclick*="' + artworkId + '"]').closest('.cart-item');
+            
+            // Add exit animation
+            itemElement.style.transform = 'translateX(-100%)';
+            itemElement.style.opacity = '0';
+            
+            setTimeout(() => {
+                cart = cart.filter(item => item.id != artworkId);
+                localStorage.setItem('chitram_cart', JSON.stringify(cart));
+                
+                loadCartItems();
+                updateCartSummary();
+                updateNavCartCount();
+                
+                showNotification('Item removed from cart', 'success');
+            }, 300);
+        }
+    }
+    
+    // Clear cart with confirmation
+    function clearCart() {
+        if (cart.length === 0) return;
+        
+        if (confirm('Are you sure you want to clear your cart?')) {
+            cart = [];
+            localStorage.setItem('chitram_cart', JSON.stringify(cart));
+            
+            loadCartItems();
+            updateCartSummary();
+            updateNavCartCount();
+            
+            showNotification('Cart cleared successfully!', 'success');
+        }
+    }
+    
+    // Update cart summary with animations
+    async function updateCartSummary() {
+        const countElement = document.getElementById('cart-count');
+        const subtotalElement = document.getElementById('subtotal');
+        const totalElement = document.getElementById('total');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        
+        const itemCount = cart.reduce((total, item) => total + item.quantity, 0);
+        countElement.textContent = itemCount;
+        
+        if (itemCount === 0) {
+            subtotalElement.textContent = 'रू 0';
+            totalElement.textContent = 'रू 50';
+            checkoutBtn.disabled = true;
+            checkoutBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Cart is Empty';
+            return;
+        }
+        
+        // Calculate subtotal
+        try {
+            const artworkIds = cart.map(item => item.id).join(',');
+            const response = await fetch('/api/arts/details?ids=' + artworkIds);
+            const artworks = await response.json();
+            
+            let subtotal = 0;
+            artworks.forEach(artwork => {
+                const cartItem = cart.find(item => item.id == artwork.id);
+                subtotal += artwork.price * cartItem.quantity;
+            });
+            
+            const platformFee = 50;
+            const total = subtotal + platformFee;
+            
+            // Animate number changes
+            animateValue(subtotalElement, 0, subtotal, 500, 'रू ');
+            animateValue(totalElement, 0, total, 500, 'रू ');
+            
+            checkoutBtn.disabled = false;
+            checkoutBtn.innerHTML = '<i class="fas fa-credit-card"></i> Proceed to Checkout';
+            
+        } catch (error) {
+            console.error('Error calculating total:', error);
+            checkoutBtn.disabled = true;
+        }
+    }
+    
+    // Animate number values
+    function animateValue(element, start, end, duration, prefix = '') {
+        const range = end - start;
+        const startTime = performance.now();
+        
+        function updateValue(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const current = Math.floor(start + (range * progress));
+            
+            element.textContent = prefix + current.toLocaleString();
+            
+            if (progress < 1) {
+                requestAnimationFrame(updateValue);
+            }
+        }
+        
+        requestAnimationFrame(updateValue);
+    }
+    
+    // Load recommended artworks
+    async function loadRecommendedArts() {
+        try {
+            const response = await fetch('/api/arts/recommended?limit=4');
+            const artworks = await response.json();
+            
+            const container = document.getElementById('recommended-arts');
+            container.innerHTML = '';
+            
+            artworks.forEach((artwork, index) => {
+                const artElement = createRecommendedArtElement(artwork);
+                artElement.style.animationDelay = (index * 0.1 + 0.3) + 's';
+                container.appendChild(artElement);
+            });
+            
+        } catch (error) {
+            console.error('Error loading recommended arts:', error);
+            document.getElementById('recommended-arts').innerHTML = 
+                '<div class="card" style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #666;">' +
+                '<i class="fas fa-palette" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>' +
+                '<p>Unable to load recommendations</p></div>';
+        }
+    }
+    
+    // Create recommended art element
+    function createRecommendedArtElement(artwork) {
+        const div = document.createElement('div');
+        div.className = 'recommended-item fade-in';
+        
+        const imageUrl = '/uploads/' + (artwork.image || 'placeholder.jpg');
+        const artworkUrl = '/art/' + artwork.id;
+        
+        div.innerHTML = 
+            '<div class="card">' +
+                '<div class="recommended-image">' +
+                    '<img src="' + imageUrl + '" ' +
+                         'alt="' + artwork.title + '"' +
+                         'onerror="this.src=\'/images/placeholder.jpg\'">' +
+                    
+                    '<div class="price-tag">' +
+                        'रू ' + artwork.price.toLocaleString() +
+                    '</div>' +
+                '</div>' +
+                
+                '<div style="padding: 1.5rem; flex: 1; display: flex; flex-direction: column;">' +
+                    '<h4 style="margin: 0 0 0.5rem 0; color: #333; font-size: 1.1rem; font-family: \'Playfair Display\', serif; flex: 1;">' +
+                        '<a href="' + artworkUrl + '" style="text-decoration: none; color: inherit; transition: color 0.3s ease;" ' +
+                           'onmouseover="this.style.color=\'#667eea\'" onmouseout="this.style.color=\'inherit\'">' +
+                            artwork.title +
+                        '</a>' +
+                    '</h4>' +
+                    
+                    '<p style="color: #666; font-size: 0.9rem; margin: 0 0 1.5rem 0;">' +
+                        'By ' + artwork.artist_name +
+                    '</p>' +
+                    
+                    '<button onclick="addRecommendedToCart(' + artwork.id + ')" class="btn" style="width: 100%; font-size: 0.9rem;">' +
+                        '<i class="fas fa-plus"></i>' +
+                        'Add to Cart' +
+                    '</button>' +
+                '</div>' +
+            '</div>';
+        
+        return div;
+    }
+    
+    // Add recommended artwork to cart
+    function addRecommendedToCart(artworkId) {
+        const existingItem = cart.find(item => item.id == artworkId);
+        
+        if (existingItem) {
+            existingItem.quantity++;
+            showNotification('Quantity updated in cart!', 'success');
+        } else {
+            cart.push({ id: artworkId, quantity: 1 });
+            showNotification('Added to cart!', 'success');
+        }
+        
+        localStorage.setItem('chitram_cart', JSON.stringify(cart));
+        
+        loadCartItems();
+        updateCartSummary();
+        updateNavCartCount();
+    }
+    
+    // Enhanced notification system
+    function showNotification(message, type = 'info') {
+        const container = document.getElementById('notification-container');
+        const notification = document.createElement('div');
+        
+        const icons = {
+            success: 'fas fa-check-circle',
+            error: 'fas fa-exclamation-circle',
+            info: 'fas fa-info-circle',
+            warning: 'fas fa-exclamation-triangle'
+        };
+        
+        const colors = {
+            success: '#10b981',
+            error: '#ef4444',
+            info: '#667eea',
+            warning: '#f59e0b'
+        };
+        
+        notification.style.cssText = `
+            background: ${colors[type]};
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            max-width: 350px;
+        `;
+        
+        notification.innerHTML = `
+            <i class="${icons[type]}"></i>
+            <span>${message}</span>
+        `;
+        
+        container.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+            setTimeout(() => {
+                if (container.contains(notification)) {
+                    container.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+    
+    // Proceed to checkout
+    function proceedToCheckout() {
+        if (cart.length === 0) {
+            showNotification('Your cart is empty!', 'warning');
+            return;
+        }
+        
+        // Add loading state
+        const btn = document.getElementById('checkout-btn');
+        const originalContent = btn.innerHTML;
+        btn.innerHTML = '<div class="loading"></div> Processing...';
+        btn.disabled = true;
+        
+        setTimeout(() => {
+            window.location.href = '/checkout';
+        }, 500);
+    }
+</script>
+
+<style>
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(100px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes slideOutRight {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateX(100px);
+        }
+    }
+</style>
+
+</body>
+</html>

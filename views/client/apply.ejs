@@ -1,0 +1,235 @@
+<!-- Application Form Section -->
+<section class="container">
+    <div class="card">
+        <h1 style="text-align: center; margin-bottom: 2rem; color: #333;">Apply as an Artist</h1>
+        
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div style="background: #f8f9ff; padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem;">
+                <h3 style="color: #667eea; margin-bottom: 1rem;">Welcome to चित्रम् Artist Community!</h3>
+                <p style="color: #555; line-height: 1.6;">
+                    Join our platform and showcase your artwork to art enthusiasts worldwide. We provide a professional platform for artists to sell their work, manage their portfolio, and connect with buyers directly.
+                </p>
+                <ul style="margin-top: 1rem; padding-left: 1.5rem; color: #555;">
+                    <li>Professional portfolio management</li>
+                    <li>Direct connection with art buyers</li>
+                    <li>Secure payment processing</li>
+                    <li>Marketing and promotional support</li>
+                    <li>Artist community and networking</li>
+                </ul>
+            </div>
+
+            <% if (error) { %>
+                <div class="alert alert-error"><%= error %></div>
+            <% } %>
+            
+            <% if (success) { %>
+                <div class="alert alert-success"><%= success %></div>
+            <% } %>
+
+            <form id="application-form" enctype="multipart/form-data" onsubmit="event.preventDefault(); submitApplication();">
+                <h3 style="color: #667eea; margin-bottom: 1.5rem; border-bottom: 2px solid #e1e8ed; padding-bottom: 0.5rem;">Personal Information</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" name="full_name" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Age *</label>
+                        <input type="number" name="age" class="form-input" min="16" max="100" required>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">City *</label>
+                        <input type="text" name="city" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">District *</label>
+                        <input type="text" name="district" class="form-input" required>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Email Address *</label>
+                        <input type="email" name="email" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" name="phone" class="form-input">
+                    </div>
+                </div>
+
+                <h3 style="color: #667eea; margin: 2rem 0 1.5rem 0; border-bottom: 2px solid #e1e8ed; padding-bottom: 0.5rem;">Art Background</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">When did you start creating art?</label>
+                        <input type="text" name="started_art_at" class="form-input" placeholder="e.g., Age 12, 2015, 5 years ago">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">School/College</label>
+                        <input type="text" name="school_college" class="form-input" placeholder="Educational institution">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Profile Picture</label>
+                    <input type="file" name="profile_picture" class="form-input" accept="image/*">
+                    <small style="color: #666; font-size: 0.9rem;">Upload a professional profile picture (JPG, PNG, max 5MB)</small>
+                </div>
+
+                <h3 style="color: #667eea; margin: 2rem 0 1.5rem 0; border-bottom: 2px solid #e1e8ed; padding-bottom: 0.5rem;">Social Media & Bio</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Instagram</label>
+                        <input type="url" name="instagram" class="form-input" placeholder="https://instagram.com/username">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Facebook</label>
+                        <input type="url" name="facebook" class="form-input" placeholder="https://facebook.com/username">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Twitter</label>
+                        <input type="url" name="twitter" class="form-input" placeholder="https://twitter.com/username">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">TikTok</label>
+                        <input type="url" name="tiktok" class="form-input" placeholder="https://tiktok.com/@username">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">YouTube</label>
+                    <input type="url" name="youtube" class="form-input" placeholder="https://youtube.com/channel/...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Bio</label>
+                    <textarea name="bio" class="form-input form-textarea" placeholder="Tell us about yourself, your art style, inspiration, and what makes your work unique..."></textarea>
+                </div>
+
+                <h3 style="color: #667eea; margin: 2rem 0 1.5rem 0; border-bottom: 2px solid #e1e8ed; padding-bottom: 0.5rem;">Application Message</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">Why do you want to join चित्रम्?</label>
+                    <textarea name="message" class="form-input form-textarea" placeholder="Tell us why you want to join our platform, your goals, and how you plan to contribute to our artist community..."></textarea>
+                </div>
+
+                <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 1rem; border-radius: 5px; margin: 2rem 0;">
+                    <p style="margin: 0; color: #856404;">
+                        <strong>📝 Application Review Process:</strong><br>
+                        • Applications are reviewed within 3-5 business days<br>
+                        • You will receive an email notification about your application status<br>
+                        • Approved artists can immediately start uploading their artwork<br>
+                        • If you have questions, feel free to <a href="/about" style="color: #667eea;">contact us</a>
+                    </p>
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button type="submit" class="btn" id="application-submit-btn" style="padding: 1rem 2rem; font-size: 1.1rem;">
+                        Submit Application
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Already Applied Section -->
+<section class="container">
+    <div class="card" style="text-align: center; background: #f8f9ff;">
+        <h3 style="color: #667eea; margin-bottom: 1rem;">Already Applied?</h3>
+        <p style="color: #666; margin-bottom: 1.5rem;">
+            If you've already submitted an application, you can check the status by contacting our support team.
+        </p>
+        <a href="/about" class="btn btn-outline">Contact Support</a>
+    </div>
+</section>
+
+<script>
+    function submitApplication() {
+        const form = document.getElementById('application-form');
+        const submitBtn = document.getElementById('application-submit-btn');
+        const originalText = submitBtn.textContent;
+        
+        submitBtn.innerHTML = '<span class="loading"></span> Submitting Application...';
+        submitBtn.disabled = true;
+
+        const formData = new FormData(form);
+        
+        // Create socials object
+        const socials = {};
+        if (formData.get('instagram')) socials.instagram = formData.get('instagram');
+        if (formData.get('facebook')) socials.facebook = formData.get('facebook');
+        if (formData.get('twitter')) socials.twitter = formData.get('twitter');
+        if (formData.get('tiktok')) socials.tiktok = formData.get('tiktok');
+        if (formData.get('youtube')) socials.youtube = formData.get('youtube');
+        
+        // Remove individual social fields and add as JSON
+        formData.delete('instagram');
+        formData.delete('facebook');
+        formData.delete('twitter');
+        formData.delete('tiktok');
+        formData.delete('youtube');
+        formData.append('socials', JSON.stringify(socials));
+
+        fetch('/api/applications/apply', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.cart.showNotification(data.success, 'success');
+                form.reset();
+                // Scroll to top to show success message
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                window.cart.showNotification(data.error, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Application submission error:', error);
+            window.cart.showNotification('An error occurred. Please try again.', 'error');
+        })
+        .finally(() => {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        });
+    }
+
+    // File upload preview
+    document.querySelector('input[name="profile_picture"]').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Check file size (5MB limit)
+            if (file.size > 5 * 1024 * 1024) {
+                window.cart.showNotification('File size should be less than 5MB', 'error');
+                e.target.value = '';
+                return;
+            }
+            
+            // Check file type
+            if (!file.type.startsWith('image/')) {
+                window.cart.showNotification('Please select an image file', 'error');
+                e.target.value = '';
+                return;
+            }
+            
+            window.cart.showNotification('Profile picture selected: ' + file.name, 'success');
+        }
+    });
+</script>
