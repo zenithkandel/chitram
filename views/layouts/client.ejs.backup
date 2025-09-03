@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Modern Dark Theme CSS -->
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <!-- Custom cursor element will be added by JavaScript -->
+    <!-- Particles container will be added by JavaScript -->
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu li a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .nav-menu li a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .nav-menu li a.active {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .cart-icon {
+            position: relative;
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
+            transition: background 0.3s;
+        }
+
+        .cart-icon:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            padding: 0.2rem 0.4rem;
+            font-size: 0.8rem;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            background: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        /* Art Grid */
+        .art-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .art-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .art-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .art-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .art-info {
+            padding: 1.5rem;
+        }
+
+        .art-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .art-artist {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .art-price {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .art-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: opacity 0.3s, transform 0.3s;
+            text-align: center;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* Search Bar */
+        .search-container {
+            position: relative;
+            max-width: 500px;
+            margin: 2rem auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: #667eea;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #667eea;
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            cursor: pointer;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e1e8ed;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .search-result-item {
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .search-result-item:hover {
+            background: #f8f9fa;
+        }
+
+        .search-result-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 5px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            border-color: #667eea;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Footer */
+        .footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                flex-direction: column;
+                padding: 1rem;
+                gap: 0.5rem;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .art-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 1rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+
+        /* Page Specific Styles */
+        .hero-section {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8)),
+                        url('/uploads/hero-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #333;
+        }
+
+        /* Cart Styles */
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #e1e8ed;
+            gap: 1rem;
+        }
+
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .cart-item-price {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .cart-total {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+            text-align: right;
+        }
+
+        .cart-total-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        /* Order Status Styles */
+        .order-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .order-status::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e1e8ed;
+            z-index: 1;
+        }
+
+        .status-step {
+            background: white;
+            padding: 1rem;
+            border-radius: 50%;
+            border: 3px solid #e1e8ed;
+            z-index: 2;
+            position: relative;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .status-step.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .status-step.completed {
+            border-color: #28a745;
+            background: #28a745;
+            color: white;
+        }
+
+        /* Artist Card Styles */
+        .artist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .artist-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .artist-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .artist-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 1rem;
+            border: 4px solid #667eea;
+        }
+
+        .artist-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .artist-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 3rem 0;
+        }
+
+        .pagination a,
+        .pagination span {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e1e8ed;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .pagination a:hover {
+            background: #f8f9fa;
+        }
+
+        .pagination .current {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <span class="brand-icon">चित्रम्</span>
+                <span class="brand-text">ART GALLERY</span>
+            </a>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="/" class="nav-link <%= title.includes('चित्रम् - Online') ? 'active' : '' %>">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a></li>
+                <li><a href="/arts" class="nav-link <%= title.includes('All Arts') ? 'active' : '' %>">
+                    <i class="fas fa-palette"></i>
+                    <span>Gallery</span>
+                </a></li>
+                <li><a href="/artists" class="nav-link <%= title.includes('Our Artists') ? 'active' : '' %>">
+                    <i class="fas fa-users"></i>
+                    <span>Artists</span>
+                </a></li>
+                <li><a href="/about" class="nav-link <%= title.includes('About') ? 'active' : '' %>">
+                    <i class="fas fa-info-circle"></i>
+                    <span>About</span>
+                </a></li>
+                <li><a href="/apply" class="nav-link <%= title.includes('Apply as Artist') ? 'active' : '' %>">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Apply</span>
+                </a></li>
+                <li><a href="/track" class="nav-link <%= title.includes('Track Order') ? 'active' : '' %>">
+                    <i class="fas fa-truck"></i>
+                    <span>Track</span>
+                </a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <a href="/cart" class="cart-btn hover-target">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cart-count">0</span>
+                </a>
+                <button class="nav-toggle" id="nav-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <%- body %>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 चित्रम् - Online Art Gallery. All rights reserved.</p>
+            <p>Where Art Meets Technology 🎨</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-toggle').addEventListener('click', function() {
+            const navMenu = document.getElementById('nav-menu');
+            navMenu.classList.toggle('active');
+        });
+
+        // Cart functionality
+        class Cart {
+            constructor() {
+                this.items = JSON.parse(localStorage.getItem('chitram_cart') || '[]');
+                this.updateCartCount();
+            }
+
+            addItem(artId, artName, artPrice, artImage, artistName) {
+                const existingItem = this.items.find(item => item.art_id === artId);
+                
+                if (!existingItem) {
+                    this.items.push({
+                        art_id: artId,
+                        art_name: artName,
+                        cost: artPrice,
+                        art_image: artImage,
+                        artist_name: artistName,
+                        added_at: new Date().toISOString()
+                    });
+                    
+                    this.saveCart();
+                    this.updateCartCount();
+                    this.showNotification('Added to cart!', 'success');
+                } else {
+                    this.showNotification('Item already in cart!', 'info');
+                }
+            }
+
+            removeItem(artId) {
+                this.items = this.items.filter(item => item.art_id !== artId);
+                this.saveCart();
+                this.updateCartCount();
+                this.showNotification('Removed from cart!', 'success');
+            }
+
+            getItems() {
+                return this.items;
+            }
+
+            getTotalAmount() {
+                return this.items.reduce((total, item) => total + parseFloat(item.cost), 0);
+            }
+
+            clearCart() {
+                this.items = [];
+                this.saveCart();
+                this.updateCartCount();
+            }
+
+            saveCart() {
+                localStorage.setItem('chitram_cart', JSON.stringify(this.items));
+            }
+
+            updateCartCount() {
+                const countElement = document.getElementById('cart-count');
+                if (countElement) {
+                    countElement.textContent = this.items.length;
+                    countElement.style.display = this.items.length > 0 ? 'block' : 'none';
+                }
+            }
+
+            showNotification(message, type = 'info') {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = `alert alert-${type === 'success' ? 'success' : 'error'}`;
+                notification.style.position = 'fixed';
+                notification.style.top = '100px';
+                notification.style.right = '20px';
+                notification.style.zIndex = '9999';
+                notification.style.minWidth = '250px';
+                notification.textContent = message;
+
+                document.body.appendChild(notification);
+
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 3000);
+            }
+        }
+
+        // Initialize cart
+        window.cart = new Cart();
+
+        // Add to cart function
+        window.addToCart = function(artId, artName, artPrice, artImage, artistName) {
+            window.cart.addItem(artId, artName, artPrice, artImage, artistName);
+        };
+
+        // Search functionality
+        let searchTimeout;
+        window.searchArts = function(query) {
+            clearTimeout(searchTimeout);
+            
+            if (query.length < 2) {
+                hideSearchResults();
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                fetch(`/api/arts/search?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        showSearchResults(data.arts);
+                    })
+                    .catch(error => {
+                        console.error('Search error:', error);
+                    });
+            }, 300);
+        };
+
+        window.showSearchResults = function(arts) {
+            const resultsContainer = document.querySelector('.search-results');
+            if (!resultsContainer) return;
+
+            if (arts.length === 0) {
+                resultsContainer.innerHTML = '<div class="search-result-item">No arts found</div>';
+            } else {
+                resultsContainer.innerHTML = arts.map(art => `
+                    <div class="search-result-item" onclick="window.location.href='/art/${art.unique_id}'">
+                        <img src="/uploads/artworks/${art.art_image}" alt="${art.art_name}" class="search-result-image">
+                        <div>
+                            <div style="font-weight: bold;">${art.art_name}</div>
+                            <div style="color: #666; font-size: 0.9rem;">by ${art.artist_name}</div>
+                            <div style="color: #667eea; font-weight: bold;">Rs. ${art.cost}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            resultsContainer.style.display = 'block';
+        };
+
+        window.hideSearchResults = function() {
+            const resultsContainer = document.querySelector('.search-results');
+            if (resultsContainer) {
+                resultsContainer.style.display = 'none';
+            }
+        };
+
+        // Hide search results when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-container')) {
+                hideSearchResults();
+            }
+        });
+
+        // Form submission helper
+        window.submitForm = function(formId, endpoint, successCallback) {
+            const form = document.getElementById(formId);
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+
+            fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (successCallback) {
+                        successCallback(data);
+                    } else {
+                        window.cart.showNotification(data.success, 'success');
+                        form.reset();
+                    }
+                } else {
+                    window.cart.showNotification(data.error, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Form submission error:', error);
+                window.cart.showNotification('An error occurred. Please try again.', 'error');
+            });
+        };
+
+        // Load more functionality
+        window.loadMoreArts = function(currentPage, buttonId) {
+            const button = document.getElementById(buttonId);
+            const originalText = button.textContent;
+            button.innerHTML = '<span class="loading"></span> Loading...';
+            button.disabled = true;
+
+            fetch(`/api/arts/load-more?page=${currentPage}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.arts && data.arts.length > 0) {
+                        const container = document.querySelector('.art-grid');
+                        const artsHtml = data.arts.map(art => `
+                            <div class="art-card">
+                                <img src="/uploads/artworks/${art.art_image}" alt="${art.art_name}" class="art-image">
+                                <div class="art-info">
+                                    <div class="art-title">${art.art_name}</div>
+                                    <div class="art-artist">by ${art.artist_name}</div>
+                                    <div class="art-price">Rs. ${art.cost}</div>
+                                    <div class="art-meta">
+                                        <span>${art.size_of_art || 'Size not specified'}</span>
+                                        <span>${art.color_type === 'color' ? 'Color' : 'B&W'}</span>
+                                    </div>
+                                    <a href="/art/${art.unique_id}" class="btn btn-outline" style="margin-right: 0.5rem;">View Details</a>
+                                    <button onclick="addToCart('${art.unique_id}', '${art.art_name}', '${art.cost}', '${art.art_image}', '${art.artist_name}')" class="btn">Add to Cart</button>
+                                </div>
+                            </div>
+                        `).join('');
+                        
+                        container.insertAdjacentHTML('beforeend', artsHtml);
+                        
+                        if (!data.hasMore) {
+                            button.style.display = 'none';
+                        } else {
+                            button.onclick = () => loadMoreArts(currentPage + 1, buttonId);
+                        }
+                    } else {
+                        button.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Load more error:', error);
+                    window.cart.showNotification('Error loading more arts', 'error');
+                })
+                .finally(() => {
+                    button.textContent = originalText;
+                    button.disabled = false;
+                });
+        };
+    </script>
+
+    <!-- Modern Interactive Effects -->
+    <script src="/js/modern-effects.js"></script>
+</body>
+</html>
