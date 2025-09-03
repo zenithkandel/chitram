@@ -871,9 +871,69 @@
                 </div>
             </div>
 
+            <!-- Search and Filter Section -->
+            <div class="admin-search-filter-section">
+                <div class="search-filter-header">
+                    <h3>Search & Filter Artworks</h3>
+                </div>
+                
+                <div class="admin-gallery-controls">
+                    <!-- Search Bar -->
+                    <div class="admin-search-container">
+                        <div class="admin-search-bar">
+                            <input type="text" 
+                                   id="adminArtworkSearchInput" 
+                                   placeholder="Search artworks, artists, categories, or descriptions..." 
+                                   autocomplete="off">
+                            <button type="button" id="adminArtworkSearchBtn" class="admin-search-button">
+                                <span id="adminArtworkSearchIcon">🔍</span>
+                                <span id="adminArtworkSearchSpinner" class="admin-loading-spinner" style="display: none;"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filter Section -->
+                    <div class="admin-filter-container">
+                        <div class="admin-filter-group">
+                            <label for="adminSortBy">Sort by:</label>
+                            <select id="adminSortBy" class="admin-filter-select">
+                                <option value="date_newest">Date: Newest First</option>
+                                <option value="date_oldest">Date: Oldest First</option>
+                                <option value="price_low_high">Price: Low to High</option>
+                                <option value="price_high_low">Price: High to Low</option>
+                                <option value="name_a_z">Name: A to Z</option>
+                                <option value="name_z_a">Name: Z to A</option>
+                            </select>
+                        </div>
+
+                        <div class="admin-filter-group">
+                            <label for="adminCategoryFilter">Category:</label>
+                            <select id="adminCategoryFilter" class="admin-filter-select">
+                                <option value="all">All Categories</option>
+                                <!-- Categories will be loaded dynamically -->
+                            </select>
+                        </div>
+
+                        <div class="admin-filter-group">
+                            <label for="adminStatusFilter">Status:</label>
+                            <select id="adminStatusFilter" class="admin-filter-select">
+                                <option value="all">All Statuses</option>
+                                <option value="listed">Listed</option>
+                                <option value="ordered">Ordered</option>
+                                <option value="sold">Sold</option>
+                                <option value="delivered">Delivered</option>
+                            </select>
+                        </div>
+
+                        <button type="button" id="adminArtworkResetBtn" class="admin-reset-button">Reset Filters</button>
+                        <button type="button" id="adminArtworkClearBtn" class="admin-clear-button" style="display: none;">Clear Search</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Artworks Grid -->
             <div class="artworks-container">
-                <div class="artworks-grid">
+                <div class="artworks-grid" id="adminArtworksContainer">
                     <% if (artworks.length === 0) { %>
                         <div class="artwork-card" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
                             <h3 style="color: #666; margin-bottom: 1rem;">No artworks found</h3>
