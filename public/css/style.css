@@ -754,6 +754,31 @@ body {
     box-shadow: 0 8px 25px rgba(0,0,0,0.15);
 }
 
+.artist-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    height: 100%;
+}
+
+.view-profile-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #007bff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+}
+
+.artist-card:hover .view-profile-btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .artist-image {
     width: 100%;
     height: 250px;
@@ -1484,5 +1509,443 @@ input[type="file"]:hover {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.25rem;
+    }
+}
+
+/* Artist Profile Page Styles */
+.artist-profile-section {
+    padding: 2rem 0;
+    background: #f8f9fa;
+    min-height: calc(100vh - 200px);
+}
+
+.artist-header {
+    background: white;
+    border-radius: 15px;
+    padding: 3rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+}
+
+.artist-image {
+    flex-shrink: 0;
+}
+
+.artist-image img {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid #e9ecef;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.artist-info {
+    flex: 1;
+}
+
+.artist-info h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.artist-specialty {
+    font-size: 1.2rem;
+    color: #007bff;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.artist-stats {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.stat i {
+    color: #007bff;
+    font-size: 1.1rem;
+}
+
+.artist-contact {
+    margin-top: 1rem;
+}
+
+.contact-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
+    color: white;
+}
+
+.artist-details {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.detail-section {
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 4px solid #007bff;
+}
+
+.detail-section h3 {
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.detail-section h3 i {
+    color: #007bff;
+}
+
+.detail-section p {
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.artist-artworks {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.section-header h2 {
+    font-size: 2.2rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.section-header p {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.artworks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.artwork-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.artwork-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.artwork-image {
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    position: relative;
+}
+
+.artwork-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.artwork-card:hover .artwork-image img {
+    transform: scale(1.05);
+}
+
+.artwork-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.artwork-card:hover .artwork-overlay {
+    opacity: 1;
+}
+
+.view-btn {
+    background: white;
+    color: #333;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: transform 0.3s ease;
+}
+
+.view-btn:hover {
+    transform: scale(1.05);
+}
+
+.artwork-info {
+    padding: 1.5rem;
+}
+
+.artwork-info h3 {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.artwork-category {
+    color: #007bff;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+.artwork-medium {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+    font-style: italic;
+}
+
+.artwork-dimensions {
+    color: #999;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.artwork-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+}
+
+.price {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #28a745;
+}
+
+.add-to-cart-btn {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.add-to-cart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.no-artworks {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #666;
+}
+
+.no-artworks i {
+    font-size: 4rem;
+    color: #ddd;
+    margin-bottom: 1rem;
+}
+
+.no-artworks h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #999;
+}
+
+.no-artworks p {
+    font-size: 1.1rem;
+}
+
+/* Artist Profile Responsive Design */
+@media (max-width: 768px) {
+    .artist-profile-section {
+        padding: 1rem 0;
+    }
+    
+    .artist-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 2rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .artist-image img {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .artist-info h1 {
+        font-size: 2rem;
+    }
+    
+    .artist-stats {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    .artist-details,
+    .artist-artworks {
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .details-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .detail-section {
+        padding: 1rem;
+    }
+    
+    .section-header h2 {
+        font-size: 1.8rem;
+    }
+    
+    .artworks-grid {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .artwork-image {
+        height: 180px;
+    }
+    
+    .artwork-info {
+        padding: 1.2rem;
+    }
+    
+    .artwork-footer {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .add-to-cart-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .artist-header {
+        padding: 1.5rem;
+    }
+    
+    .artist-image img {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .artist-info h1 {
+        font-size: 1.6rem;
+    }
+    
+    .artist-specialty {
+        font-size: 1rem;
+    }
+    
+    .artist-details,
+    .artist-artworks {
+        padding: 1rem;
+    }
+    
+    .section-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .artworks-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .artwork-image {
+        height: 160px;
+    }
+    
+    .artwork-info {
+        padding: 1rem;
+    }
+    
+    .price {
+        font-size: 1.1rem;
     }
 }
