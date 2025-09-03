@@ -292,19 +292,46 @@
                 };
 
                 try {
-                    // For now, just show the order data (will implement server submission later)
-                    console.log('Order Data:', orderData);
-                    alert(`Order placed successfully!\nOrder ID: ${orderData.order_id}\nPlease save this Order ID for tracking.`);
-                    
-                    // Clear cart after successful order
-                    cartManager.clearCart();
-                    
-                    // Redirect to home or thank you page
-                    window.location.href = '/';
+                    // Disable submit button and show loading
+                    const submitBtn = document.getElementById('place-order-btn');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Placing Order...';
+
+                    // Submit order to backend
+                    const response = await fetch('/api/orders', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(orderData)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        // Order placed successfully
+                        alert(`Order placed successfully!\nOrder ID: ${result.order_id}\nPlease save this Order ID for tracking.\n\nYou will be contacted within 48 hours.`);
+                        
+                        // Clear cart after successful order
+                        cartManager.clearCart();
+                        
+                        // Redirect to home page
+                        window.location.href = '/';
+                        
+                    } else {
+                        // Handle error response
+                        throw new Error(result.error || 'Failed to place order');
+                    }
                     
                 } catch (error) {
                     console.error('Order submission error:', error);
-                    alert('There was an error placing your order. Please try again.');
+                    alert(`There was an error placing your order: ${error.message}\nPlease try again.`);
+                    
+                    // Re-enable submit button
+                    const submitBtn = document.getElementById('place-order-btn');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
                 }
             }
         }

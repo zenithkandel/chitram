@@ -17,6 +17,7 @@ const { getGalleryArtworks, searchAndFilterArtworks, getArtCategories } = requir
 const { getTrackOrdersPage, trackOrder } = require('./controllers/trackOrderController');
 const { getArtistProfile } = require('./controllers/artistProfileController');
 const { getArtworkDetails } = require('./controllers/artworkController');
+const { createOrder } = require('./controllers/orderController');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -96,6 +97,9 @@ app.get('/checkout', (req, res) => {
         title: 'Checkout - चित्रम्'
     });
 });
+
+// Order creation route (POST)
+app.post('/api/orders', createOrder);
 
 // Track Orders page route
 app.get('/track-orders', getTrackOrdersPage);
