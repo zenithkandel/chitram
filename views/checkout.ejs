@@ -129,6 +129,58 @@
         </div>
     </section>
 
+    <!-- Order Success Modal -->
+    <div id="order-success-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-check-circle success-icon"></i>
+                <h2>Order Placed Successfully!</h2>
+            </div>
+            <div class="modal-body">
+                <div class="order-details">
+                    <div class="order-id-section">
+                        <label>Your Order ID:</label>
+                        <div class="order-id-display">
+                            <span id="modal-order-id"></span>
+                            <button type="button" class="copy-btn" onclick="copyOrderId()" title="Copy Order ID">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="important-note">
+                        <div class="note-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="note-text">
+                            <strong>Please save this Order ID!</strong><br>
+                            You'll need it to track your order.
+                        </div>
+                    </div>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span>We will contact you within <strong>48 hours</strong></span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-shipping-fast"></i>
+                            <span>Your artwork will be shipped within <strong>1 week</strong></span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>For inquiries, visit our <a href="/contact">contact page</a></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-primary" onclick="closeModalAndRedirect()">
+                    <i class="fas fa-home"></i>
+                    Continue Shopping
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -310,14 +362,11 @@
                     const result = await response.json();
 
                     if (response.ok && result.success) {
-                        // Order placed successfully
-                        alert(`Order placed successfully!\nOrder ID: ${result.order_id}\nPlease save this Order ID for tracking.\n\nYou will be contacted within 48 hours.`);
+                        // Order placed successfully - show modal
+                        this.showSuccessModal(result.order_id);
                         
                         // Clear cart after successful order
                         cartManager.clearCart();
-                        
-                        // Redirect to home page
-                        window.location.href = '/';
                         
                     } else {
                         // Handle error response
@@ -334,6 +383,20 @@
                     submitBtn.innerHTML = originalText;
                 }
             }
+
+            showSuccessModal(orderId) {
+                // Set the order ID in the modal
+                document.getElementById('modal-order-id').textContent = orderId;
+                
+                // Show the modal
+                const modal = document.getElementById('order-success-modal');
+                modal.style.display = 'flex';
+                
+                // Re-enable the submit button for future use
+                const submitBtn = document.getElementById('place-order-btn');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Place Order';
+            }
         }
 
         // Handle checkout image errors
@@ -346,8 +409,66 @@
             };
         }
 
+        // Modal functionality
+        function copyOrderId() {
+            const orderIdText = document.getElementById('modal-order-id').textContent;
+            navigator.clipboard.writeText(orderIdText).then(() => {
+                const copyBtn = document.querySelector('.copy-btn');
+                const originalHTML = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+                copyBtn.style.color = '#27ae60';
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalHTML;
+                    copyBtn.style.color = '';
+                }, 2000);
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = orderIdText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                const copyBtn = document.querySelector('.copy-btn');
+                const originalHTML = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+                copyBtn.style.color = '#27ae60';
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalHTML;
+                    copyBtn.style.color = '';
+                }, 2000);
+            });
+        }
+
+        function closeModalAndRedirect() {
+            const modal = document.getElementById('order-success-modal');
+            modal.style.display = 'none';
+            window.location.href = '/';
+        }
+
+        // Close modal when clicking outside of it
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('order-success-modal');
+            if (event.target === modal) {
+                closeModalAndRedirect();
+            }
+        });
+
         // Initialize checkout page
         const checkoutPage = new CheckoutPage();
+
+        // Handle checkout image errors
+        function handleCheckoutImageError(img) {
+            if (img.src.includes('placeholder-art.jpg')) return;
+            img.src = '/images/placeholder-art.jpg';
+            img.onerror = function() {
+                this.style.display = 'none';
+                this.parentNode.innerHTML = '<div class="image-placeholder"><i class="fas fa-image"></i></div>';
+            };
+        }
     </script>
 </body>
 </html>
