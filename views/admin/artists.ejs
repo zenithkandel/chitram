@@ -4,757 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>चित्रम् - Artists Management</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f7fa;
-            color: #333;
-            overflow-x: hidden;
-        }
-
-        /* Sidebar styles - same as dashboard */
-        .sidebar {
-            position: fixed;
-            left: -280px;
-            top: 0;
-            width: 280px;
-            height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            z-index: 1000;
-            transition: left 0.3s ease;
-            overflow-y: auto;
-        }
-
-        .sidebar.active {
-            left: 0;
-        }
-
-        .sidebar-header {
-            padding: 2rem 1.5rem;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .sidebar-header h2 {
-            color: white;
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .sidebar-header p {
-            color: rgba(255,255,255,0.8);
-            font-size: 0.9rem;
-        }
-
-        .sidebar-nav {
-            padding: 1rem 0;
-        }
-
-        .nav-item {
-            margin: 0.5rem 0;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1.5rem;
-            color: rgba(255,255,255,0.9);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            border-left: 3px solid transparent;
-        }
-
-        .nav-link:hover {
-            background: rgba(255,255,255,0.1);
-            border-left-color: white;
-            color: white;
-        }
-
-        .nav-link.active {
-            background: rgba(255,255,255,0.15);
-            border-left-color: white;
-            color: white;
-        }
-
-        .nav-icon {
-            width: 20px;
-            height: 20px;
-            margin-right: 0.75rem;
-            font-size: 1.2rem;
-        }
-
-        /* Main content */
-        .main-content {
-            margin-left: 0;
-            transition: margin-left 0.3s ease;
-            min-height: 100vh;
-        }
-
-        .header {
-            background: white;
-            padding: 1rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .menu-toggle {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #333;
-            padding: 0.5rem;
-        }
-
-        .header-title {
-            font-size: 1.5rem;
-            color: #333;
-            flex: 1;
-            text-align: center;
-        }
-
-        .logout-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: opacity 0.3s;
-            font-size: 0.9rem;
-        }
-
-        .logout-btn:hover {
-            opacity: 0.9;
-        }
-
-        /* Artists content */
-        .artists-content {
-            padding: 1.5rem;
-        }
-
-        .artists-header {
-            margin-bottom: 2rem;
-        }
-
-        .artists-header h2 {
-            color: #333;
-            margin-bottom: 0.5rem;
-        }
-
-        .artists-stats {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .stat-item {
-            background: white;
-            padding: 1rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            min-width: 120px;
-        }
-
-        .add-artist-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            min-width: 120px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 80px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .add-artist-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .add-artist-btn:active {
-            transform: translateY(0);
-        }
-
-        .add-artist-btn .add-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .add-artist-btn .add-text {
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        /* Admin Search Bar Styles */
-        .admin-search-container {
-            margin: 1.5rem 0;
-            padding: 0 0.5rem;
-        }
-
-        .admin-search-bar {
-            display: flex;
-            max-width: 500px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-            transition: box-shadow 0.3s ease;
-        }
-
-        .admin-search-bar:focus-within {
-            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .admin-search-bar input {
-            flex: 1;
-            padding: 1rem 1.5rem;
-            border: none;
-            outline: none;
-            font-size: 1rem;
-            background: transparent;
-        }
-
-        .admin-search-bar input::placeholder {
-            color: #999;
-        }
-
-        .admin-search-button, .admin-clear-button {
-            padding: 1rem 1.5rem;
-            border: none;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .admin-search-button:hover, .admin-clear-button:hover {
-            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
-            transform: translateY(-1px);
-        }
-
-        .admin-clear-button {
-            background: #6c757d;
-            margin-left: 1px;
-        }
-
-        .admin-clear-button:hover {
-            background: #5a6268;
-        }
-
-        .admin-loading-spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid #ffffff;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Artists grid */
-        .artists-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
-
-        .artist-card {
-            background: white;
-            border-radius: 10px;
-            padding: 1.5rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .artist-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        }
-
-        .artist-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .artist-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-right: 1rem;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .artist-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        .artist-avatar .avatar-fallback,
-        .artist-avatar .avatar-text {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
-            position: relative;
-            z-index: 1;
-        }
-
-        .artist-info h3 {
-            color: #333;
-            margin-bottom: 0.25rem;
-        }
-
-        .artist-details {
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        .artist-meta {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
-            margin: 1rem 0;
-            font-size: 0.85rem;
-        }
-
-        .meta-item {
-            color: #666;
-        }
-
-        .meta-label {
-            font-weight: 500;
-            color: #333;
-        }
-
-        .artist-stats {
-            display: flex;
-            justify-content: space-between;
-            margin: 1rem 0;
-            padding: 0.75rem;
-            background: #f8f9fa;
-            border-radius: 5px;
-        }
-
-        .stat {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .stat-text {
-            font-size: 0.8rem;
-            color: #666;
-        }
-
-        .artist-status {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            margin-bottom: 1rem;
-        }
-
-        .status-active {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-inactive {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .artist-actions {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: opacity 0.3s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-        }
-
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .btn:disabled:hover {
-            opacity: 0.6;
-        }
-
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 2000;
-        }
-
-        .modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
-            max-width: 600px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .modal-title {
-            color: #333;
-            margin: 0;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #666;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #333;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 0.9rem;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .form-textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-            margin-top: 1.5rem;
-        }
-
-        /* Progress Bar */
-        .progress-container {
-            display: none;
-            margin: 1rem 0;
-            background: #f0f0f0;
-            border-radius: 10px;
-            overflow: hidden;
-            height: 8px;
-            position: relative;
-        }
-
-        .progress-container.active {
-            display: block;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            width: 0%;
-            transition: width 0.3s ease;
-            border-radius: 10px;
-            position: relative;
-            animation: progressShine 2s infinite;
-        }
-
-        @keyframes progressShine {
-            0% { background-position: -200px 0; }
-            100% { background-position: calc(200px + 100%) 0; }
-        }
-
-        .progress-bar.animated {
-            background: linear-gradient(
-                90deg,
-                #667eea 0%,
-                #764ba2 25%,
-                #89f7fe 50%,
-                #764ba2 75%,
-                #667eea 100%
-            );
-            background-size: 200px 100%;
-            animation: progressShine 1.5s infinite;
-        }
-
-        .progress-text {
-            text-align: center;
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
-            color: #666;
-            font-weight: 500;
-        }
-
-        .update-status {
-            display: none;
-            text-align: center;
-            margin: 1rem 0;
-            padding: 0.75rem;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .update-status.active {
-            display: block;
-        }
-
-        .update-status.uploading {
-            background: #e3f2fd;
-            color: #1976d2;
-            border: 1px solid #bbdefb;
-        }
-
-        .update-status.processing {
-            background: #fff3e0;
-            color: #f57c00;
-            border: 1px solid #ffcc02;
-        }
-
-        .update-status.success {
-            background: #e8f5e8;
-            color: #2e7d32;
-            border: 1px solid #c8e6c8;
-        }
-
-        /* Loading Spinner */
-        .loading-spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            margin-right: 8px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Alerts */
-        .alert {
-            padding: 1rem;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-        }
-
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 999;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* Responsive design */
-        @media (min-width: 768px) {
-            .artists-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .artists-content {
-                padding: 2rem;
-            }
-
-            .header-title {
-                text-align: left;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .sidebar {
-                left: 0;
-                position: fixed;
-            }
-
-            .main-content {
-                margin-left: 280px;
-            }
-
-            .menu-toggle {
-                display: none;
-            }
-
-            .artists-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .artists-content {
-                padding: 2.5rem;
-            }
-        }
-
-        @media (min-width: 1200px) {
-            .artists-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="/css/pages/admin-common.css">
+    <link rel="stylesheet" href="/css/pages/admin-artists.css">
 </head>
 <body>
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <h2>चित्रम्</h2>
-            <p>Admin Dashboard</p>
+            <p>Art Management System</p>
         </div>
         <nav class="sidebar-nav">
             <div class="nav-item">
@@ -850,9 +108,9 @@
                            autocomplete="off">
                     <button type="button" id="adminSearchBtn" class="admin-search-button">
                         <span id="adminSearchIcon">🔍</span>
-                        <span id="adminSearchSpinner" class="admin-loading-spinner" style="display: none;"></span>
+                        <span id="adminSearchSpinner" class="admin-loading-spinner initially-hidden"></span>
                     </button>
-                    <button type="button" id="adminClearBtn" class="admin-clear-button" style="display: none;">
+                    <button type="button" id="adminClearBtn" class="admin-clear-button initially-hidden">
                         <span>Clear</span>
                     </button>
                 </div>
@@ -941,9 +199,9 @@
             </div>
 
             <% if (artists.length === 0) { %>
-                <div style="text-align: center; padding: 3rem; color: #666;">
+                <div class="empty-state">
                     <h3>No artists found</h3>
-                    <p>There are no artists registered in the system yet.</p>
+                    <p class="muted-2">There are no artists registered in the system yet.</p>
                 </div>
             <% } %>
         </div>
@@ -1015,12 +273,12 @@
                 <div class="form-group">
                     <label class="form-label">Profile Picture</label>
                     <input type="file" class="form-input" id="edit_profile_picture" accept="image/*" onchange="previewProfilePicture(this)">
-                    <small style="color: #666; font-size: 0.8rem;">Current: <span id="current_profile_picture">None</span></small>
+                    <small class="text-sm muted">Current: <span id="current_profile_picture">None</span></small>
                     
                     <!-- Image Preview -->
-                    <div id="imagePreview" style="display: none; margin-top: 10px;">
-                        <div style="font-size: 0.8rem; color: #666; margin-bottom: 5px;">Preview:</div>
-                        <img id="previewImage" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 2px solid #ddd;">
+                    <div id="imagePreview" class="initially-hidden preview-wrapper">
+                        <div class="text-sm muted preview-label">Preview:</div>
+                        <img id="previewImage" class="avatar-preview">
                     </div>
                 </div>
                 
@@ -1028,7 +286,7 @@
                 <div class="progress-container" id="updateProgressContainer">
                     <div class="progress-bar" id="updateProgressBar"></div>
                 </div>
-                <div class="progress-text" id="updateProgressText" style="display: none;"></div>
+                <div class="progress-text initially-hidden" id="updateProgressText"></div>
                 
                 <!-- Update Status -->
                 <div class="update-status" id="updateStatus"></div>
@@ -1037,7 +295,7 @@
                     <button type="button" class="btn btn-secondary" onclick="closeEditModal()" id="cancelBtn">Cancel</button>
                     <button type="submit" class="btn btn-primary" id="updateBtn">
                         <span id="updateBtnText">Update Artist</span>
-                        <span id="updateBtnSpinner" style="display: none;">
+                        <span id="updateBtnSpinner" class="initially-hidden">
                             <span class="loading-spinner"></span>Updating...
                         </span>
                     </button>
@@ -1114,9 +372,9 @@
                     <input type="file" class="form-input" id="add_profile_picture" accept="image/*" onchange="previewAddProfilePicture(this)">
                     
                     <!-- Image Preview -->
-                    <div id="addImagePreview" style="display: none; margin-top: 10px;">
-                        <div style="font-size: 0.8rem; color: #666; margin-bottom: 5px;">Preview:</div>
-                        <img id="addPreviewImage" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 2px solid #ddd;">
+                    <div id="addImagePreview" class="initially-hidden preview-wrapper">
+                        <div class="text-sm muted preview-label">Preview:</div>
+                        <img id="addPreviewImage" class="avatar-preview">
                     </div>
                 </div>
                 
@@ -1124,7 +382,7 @@
                 <div class="progress-container" id="addProgressContainer">
                     <div class="progress-bar" id="addProgressBar"></div>
                 </div>
-                <div class="progress-text" id="addProgressText" style="display: none;"></div>
+                <div class="progress-text initially-hidden" id="addProgressText"></div>
                 
                 <!-- Add Status -->
                 <div class="update-status" id="addStatus"></div>
@@ -1133,7 +391,7 @@
                     <button type="button" class="btn btn-secondary" onclick="closeAddArtistModal()" id="addCancelBtn">Cancel</button>
                     <button type="submit" class="btn btn-primary" id="addArtistBtn">
                         <span id="addBtnText">Create Artist</span>
-                        <span id="addBtnSpinner" style="display: none;">
+                        <span id="addBtnSpinner" class="initially-hidden">
                             <span class="loading-spinner"></span>Creating...
                         </span>
                     </button>

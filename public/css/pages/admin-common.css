@@ -127,8 +127,10 @@ body {
 
 /* Utilities */
 .hidden, .is-hidden { display: none !important; }
+.initially-hidden { display: none; }
 .muted { color: var(--muted); }
 .muted-2 { color: var(--muted-2); }
+.text-sm { font-size: 0.85rem; }
 .subject-text { font-weight: 600; color: var(--text); font-size: 1.1rem; }
 .description-text { margin: 0.75rem 0; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
 .empty-state { grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--muted); }

@@ -1,0 +1,21 @@
+/* Applications page */
+.applications-content { padding: 1.5rem; }
+.applications-container { background: var(--surface); padding: 1.5rem; border-radius: 10px; box-shadow: var(--shadow-sm); }
+.applications-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+.application-card { background: #f8f9ff; border-radius: 10px; padding: 1.5rem; transition: all 0.3s ease; border: 1px solid #e1e8ed; }
+.application-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.application-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem; }
+.applicant-name { font-size: 1.1rem; font-weight: 600; color: var(--text); }
+.application-date { font-size: 0.8rem; color: var(--muted); }
+.application-info h3 { color: var(--text); font-size: 1.05rem; margin-bottom: 0.75rem; font-weight: 600; }
+.application-details { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; }
+.detail-item { display: flex; flex-direction: column; }
+.detail-label { font-size: 0.8rem; color: var(--muted); font-weight: 500; margin-bottom: 0.25rem; }
+.detail-value { font-weight: 600; color: var(--text); font-size: 0.9rem; }
+.application-preview { background: #f0f2f5; padding: 0.75rem; border-radius: 8px; margin: 1rem 0; font-size: 0.9rem; line-height: 1.4; color: #555; }
+.application-actions { display: flex; gap: 0.75rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e1e8ed; }
+
+@media (max-width: 768px) {
+  .applications-content { padding: 1rem; }
+  .applications-grid { grid-template-columns: 1fr; }
+}

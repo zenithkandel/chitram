@@ -1,0 +1,14 @@
+/* Admin login page */
+body { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+.login-container { background: #fff; padding: 2rem; border-radius: 10px; box-shadow: var(--shadow-md); width: 100%; max-width: 400px; }
+.logo { text-align: center; margin-bottom: 2rem; }
+.logo h1 { color: var(--text); font-size: 2rem; margin-bottom: 0.5rem; }
+.logo p { color: var(--muted); font-size: 0.9rem; }
+.form-group { margin-bottom: 1rem; }
+label { display: block; margin-bottom: 0.5rem; color: var(--text); font-weight: 500; }
+input[type="text"], input[type="password"] { width: 100%; padding: 0.75rem; border: 2px solid #ddd; border-radius: 5px; font-size: 1rem; transition: border-color 0.3s; }
+input[type="text"]:focus, input[type="password"]:focus { outline: none; border-color: var(--primary); }
+.btn { width: 100%; padding: 0.75rem; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%); color: white; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; transition: transform 0.2s; }
+.btn:hover { transform: translateY(-2px); }
+.error { background: #f8d7da; color: #721c24; padding: 0.75rem; border-radius: 5px; margin-bottom: 1rem; border-left: 4px solid #c33; }
+.footer { text-align: center; margin-top: 2rem; color: var(--muted); font-size: 0.8rem; }
