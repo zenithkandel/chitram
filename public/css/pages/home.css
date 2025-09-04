@@ -36,6 +36,7 @@
 .stats-number { margin: 0; font-size: 1.25rem; }
 .stats-label { margin: 2px 0 0; color: var(--muted); font-size: .9rem; }
 
+
 /* Artworks */
 .artworks-section { padding: 30px 0; }
 .artworks-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
