@@ -1,0 +1,21 @@
+/* Artwork details page */
+.artwork-details-section { padding: 16px 0; }
+.artwork-details-container { display: grid; gap: 16px; }
+.artwork-image-section .artwork-main-image { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); overflow: hidden; }
+.artwork-main-image img { width: 100%; height: auto; display: block; }
+.artwork-info-section { background: var(--panel); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); padding: 16px; }
+.artist-info-box .artist-profile { display: inline-flex; gap: 10px; align-items: center; padding: 8px; background: rgba(255,255,255,0.04); border-radius: 12px; }
+.artist-avatar { width: 40px; height: 40px; border-radius: 999px; object-fit: cover; }
+.price-section { margin: 12px 0; display: flex; align-items: baseline; gap: 8px; }
+.price-label { color: var(--muted); font-size: 0.9rem; }
+.price-value { font-weight: 800; font-size: 1.25rem; }
+.artwork-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.detail-item { display: flex; justify-content: space-between; gap: 8px; }
+.detail-label { color: var(--muted); }
+.description-section { margin-top: 12px; }
+.action-buttons { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+.status-badge { display: inline-flex; gap: 6px; padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,0.08); }
+
+@media (min-width: 1024px) {
+  .artwork-details-container { grid-template-columns: 1.1fr 1fr; align-items: start; }
+}
