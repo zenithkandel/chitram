@@ -67,18 +67,18 @@
                     
                     <button type="submit" class="btn-track" id="trackBtn">
                         <span id="trackText">Track Order</span>
-                        <span id="trackSpinner" class="loading-spinner" style="display: none;"></span>
+                        <span id="trackSpinner" class="loading-spinner hidden"></span>
                     </button>
                 </form>
             </div>
 
             <!-- Order Details Display -->
-            <div id="orderResult" class="order-result" style="display: none;">
+            <div id="orderResult" class="order-result hidden">
                 <!-- Order details will be displayed here -->
             </div>
 
             <!-- Error Message Display -->
-            <div id="errorMessage" class="error-message" style="display: none;">
+            <div id="errorMessage" class="error-message hidden">
                 <p id="errorText"></p>
             </div>
         </div>
@@ -178,7 +178,7 @@
                 <div class="order-card">
                     <div class="order-header">
                         <h2>Order Details</h2>
-                        <div class="order-status" style="background-color: ${statusColor}">
+                        <div class="order-status" data-status-color="${statusColor}">
                             ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                         </div>
                     </div>
