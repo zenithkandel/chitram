@@ -98,3 +98,119 @@ Admin
 
 ---
 Generated from current code (controllers/routes/server) to reflect the actual pages being rendered and their features.
+
+## System architecture and working mechanism
+
+### High-level architecture
+- Platform: Node.js + Express server with EJS templating.
+- Database: MySQL (mysql2 with a connection pool; promise API) via `config/database.js`.
+- Auth: Admin-only authentication with JWT stored in httpOnly cookie (`adminToken`), middleware-guarded routes under `/admin/*`.
+- Static/Uploads: `public/` served statically; uploaded media under `uploads/` (profiles, artworks, applications) served via `/uploads/*`.
+- Frontend behavior: Progressive enhancement with vanilla JS (`public/js/main.js`, `public/js/cart.js`).
+- Error handling: Central 404 and 500 handlers in Express; controllers render `views/error.ejs` for domain errors.
+
+### Actors and identities
+- Visitors (anonymous): browse artists, artworks, view details, add to cart (localStorage), checkout (creates an order without account), submit contact, track orders.
+- Admins: authenticated users managing artists, artworks, orders, messages, and applications via `/admin/*`.
+- Artists: data entities (rows in `artists`); no login in this build. Created directly by admins or via approval of public applications.
+
+### Data model overview (from `chitram_db_schema.sql`)
+- admin: id, username (unique), password_hash (bcrypt), last_login, created_at.
+- artists: unique_id (PK), full_name, age, started_art_since, college_school, location (city, district), email (unique), phone, socials (JSON text), counts (arts_uploaded, arts_sold), bio, profile_picture, joined_at, status (active/inactive/deleted).
+- arts: unique_id (PK), art_name, artist_unique_id (FK→artists), art_category, cost, art_image, art_description, work_hours, size_of_art, color_type (black_and_white|color), status (listed|ordered|sold|delivered), uploaded_at.
+- contact_messages: unique_id, full_name, email, phone, subject, message, status (unread|read|archived), created_at.
+- orders: unique_id, order_id (unique), customer_name/phone/email, shipping_address, customer_message, total_amount, item_count, item_list (JSON), timestamps (creation/received/delivered), status (placed|seen|contacted|sold|delivered|canceled).
+- page_views: view_date (unique), view_count, sn.
+- artist_applications: unique_id, applicant details (name, age, started_art_at, school_college, location), email (unique), phone, socials (JSON), message, profile_picture, bio, received_date, status (pending|under_review|approved|rejected), reviewed_by/date, rejection_reason, created/updated.
+- Indexes: on key lookup/filter fields for performance (artist email, arts artist/category/status, orders status/date, messages status, applications status/date, page_views date).
+
+### Authentication and session management (admin)
+1) Admin visits `/admin/login` (GET) → `views/admin/login.ejs`.
+2) POST `/admin/login` → `adminController.adminLogin`: looks up admin by username, compares bcrypt hash, updates `last_login`, issues JWT via `config/jwt.js` with `JWT_SECRET` and `JWT_EXPIRES_IN`, sets `adminToken` httpOnly cookie (secure in production), redirects to `/admin/dashboard`.
+3) `middleware/auth.authenticateAdmin` checks/decodes `adminToken` on protected routes; clears cookie and redirects to login on failure.
+4) Logout via `POST /admin/logout` or `GET /admin/logout` clears the cookie and redirects to login.
+
+### Artist application intake workflow (public → admin)
+1) Visitor opens `/apply` → `views/apply.ejs`.
+2) Form submits to `/api/applications/apply` or `/api/applications/submit` (both handled by `applicationController.submitApplication`) with optional `profile_picture` (multer: 5MB limit, images only) and inputs like full_name, age, city, district, email, socials, bio, message.
+3) Server validates required fields and email format, enforces unique email across `artist_applications`, normalizes `socials` to JSON if present, stores file to `uploads/applications/`.
+4) Admin reviews in `/admin/applications` (default new/under_review), `/admin/applications/approved`, `/admin/applications/rejected`.
+5) Status change via `PUT/POST /admin/applications/:id/status` updates status, sets reviewer/timestamp; if approved and no existing artist with same email, server copies the application `profile_picture` to `uploads/profiles/` and inserts a new record in `artists` (status active).
+6) Admin can delete application `DELETE /admin/applications/:id` (attempts to remove associated image file if present).
+
+### Artist management (admin)
+- List: `GET /admin/artists` → `views/admin/artists.ejs` (excludes deleted). Search via `GET /admin/artists/search?q=` matches name/email/bio.
+- Create: `POST /admin/artists` with `profile_picture` (multer 5MB; images only). Email uniqueness enforced.
+- Read: `GET /admin/artists/:id` returns JSON details.
+- Update: `PUT /admin/artists/:id` supports updating fields and replacing `profile_picture` (old file removed if exists). Required fields validated.
+- Delete: `DELETE /admin/artists/:id` soft-deletes by setting status to `deleted`.
+
+### Artwork lifecycle and catalog management
+- Create: `POST /admin/artworks` with `art_image` (multer 10MB). Requires art_name, artist_unique_id (validated), category, cost. Inserts into `arts` and increments artist’s `arts_uploaded`.
+- Read: `GET /admin/artworks` renders list; `GET /admin/artworks/:id` returns JSON; `GET /admin/artworks/categories` lists distinct categories; `GET /admin/artworks/api/artists` lists active artists for dropdown.
+- Update: `PUT /admin/artworks/:id` can change fields and replace image (old file deleted). If artist changes, decrements old artist’s `arts_uploaded` and increments new artist’s count.
+- Delete: `DELETE /admin/artworks/:id` soft-deletes (status → deleted) and decrements artist’s `arts_uploaded`.
+- Status semantics: `listed` (visible publicly), `ordered` (customer initiated), `sold`/`delivered` (completed stages). Admin orders flow can reflect transitions; public pages generally show `listed` items.
+
+### Public browsing and discovery
+- Home `/` → stats and latest artworks via `homeController.getHomePage` (counts from `page_views`, active artists, listed arts, total orders; updates today’s view).
+- Gallery `/gallery` → full listing of listed artworks by active artists; supports client-side integrations with `GET /api/gallery/search` (q, category, sort) and `GET /api/gallery/categories`.
+- Artists `/artists` → active artists with computed fields (short bio, experienceYears, location) and artwork counts.
+- Artist profile `/artist/:id` → detailed view with artist info (socials parsed from JSON), validated image paths, computed experience; artworks across statuses displayed with formatted prices.
+- Artwork details `/artwork/:id` → formatted currency, artist info, relative “time ago”, image validation with fallbacks.
+- Optional/alternate client router: `routes/client.js` + `controllers/clientController.js` render `views/client/*` and expose additional APIs like `/api/arts/details`, `/api/arts/recommended`, `/api/orders/create`, `/api/orders/track` if that router is mounted.
+
+### Cart and checkout
+- Cart: implemented entirely client-side with `localStorage` key `chitram_cart` (`public/js/cart.js`).
+   - Add/remove items, dedupe by `unique_id`, badge count updates, toast notifications, total calculation.
+   - Can auto-extract artwork data from DOM on detail/profile pages when only ID is provided.
+- Checkout page `/checkout`: server provides `POST /api/orders` (from `orderController.createOrder`) that validates required fields, ensures `item_list` is a non-empty array, checks duplicate `order_id`, then inserts to `orders` with status `placed`.
+- Track orders:
+   - Public page `/track-orders` (redirect from `/track`) → UI posts to `POST /api/track-order` with `{ order_id, email }`.
+   - Server validates input/email, fetches order, parses `item_list`, formats dates, returns normalized payload.
+
+### Contact messages
+- Public contact submission: `POST /api/contact` stores records in `contact_messages` as `unread` with server-side validation.
+- Admin messages: `/admin/messages` (inbox) and `/admin/messages/archive` (archived). JSON APIs to view one (auto-mark unread→read), update status (unread/read/archived), and delete.
+
+### Page views tracking
+- On selected page controllers, `recordPageView()` increments today’s counter in `page_views` (upsert). Aggregate totals and today’s views power home/client stats.
+
+### File uploads and media management
+- Multer configurations in `middleware/upload.js`:
+   - Profiles: `uploads/profiles/`, filename `artist_<id>_<timestamp>.<ext>`, 5MB, images only.
+   - Artworks: `uploads/artworks/`, filename `artwork_<timestamp>.<ext>`, 10MB, images only.
+   - Applications: `uploads/applications/`, filename `application_<timestamp>.<ext>`, 5MB, images only.
+- Directories are auto-created on server start and by upload module; static serving via `/uploads/*`.
+- Controllers validate disk existence of images and fall back to placeholders where appropriate.
+
+### Error handling strategy
+- Express-level 404 returns simple HTML; 500 handler traps common file upload errors (`LIMIT_FILE_SIZE`, non-image) and generic server errors.
+- Domain errors render `views/error.ejs` (e.g., missing artist/artwork) with user-friendly messages and titles.
+
+### Security and validation
+- JWT-based admin auth, cookie `httpOnly` and `secure` in production; protected routes under `/admin/*`.
+- Parameterized SQL queries used throughout to prevent injection.
+- Input validation for required fields and basic formats (e.g., email regex for applications, tracking, contact).
+- Upload file type checks (MIME starts with `image/`) and size limits.
+- Suggestions for hardening: rate limiting on public APIs (search/contact/order), CSRF protection for admin mutations, stronger password policy, content security policy (CSP), helmet, audit logs.
+
+### Performance and scalability
+- MySQL pool (`connectionLimit: 10`), lean queries with indexes on frequent filters/sorts.
+- Pagination on arts list (`LIMIT/OFFSET`), and batched APIs (`loadMoreArts`).
+- JSON columns (orders.item_list) parsed on-demand in controllers; consider normalization at scale.
+- Image files stored on disk; consider CDN/object storage for production.
+
+### Configuration and environment
+- `.env` variables consumed by the app:
+   - `PORT`: server port (defaults to 3000).
+   - `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`: MySQL connection.
+   - `JWT_SECRET`, `JWT_EXPIRES_IN`: admin auth token settings.
+- Folders created/used: `public/`, `uploads/` (profiles, artworks, applications).
+
+### Data integrity rules and transitions
+- Applications: email unique; approval optionally creates artist and copies profile photo; status transitions tracked with reviewer and timestamps.
+- Artists: email unique; soft-delete via status; profile picture replacement deletes old file.
+- Artworks: status controls public visibility; artist change adjusts `arts_uploaded` counters; soft-delete removes from public and decrements counters.
+- Orders: status transitions may update timestamps (seen/delivered); IDs are unique (either client-generated or server-generated depending on endpoint).
+
