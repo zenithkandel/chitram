@@ -31,7 +31,7 @@ A complete art selling platform built with Node.js, Express, MySQL, and EJS temp
 
 2. **Install dependencies**
    ```bash
-   npm install
+   npm install 
    ```
 
 3. **Setup environment variables**
