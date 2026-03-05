@@ -192,4 +192,3 @@ For issues and questions:
 ---
 
 **चित्रम्** - Where Art Meets Technology 🎨
-
